@@ -11,6 +11,9 @@
 *.sln.docstates
 *.env
 
+# ignore .idea
+.idea/
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
