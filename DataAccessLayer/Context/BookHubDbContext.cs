@@ -16,8 +16,7 @@ public class BookHubDbContext: DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Book M:N Genre
-        modelBuilder.Entity<Book>().HasMany(b => b.Genres).WithMany().UsingEntity<BookGenre>();
-        
+        modelBuilder.Entity<Book>().HasMany(b => b.Genres).WithMany(g => g.Books);        
         
         foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
         {

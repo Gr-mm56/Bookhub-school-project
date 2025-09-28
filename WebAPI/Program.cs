@@ -5,7 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<BookHubDbContext>(options =>
 {
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")).UseLazyLoadingProxies();
 });
 // Add services to the container.
 

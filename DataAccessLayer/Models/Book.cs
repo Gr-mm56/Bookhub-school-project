@@ -24,9 +24,9 @@ public class Book: BaseEntity
     [Required]
     public required int AuthorId { get; set; }
     
-    public virtual IEnumerable<Genre> Genres { get; set; }
+    public virtual ICollection<Genre> Genres { get; set; }
     
-    public virtual IEnumerable<Rating>? Ratings { get; set; }
+    public virtual ICollection<Rating>? Ratings { get; set; }
     // todo: uncomment when Images are done
     //public virtual IEnumerable<Image> Images { get; set; }
   // todo: uncomment when Publishers are done  
