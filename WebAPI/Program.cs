@@ -1,5 +1,12 @@
+using DataAccessLayer.Context;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddDbContext<BookHubDbContext>(options =>
+{
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
 // Add services to the container.
 
 builder.Services.AddControllers();
