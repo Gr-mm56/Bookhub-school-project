@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace DataAccessLayer.Models;
+namespace DataAccessLayer.Entities;
 
 public class Rating: BaseEntity
 {
