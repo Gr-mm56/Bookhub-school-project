@@ -11,6 +11,18 @@
 *.sln.docstates
 *.env
 
+# Configuration files
+appsettings.*.json
+
+# Database file
+*.db
+*.sqlite
+*.db-shm
+*.db-wal
+
+# ignore .idea
+.idea/
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
