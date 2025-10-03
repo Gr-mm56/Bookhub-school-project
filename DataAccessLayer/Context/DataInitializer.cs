@@ -1,4 +1,5 @@
-﻿using DataAccessLayer.Entities;
+﻿using System.Collections;
+using DataAccessLayer.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccessLayer.Context;
@@ -8,25 +9,25 @@ public static class DataInitializer
     public static void Seed(this ModelBuilder modelBuilder)
     {
         var genres = PrepareGenreModels();
-        modelBuilder.Entity<Genre>().HasData(genres);
+        modelBuilder.Entity<Genre>().HasData(AddDates(genres));
 
         var books = PrepareBookModels();
-        modelBuilder.Entity<Book>().HasData(books);
+        modelBuilder.Entity<Book>().HasData(AddDates(books));
 
         var users = PrepareUserModels();
-        modelBuilder.Entity<User>().HasData(users);
+        modelBuilder.Entity<User>().HasData(AddDates(users));
 
         var ratings = PrepareRatingModels();
-        modelBuilder.Entity<Rating>().HasData(ratings);
+        modelBuilder.Entity<Rating>().HasData(AddDates(ratings));
 
         var carts = PrepareCartModels();
-        modelBuilder.Entity<Cart>().HasData(carts);
+        modelBuilder.Entity<Cart>().HasData(AddDates(carts));
 
         var purchaseItems = PreparePurchaseItemModels();
-        modelBuilder.Entity<PurchaseItem>().HasData(purchaseItems);
+        modelBuilder.Entity<PurchaseItem>().HasData(AddDates(purchaseItems));
 
         var wishlistItems = PrepareWishlistItemModels();
-        modelBuilder.Entity<WishlistItem>().HasData(wishlistItems);
+        modelBuilder.Entity<WishlistItem>().HasData(AddDates(wishlistItems));
     }
 
     private static List<Genre> PrepareGenreModels()
@@ -152,7 +153,7 @@ public static class DataInitializer
 
     private static List<Rating> PrepareRatingModels()
     {
-        var seedDate = new DateTime(2025, 09, 15); // todo: randomize this a bit
+        var seedDate = new DateTime(2025, 09, 15);
 
         return
         [
@@ -161,8 +162,7 @@ public static class DataInitializer
                 Id = 1,
                 Stars = 5,
                 BookId = 1,
-                DateCreated = seedDate,
-                DateModified = seedDate
+                UserId = 1
             },
 
             new Rating
@@ -170,14 +170,15 @@ public static class DataInitializer
                 Id = 2,
                 Stars = 4,
                 BookId = 2,
-                DateCreated = seedDate,
-                DateModified = seedDate
+                UserId = 2
             }
         ];
     }
 
     private static List<Cart> PrepareCartModels()
     {
+        var seedDate = new DateTime(2025, 09, 15);
+
         return
         [
             new Cart
@@ -202,7 +203,7 @@ public static class DataInitializer
                 UserId = 3,
                 TotalValue = 120.50,
                 OrderId = 1001,
-                OrderDate = DateTime.UtcNow.AddDays(-7)
+                OrderDate = seedDate
             },
             new Cart
             {
@@ -210,7 +211,7 @@ public static class DataInitializer
                 UserId = 4,
                 TotalValue = 15.75,
                 OrderId = 1002,
-                OrderDate = DateTime.UtcNow.AddDays(-1)
+                OrderDate = seedDate
             },
             new Cart
             {
@@ -300,5 +301,19 @@ public static class DataInitializer
                 BookId = 4
             }
         ];
+    }
+
+    private static List<T> AddDates<T>(List<T> data) where T : BaseEntity
+    {
+        var creationDate = new DateTime(2025, 09, 16);
+        var updateDate = new DateTime(2025, 09, 17);
+
+        foreach (var entity in data)
+        {
+            entity.CreatedAt = creationDate;
+            entity.UpdatedAt = updateDate;
+        }
+
+        return data;
     }
 }
