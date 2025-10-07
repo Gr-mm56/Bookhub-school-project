@@ -22,8 +22,6 @@ public class User : BaseEntity
     [MaxLength(64)]
     public string Street { get; set; }
 
-    public int ImageId { get; set; }
-
     public virtual ICollection<Cart>? Carts { get; set; }
 
     public virtual ICollection<WishlistItem>? WishlistItems { get; set; }
@@ -32,6 +30,5 @@ public class User : BaseEntity
 
     [ForeignKey(nameof(ProfilePhotoId))]
     public virtual Image? ProfilePhoto { get; set; }
-
-    public int ProfilePhotoId { get; set; }
+    public int? ProfilePhotoId { get; set; }
 }

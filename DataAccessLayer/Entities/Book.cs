@@ -19,9 +19,6 @@ public class Book : BaseEntity
     [Required]
     public double Price { get; set; }
 
-    [Required]
-    public required int AuthorId { get; set; }
-
     public virtual ICollection<Genre> Genres { get; set; }
 
     public virtual ICollection<Rating>? Ratings { get; set; }
