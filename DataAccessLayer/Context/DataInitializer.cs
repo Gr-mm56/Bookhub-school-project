@@ -8,6 +8,15 @@ public static class DataInitializer
 {
     public static void Seed(this ModelBuilder modelBuilder)
     {
+        var images = PrepareImageModels();
+        modelBuilder.Entity<Image>().HasData(AddDates(images));
+
+        var authors = PrepareAuthorModels();
+        modelBuilder.Entity<Author>().HasData(AddDates(authors));
+
+        var publishers = PreparePublisherModels();
+        modelBuilder.Entity<Publisher>().HasData(AddDates(publishers));
+
         var genres = PrepareGenreModels();
         modelBuilder.Entity<Genre>().HasData(AddDates(genres));
 
@@ -28,6 +37,11 @@ public static class DataInitializer
 
         var wishlistItems = PrepareWishlistItemModels();
         modelBuilder.Entity<WishlistItem>().HasData(AddDates(wishlistItems));
+
+        var bookAuthors = PrepareBookAuthorRelationships();
+        modelBuilder.Entity<Rel_Book_Author>().HasData(bookAuthors);
+
+
     }
 
     private static List<Genre> PrepareGenreModels()
@@ -53,9 +67,7 @@ public static class DataInitializer
     }
 
     private static List<Book> PrepareBookModels()
-        // todo: add more when the models are complete
     {
-        const int tolkienAuthorId = 1; // todo: change this when some Authors are seeded
         return
         [
             new Book
@@ -66,7 +78,7 @@ public static class DataInitializer
                 Price = 12.99,
                 Description =
                     "The first volume in J.R.R. Tolkien's epic adventure, starting the journey to destroy the One Ring.",
-                AuthorId = tolkienAuthorId
+                ImageId = 6
             },
 
             new Book
@@ -77,7 +89,7 @@ public static class DataInitializer
                 Price = 14.50,
                 Description =
                     "The second volume of the trilogy, where the fellowship is scattered and the war for Middle-earth escalates.",
-                AuthorId = tolkienAuthorId
+                ImageId = 7
             },
 
             new Book
@@ -88,7 +100,7 @@ public static class DataInitializer
                 Price = 15.99,
                 Description =
                     "The final volume, chronicling the final destruction of the Ring and the ultimate fate of Middle-earth.",
-                AuthorId = tolkienAuthorId
+                ImageId = 8
             }
         ];
     }
@@ -106,7 +118,7 @@ public static class DataInitializer
                 Country = "USA",
                 City = "New York",
                 Street = "5th Avenue 123",
-                ImageId = 1
+                ProfilePhotoId = 1
             },
             new User
             {
@@ -116,7 +128,7 @@ public static class DataInitializer
                 Country = "UK",
                 City = "London",
                 Street = "Baker Street 221B",
-                ImageId = 2
+                ProfilePhotoId = 2
             },
             new User
             {
@@ -126,7 +138,7 @@ public static class DataInitializer
                 Country = "Japan",
                 City = "Tokyo",
                 Street = "Shibuya 1-2-3",
-                ImageId = 3
+                ProfilePhotoId = 3
             },
             new User
             {
@@ -136,7 +148,7 @@ public static class DataInitializer
                 Country = "Poland",
                 City = "Warsaw",
                 Street = "Marszałkowska 45",
-                ImageId = 4
+                ProfilePhotoId = 4
             },
             new User
             {
@@ -146,7 +158,7 @@ public static class DataInitializer
                 Country = "Slovakia",
                 City = "Bratislava",
                 Street = "Hviezdoslavovo námestie 7",
-                ImageId = 5
+                ProfilePhotoId = 5
             }
         ];
     }
@@ -315,5 +327,84 @@ public static class DataInitializer
         }
 
         return data;
+    }
+
+    private static List<Image> PrepareImageModels()
+    {
+        return
+        [
+            new Image { Id = 1, FileUrl = "assets/users/john_doe.jpg" },
+            new Image { Id = 2, FileUrl = "assets/users/jane_smith.jpg" },
+            new Image { Id = 3, FileUrl = "assets/users/taro_yamada.jpg" },
+            new Image { Id = 4, FileUrl = "assets/users/anna_kowalska.jpg" },
+            new Image { Id = 5, FileUrl = "assets/users/peter_novak.jpg" },
+            new Image { Id = 6, FileUrl = "assets/books/fellowship_of_the_ring.jpg" },
+            new Image { Id = 7, FileUrl = "assets/books/two_towers.jpg" },
+            new Image { Id = 8, FileUrl = "assets/books/return_of_the_king.jpg" },
+            new Image { Id = 9, FileUrl = "assets/authors/tolkien.jpg" },
+            new Image { Id = 10, FileUrl = "assets/authors/rowling.jpg" },
+            new Image { Id = 11, FileUrl = "assets/publishers/harpercollins.jpg" },
+            new Image { Id = 12, FileUrl = "assets/publishers/penguin.jpg" }
+        ];
+    }
+
+    private static List<Author> PrepareAuthorModels()
+    {
+        return
+        [
+            new Author
+            {
+                Id = 1,
+                Name = "J.R.R.",
+                Surname = "Tolkien",
+                ProfilePhotoId = 9
+            },
+            new Author
+            {
+                Id = 2,
+                Name = "J.K.",
+                Surname = "Rowling",
+                ProfilePhotoId = 10
+            }
+        ];
+    }
+
+    private static List<Publisher> PreparePublisherModels()
+    {
+        return
+        [
+            new Publisher
+            {
+                Id = 1,
+                Name = "HarperCollins",
+                Address = "195 Broadway, New York, NY 10007, USA",
+                ProfilePhotoId = 11
+            },
+            new Publisher
+            {
+                Id = 2,
+                Name = "Penguin Random House",
+                Address = "1745 Broadway, New York, NY 10019, USA",
+                ProfilePhotoId = 12
+            }
+        ];
+    }
+
+    private static List<Rel_Book_Author> PrepareBookAuthorRelationships()
+    {
+        return
+        [
+            // Tolkien's books
+            new Rel_Book_Author { BookId = 1, AuthorId = 1 },
+            new Rel_Book_Author { BookId = 2, AuthorId = 1 },
+            new Rel_Book_Author { BookId = 3, AuthorId = 1 },
+        
+            // Add fictional collaborations to demonstrate many-to-many
+            // Book 1 has both Tolkien and Rowling as co-authors (fictional example)
+            new Rel_Book_Author { BookId = 1, AuthorId = 2 },
+        
+            // Book 3 also has a secondary author (fictional example)
+            new Rel_Book_Author { BookId = 3, AuthorId = 2 }
+        ];
     }
 }
