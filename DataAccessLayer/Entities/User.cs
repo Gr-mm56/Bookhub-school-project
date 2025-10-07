@@ -30,8 +30,8 @@ public class User : BaseEntity
 
     public virtual ICollection<Rating>? Ratings { get; set; }
 
-    // TODO uncomment
-    // [Required]
-    // [ForeignKey(nameof(ImageId))]
-    // public Image ProfilePhotoId { get; set; } = null;
+    [ForeignKey(nameof(ProfilePhotoId))]
+    public virtual Image? ProfilePhoto { get; set; }
+
+    public int ProfilePhotoId { get; set; }
 }

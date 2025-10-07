@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DataAccessLayer.Entities;
 
-public class Book: BaseEntity
+public class Book : BaseEntity
 {
     [Required]
     public string Title { get; set; }
@@ -18,10 +18,6 @@ public class Book: BaseEntity
 
     [Required]
     public double Price { get; set; }
-    // todo: uncomment when Author is done
-  //  [Required]
-  //  [ForeignKey(nameof(AuthorId))]
-  //  public Author?  Author { get; set; }
 
     [Required]
     public required int AuthorId { get; set; }
@@ -30,8 +26,13 @@ public class Book: BaseEntity
 
     public virtual ICollection<Rating>? Ratings { get; set; }
 
-    // todo: uncomment when Images are done
-    //public virtual IEnumerable<Image> Images { get; set; }
-  // todo: uncomment when Publishers are done
-//    public virtual IEnumerable<Publisher>  Publishers { get; set; }
+    public virtual ICollection<Author>? Authors { get; set; }
+
+    public virtual ICollection<Publisher>? Publishers { get; set; }
+
+
+    [ForeignKey(nameof(ImageId))]
+    public virtual Image? Image { get; set; }
+
+    public int ImageId { get; set; }
 }
