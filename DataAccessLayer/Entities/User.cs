@@ -22,16 +22,13 @@ public class User : BaseEntity
     [MaxLength(64)]
     public string Street { get; set; }
 
-    public int ImageId { get; set; }
-
     public virtual ICollection<Cart>? Carts { get; set; }
 
     public virtual ICollection<WishlistItem>? WishlistItems { get; set; }
 
     public virtual ICollection<Rating>? Ratings { get; set; }
 
-    // TODO uncomment
-    // [Required]
-    // [ForeignKey(nameof(ImageId))]
-    // public Image ProfilePhotoId { get; set; } = null;
+    [ForeignKey(nameof(ProfilePhotoId))]
+    public virtual Image? ProfilePhoto { get; set; }
+    public int? ProfilePhotoId { get; set; }
 }
