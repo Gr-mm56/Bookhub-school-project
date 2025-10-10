@@ -9,17 +9,36 @@ namespace WebAPI.Controllers;
 public class BookController(BookHubDbContext context) : Controller
 {
     [HttpGet]
-    [Route("")]
+    [Route("list")]
     public IActionResult GetBooks()
     {
-        var books = context.Books//.Include(b => b.Genres)
-         //   .Include(b => b.Authors)
-         //   .Include(b => b.Publishers)
-          //  .Include(b => b.Image)
-         //   .Include(b => b.Ratings)
+        var books = context.Books.Include(book => book.Authors)
+            .Include(b => b.Genres)
+            .Include(b => b.Authors)
+            .Include(b => b.Publishers)
+            .Include(b => b.Image)
+            .Include(b => b.Ratings)
             .ToListAsync();
         Console.WriteLine("Fetched books: " + books.Result);
-        return NotFound(); //Ok(books);
+        var result = new
+        {
+            Books = books.Result.Select(b => new
+            {
+                b.Id,
+                b.Title,
+                b.ISBN,
+                b.Description,
+                b.Price,
+                b.CreatedAt,
+                b.ImageId,
+                Genres = b.Genres?.Select(g => new { g.Id, g.Name }),
+                Authors = b.Authors?.Select(a => new { a.Id, a.Name }),
+                Publishers = b.Publishers?.Select(p => new { p.Id, p.Name }),
+                Image = b.Image != null ? new { b.Image.Id, b.Image.FileUrl } : null,
+                Ratings = b.Ratings?.Select(r => new { r.Id, r.UserId })
+            })
+        };
+        return Ok(result);
     }
 
     [HttpGet]
@@ -37,7 +56,10 @@ public class BookController(BookHubDbContext context) : Controller
         {
             return NotFound();
         }
-        var returnBooks = new { book.Id, book.Title, book.ISBN, book.Description, book.Price, book.CreatedAt, book.ImageId,
+
+        var returnBooks = new
+        {
+            book.Id, book.Title, book.ISBN, book.Description, book.Price, book.CreatedAt, book.ImageId,
             Genres = book.Genres?.Select(g => new { g.Id, g.Name }),
             Authors = book.Authors?.Select(a => new { a.Id, a.Name }),
             Publishers = book.Publishers?.Select(p => new { p.Id, p.Name }),
@@ -52,7 +74,12 @@ public class BookController(BookHubDbContext context) : Controller
     public async Task<IActionResult> SearchBooks([FromQuery] string? title, [FromQuery] string? description,
         [FromQuery] string? author, [FromQuery] string? genre, [FromQuery] string? publisher, [FromQuery] double? price)
     {
-        var query = context.Books.AsQueryable();
+        var query = context.Books.Include(b => b.Genres)
+            .Include(b => b.Authors)
+            .Include(b => b.Publishers)
+            .Include(b => b.Image)
+            .Include(b => b.Ratings)
+            .AsQueryable();
         if (!string.IsNullOrEmpty(title))
         {
             query = query.Where(b => b.Title.Contains(title));
@@ -60,7 +87,8 @@ public class BookController(BookHubDbContext context) : Controller
 
         if (!string.IsNullOrEmpty(author))
         {
-            query = query.Where(b => b.Authors != null && b.Authors.Any(a => a.Name.Contains(author)));
+           // query = query.Where(b => b.Authors.Any(a => EF.Functions.Like(a.Name, $"%{author}%")));
+            query = query.Where(b => b.Authors.Any(a => a.Name.Contains(author)));
         }
 
         if (!string.IsNullOrEmpty(genre))
@@ -79,13 +107,85 @@ public class BookController(BookHubDbContext context) : Controller
         }
 
         var books = await query
-            .Include(b => b.Genres)
+         /*   .Include(b => b.Genres)
             .Include(b => b.Authors)
             .Include(b => b.Publishers)
             .Include(b => b.Image)
-            .Include(b => b.Ratings)
+            .Include(b => b.Ratings)*/
             .ToListAsync();
+        var result = new
+        {
+            Books = books.Select(b => new
+            {
+                b.Id,
+                b.Title,
+                b.ISBN,
+                b.Description,
+                b.Price,
+                b.CreatedAt,
+                b.ImageId,
+                Genres = b.Genres?.Select(g => new { g.Id, g.Name }),
+                Authors = b.Authors?.Select(a => new { a.Id, a.Name }),
+                Publishers = b.Publishers?.Select(p => new { p.Id, p.Name }),
+                Image = b.Image != null ? new { b.Image.Id, b.Image.FileUrl } : null,
+                Ratings = b.Ratings?.Select(r => new { r.Id, r.UserId })
+            })
+        };
 
-        return Ok(books);
+        return Ok(result);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> CreateBook([FromBody] Book newBook)
+    {
+        if (newBook == null || string.IsNullOrEmpty(newBook.Title) || string.IsNullOrEmpty(newBook.ISBN))
+        {
+            return BadRequest("Book title and ISBN are required.");
+        }
+
+        newBook.CreatedAt = DateTime.UtcNow;
+        // todo: remove id check
+        var bookExists = await context.Books.AnyAsync(b => b.Id == newBook.Id);
+        if (bookExists)
+        {
+            return Conflict("A book with the same ID already exists.");
+        }
+        context.Books.Add(newBook);
+        await context.SaveChangesAsync();
+        return CreatedAtAction(nameof(GetBookById), new { id = newBook.Id }, newBook);
+    }
+
+    [HttpPut]
+    [Route("{id:int}")]
+    public async Task<IActionResult> UpdateBook(int id, [FromBody] Book updatedBook)
+    {
+        var book = await context.Books.FindAsync(id);
+        if (book == null)
+        {
+            return NotFound();
+        }
+
+        book.Title = updatedBook.Title;
+        book.ISBN = updatedBook.ISBN;
+        book.Description = updatedBook.Description;
+        book.Price = updatedBook.Price;
+        book.ImageId = updatedBook.ImageId;
+        context.Books.Update(book);
+        await context.SaveChangesAsync();
+        return Ok(new { message = "Book updated successfully." });
+    }
+
+    [HttpDelete]
+    [Route("{id:int}")]
+    public async Task<IActionResult> DeleteBook(int id)
+    {
+        var book = await context.Books.FindAsync(id);
+        if (book == null)
+        {
+            return NotFound();
+        }
+        context.Books.Remove(book);
+        await context.SaveChangesAsync();
+        return NoContent();
     }
 }
