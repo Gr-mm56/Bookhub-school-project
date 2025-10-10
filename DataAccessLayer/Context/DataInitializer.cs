@@ -39,7 +39,10 @@ public static class DataInitializer
         modelBuilder.Entity<WishlistItem>().HasData(AddDates(wishlistItems));
 
         var bookAuthors = PrepareBookAuthorRelationships();
-        modelBuilder.Entity<Rel_Book_Author>().HasData(bookAuthors);
+        modelBuilder.Entity<RelBookAuthor>().HasData(bookAuthors);
+        
+        var bookGenres = PrepareBookGenreRelationships();
+        modelBuilder.Entity<RelBookGenre>().HasData(bookGenres);
 
 
     }
@@ -104,6 +107,8 @@ public static class DataInitializer
             }
         ];
     }
+    
+    
 
     private static List<User> PrepareUserModels()
     {
@@ -390,21 +395,32 @@ public static class DataInitializer
         ];
     }
 
-    private static List<Rel_Book_Author> PrepareBookAuthorRelationships()
+    private static List<RelBookGenre> PrepareBookGenreRelationships()
+    {
+        return
+        [
+            new RelBookGenre { BookId = 1, GenreId = 3 },
+            new RelBookGenre { BookId = 1, GenreId = 2 },
+            new RelBookGenre { BookId = 2, GenreId = 2 },
+            new RelBookGenre { BookId = 3, GenreId = 2 }
+
+        ];
+    }
+    private static List<RelBookAuthor> PrepareBookAuthorRelationships()
     {
         return
         [
             // Tolkien's books
-            new Rel_Book_Author { BookId = 1, AuthorId = 1 },
-            new Rel_Book_Author { BookId = 2, AuthorId = 1 },
-            new Rel_Book_Author { BookId = 3, AuthorId = 1 },
+            new RelBookAuthor { BookId = 1, AuthorId = 1 },
+            new RelBookAuthor { BookId = 2, AuthorId = 1 },
+            new RelBookAuthor { BookId = 3, AuthorId = 1 },
         
             // Add fictional collaborations to demonstrate many-to-many
             // Book 1 has both Tolkien and Rowling as co-authors (fictional example)
-            new Rel_Book_Author { BookId = 1, AuthorId = 2 },
+            new RelBookAuthor { BookId = 1, AuthorId = 2 },
         
             // Book 3 also has a secondary author (fictional example)
-            new Rel_Book_Author { BookId = 3, AuthorId = 2 }
+            new RelBookAuthor { BookId = 3, AuthorId = 2 }
         ];
     }
 }

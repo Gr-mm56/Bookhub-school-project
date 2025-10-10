@@ -18,10 +18,4 @@ public class Rating : BaseEntity
     public virtual Book Book { get; set; }
 
     public int BookId { get; set; }
-
-    [Required]
-    public DateTime CreatedAt { get; set; }
-
-    [Required]
-    public DateTime UpdatedAt { get; set; }
 }
