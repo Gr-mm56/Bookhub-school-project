@@ -22,7 +22,7 @@ public class UserController : BaseController<User>
     public Task<IActionResult> CreateUser([FromBody] User entity) => Insert(entity);
 
     [HttpPut("{id}")]
-    public Task<IActionResult> UpdateUser([FromBody] User entity) => Update(entity);
+    public Task<IActionResult> UpdateUser(int id, [FromBody] User entity) => Update(id, entity);
 
     [HttpDelete("{id}")]
     public Task<IActionResult> DeleteUser(int id) => Delete(id);

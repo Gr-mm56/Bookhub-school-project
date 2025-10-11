@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace DataAccessLayer.Entities;
 
@@ -13,6 +14,7 @@ public class Cart : BaseEntity
 
     [Required]
     [ForeignKey(nameof(UserId))]
+    [JsonIgnore]
     public virtual User? User { get; set; }
 
     [Required]
@@ -23,5 +25,6 @@ public class Cart : BaseEntity
 
     public DateTime? OrderDate { get; set; } = null;
 
+    [JsonIgnore]
     public virtual ICollection<PurchaseItem>? PurchaseItems { get; set; }
 }

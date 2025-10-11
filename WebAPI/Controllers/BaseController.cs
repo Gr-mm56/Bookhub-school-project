@@ -59,14 +59,14 @@ public abstract class BaseController<TEntity> : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    protected async Task<IActionResult> Update([FromBody] TEntity entity)
+    protected async Task<IActionResult> Update(int id, [FromBody] TEntity entity)
     {
-        if (entity.Id <= 0)
+        if (id <= 0)
         {
             return BadRequest();
         }
 
-        TEntity? u = await _repository.GetByIdAsync(entity.Id);
+        TEntity? u = await _repository.GetByIdAsync(id);
 
         if (u == null)
         {
