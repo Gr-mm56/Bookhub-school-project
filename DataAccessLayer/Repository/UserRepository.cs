@@ -1,5 +1,6 @@
 ﻿using DataAccessLayer.Context;
 using DataAccessLayer.Entities;
+using DataAccessLayer.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccessLayer.Repository;

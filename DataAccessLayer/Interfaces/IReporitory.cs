@@ -1,4 +1,4 @@
-﻿namespace DataAccessLayer.Repository;
+﻿namespace DataAccessLayer.Interfaces;
 
 public interface IRepository<TEntity>
     where TEntity : class
