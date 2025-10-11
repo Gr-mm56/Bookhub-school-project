@@ -1,5 +1,5 @@
 ﻿namespace DataAccessLayer.Entities;
-public class Rel_Book_Author
+public class RelBookAuthor
 {
     public int AuthorId { get; set; }
 

@@ -8,23 +8,15 @@ public class Rating : BaseEntity
 {
     [Required] [Range(0, 5)] public int Stars { get; set; }
 
-    [Required]
     [ForeignKey(nameof(UserId))]
     [JsonIgnore]
     public virtual User User { get; set; }
 
     public int UserId { get; set; }
 
-    [Required]
     [ForeignKey(nameof(BookId))]
     [JsonIgnore]
     public virtual Book Book { get; set; }
 
     public int BookId { get; set; }
-
-    [Required]
-    public DateTime CreatedAt { get; set; }
-
-    [Required]
-    public DateTime UpdatedAt { get; set; }
 }
