@@ -7,11 +7,11 @@ namespace WebAPI.Controllers;
 public abstract class BaseController<TEntity> : ControllerBase
     where TEntity : BaseEntity
 {
-    protected readonly IRepository<TEntity> _repository;
+    protected readonly IService<TEntity> _service;
 
     public BaseController(IRepository<TEntity> repository)
     {
-        _repository = repository;
+        _service = repository;
     }
 
     [HttpGet]
@@ -19,7 +19,7 @@ public abstract class BaseController<TEntity> : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     protected async Task<IActionResult> GetAll()
     {
-        var entities = await _repository.GetAllAsync();
+        var entities = await _service.GetAllAsync();
 
         if (entities.Any())
         {
@@ -41,7 +41,7 @@ public abstract class BaseController<TEntity> : ControllerBase
             return BadRequest();
         }
 
-        TEntity? entity = await _repository.GetByIdAsync(id);
+        TEntity? entity = await _service.GetByIdAsync(id);
 
         return entity == null ? NotFound() : Ok(entity);
     }
@@ -51,7 +51,7 @@ public abstract class BaseController<TEntity> : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     protected async Task<IActionResult> Insert([FromBody] TEntity entity)
     {
-        await _repository.InsertAsync(entity);
+        await _service.InsertAsync(entity);
         return Created();
     }
 
@@ -66,14 +66,14 @@ public abstract class BaseController<TEntity> : ControllerBase
             return BadRequest();
         }
 
-        TEntity? u = await _repository.GetByIdAsync(id);
+        TEntity? u = await _service.GetByIdAsync(id);
 
         if (u == null)
         {
             return NotFound();
         }
 
-        await _repository.UpdateAsync(entity);
+        await _service.UpdateAsync(entity);
         return NoContent();
     }
 
@@ -88,14 +88,14 @@ public abstract class BaseController<TEntity> : ControllerBase
             return BadRequest();
         }
 
-        TEntity? entity = await _repository.GetByIdAsync(id);
+        TEntity? entity = await _service.GetByIdAsync(id);
 
         if (entity == null)
         {
             return NotFound();
         }
 
-        await _repository.DeleteAsync(id);
+        await _service.DeleteAsync(id);
         return NoContent();
     }
 }

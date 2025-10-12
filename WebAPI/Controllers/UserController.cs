@@ -3,7 +3,7 @@ using DataAccessLayer.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Controllers;
 
-[Route("users")]
+[Route("controller")]
 [ApiController]
 public class UserController : BaseController<User>
 {
