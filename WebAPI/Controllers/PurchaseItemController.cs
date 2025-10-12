@@ -3,7 +3,7 @@ using DataAccessLayer.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Controllers;
 
-[Route("purchaseItem")]
+[Route("[controller]")]
 [ApiController]
 public class PurchaseItemController : BaseController<PurchaseItem>
 {

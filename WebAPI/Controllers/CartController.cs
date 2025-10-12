@@ -3,7 +3,7 @@ using DataAccessLayer.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Controllers;
 
-[Route("cart")]
+[Route("[controller]")]
 [ApiController]
 public class CartController : BaseController<Cart>
 {

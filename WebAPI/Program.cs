@@ -20,6 +20,9 @@ builder.Services.AddScoped<IRepository<User>, UserRepository>();
 builder.Services.AddScoped<IRepository<Author>, AuthorRepository>();
 builder.Services.AddScoped<IRepository<Publisher>, PublisherRepository>();
 builder.Services.AddScoped<IRepository<Image>, ImageRepository>();
+builder.Services.AddScoped<IRatingRepository, RatingRepository>();
+builder.Services.AddScoped<IGenreRepository, GenreRepository>();
+builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();

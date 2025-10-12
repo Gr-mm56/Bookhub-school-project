@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
 
-[Route("image")]
+[Route("[controller]")]
 [ApiController]
 public class ImageController : BaseController<Image>
 {

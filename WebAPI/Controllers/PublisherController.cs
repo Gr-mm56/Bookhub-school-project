@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
 
-[Route("publisher")]
+[Route("[controller]")]
 [ApiController]
 public class PublisherController : BaseController<Publisher>
 {
