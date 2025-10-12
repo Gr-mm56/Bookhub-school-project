@@ -20,6 +20,4 @@ public class UserUpdateDto
     public string Street { get; set; }
 
     public int? ProfilePhotoId { get; set; }
-
-    public DateTime UpdatedAt { get; set; }
 }

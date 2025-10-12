@@ -2,10 +2,8 @@
 
 namespace BusinessLayer.Models.Cart.Responses;
 
-public class CartCreatedDto
+public class CartUpdateDto
 {
-    public int UserId { get; set; }
-
     [Required]
     [Range(0, double.MaxValue, ErrorMessage = "TotalValue must be non-negative.")]
     public double TotalValue { get; set; }
@@ -13,6 +11,4 @@ public class CartCreatedDto
     public int? OrderId { get; set; }
 
     public DateTime? OrderDate { get; set; }
-
-    public DateTime UpdatedAt { get; set; }
 }
