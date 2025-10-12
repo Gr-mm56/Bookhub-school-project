@@ -1,4 +1,5 @@
-﻿using BusinessLayer.Models.Genre.Requests;
+﻿using BusinessLayer.Models.Common;
+using BusinessLayer.Models.Genre.Requests;
 using BusinessLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,20 +7,18 @@ namespace WebAPI.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class GenreController : ControllerBase
+public class GenreController(IGenreService genreService) : ControllerBase
 {
-    private readonly IGenreService _genreService;
-
-    public GenreController(IGenreService genreService)
-    {
-        _genreService = genreService;
-    }
-
     [HttpGet]
     [Route("list")]
-    public async Task<IActionResult> GetGenres([FromQuery] int limit = 20, [FromQuery] int offset = 0)
+    public async Task<IActionResult> GetGenres([FromQuery] PagedRequestDto pagedRequest)
     {
-        var result = await _genreService.GetGenresAsync(limit, offset);
+        if (!ModelState.IsValid)
+        {
+            return ValidationProblem(ModelState);
+        }
+
+        var result = await genreService.GetGenresAsync(pagedRequest.Limit, pagedRequest.Offset);
         return Ok(result);
     }
 
@@ -27,12 +26,12 @@ public class GenreController : ControllerBase
     [Route("search")]
     public async Task<IActionResult> SearchGenres([FromQuery] GenreSearchDto searchDto)
     {
-        if (string.IsNullOrEmpty(searchDto.Name))
+        if (!ModelState.IsValid)
         {
-            return BadRequest("Name query parameter is required.");
+            return ValidationProblem(ModelState);
         }
 
-        var result = await _genreService.SearchGenresAsync(searchDto);
+        var result = await genreService.SearchGenresAsync(searchDto);
         return Ok(result);
     }
 
@@ -40,7 +39,7 @@ public class GenreController : ControllerBase
     [Route("details/{id:int}")]
     public async Task<IActionResult> GetGenreWithBooks(int id)
     {
-        var genre = await _genreService.GetGenreWithBooksAsync(id);
+        var genre = await genreService.GetGenreWithBooksAsync(id);
         if (genre == null)
         {
             return NotFound();
@@ -53,7 +52,7 @@ public class GenreController : ControllerBase
     [Route("{id:int}")]
     public async Task<IActionResult> GetGenreById(int id)
     {
-        var genre = await _genreService.GetGenreByIdAsync(id);
+        var genre = await genreService.GetGenreByIdAsync(id);
         if (genre == null)
         {
             return NotFound();
@@ -71,7 +70,7 @@ public class GenreController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        var genre = await _genreService.CreateGenreAsync(requestDto);
+        var genre = await genreService.CreateGenreAsync(requestDto);
         return CreatedAtAction(nameof(GetGenreById), new { id = genre.Id }, genre);
     }
 
@@ -84,7 +83,7 @@ public class GenreController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        var genre = await _genreService.UpdateGenreAsync(id, requestDto);
+        var genre = await genreService.UpdateGenreAsync(id, requestDto);
         if (genre == null)
         {
             return NotFound();
@@ -97,7 +96,7 @@ public class GenreController : ControllerBase
     [Route("{id:int}")]
     public async Task<IActionResult> DeleteGenre(int id)
     {
-        var result = await _genreService.DeleteGenreAsync(id);
+        var result = await genreService.DeleteGenreAsync(id);
         if (!result)
         {
             return NotFound();
