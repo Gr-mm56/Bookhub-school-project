@@ -22,7 +22,7 @@ builder.Services.AddScoped<IRepository<User>, UserRepository>();
 builder.Services.AddScoped<IRepository<Author>, AuthorRepository>();
 builder.Services.AddScoped<IRepository<Publisher>, PublisherRepository>();
 builder.Services.AddScoped<IRepository<Image>, ImageRepository>();
-builder.Services.AddScoped<IRatingRepository, RatingRepository>();
+builder.Services.AddScoped<IRatingService, RatingService>();
 builder.Services.AddScoped<IGenreService, GenreService>();
 builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddControllers();
