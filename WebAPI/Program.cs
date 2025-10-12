@@ -17,6 +17,9 @@ builder.Services.AddScoped<IRepository<PurchaseItem>, PurchaseItemRepository>();
 builder.Services.AddScoped<IRepository<WishlistItem>, WishlistItemRepository>();
 builder.Services.AddScoped<IRepository<Cart>, CartRepository>();
 builder.Services.AddScoped<IRepository<User>, UserRepository>();
+builder.Services.AddScoped<IRepository<Author>, AuthorRepository>();
+builder.Services.AddScoped<IRepository<Publisher>, PublisherRepository>();
+builder.Services.AddScoped<IRepository<Image>, ImageRepository>();
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
