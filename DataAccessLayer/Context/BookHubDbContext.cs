@@ -24,10 +24,10 @@ public class BookHubDbContext: DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Book M:N Genre
-        modelBuilder.Entity<Book>().HasMany(b => b.Genres).WithMany(g => g.Books);
+        modelBuilder.Entity<Book>().HasMany(b => b.Genres).WithMany(g => g.Books).UsingEntity<RelBookGenre>();
 
         // Book M:N Author
-        modelBuilder.Entity<Book>().HasMany(a => a.Authors).WithMany(b => b.Books).UsingEntity<Rel_Book_Author>();
+        modelBuilder.Entity<Book>().HasMany(a => a.Authors).WithMany(b => b.Books).UsingEntity<RelBookAuthor>();
 
         // One-to-many relationships
         modelBuilder.Entity<User>().HasMany(u => u.Carts);
