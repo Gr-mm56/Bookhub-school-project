@@ -3,7 +3,7 @@ using BusinessLayer.Models.User.Requests;
 
 namespace BusinessLayer.Models.Cart.Requests;
 
-public class CartDetailDto
+public class CartDetailDto : CartDto
 {
     public UserDto? User { get; set; } = null;
 

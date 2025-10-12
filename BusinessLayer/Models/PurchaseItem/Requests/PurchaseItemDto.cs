@@ -5,6 +5,8 @@ namespace BusinessLayer.Models.PurchaseItem.Requests;
 
 public class PurchaseItemDto
 {
+    public int Id { get; set; }
+
     public int BookId { get; set; }
 
     public int CartId { get; set; }

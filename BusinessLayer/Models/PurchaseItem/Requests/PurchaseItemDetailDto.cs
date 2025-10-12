@@ -4,7 +4,7 @@ using BusinessLayer.Models.Cart.Requests;
 
 namespace BusinessLayer.Models.PurchaseItem.Requests;
 
-public class PurchaseItemDetailDto
+public class PurchaseItemDetailDto : PurchaseItemDto
 {
     [Required] public BookDto? Book { get; set; } = null;
 

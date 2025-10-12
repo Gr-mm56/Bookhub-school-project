@@ -4,7 +4,7 @@ using BusinessLayer.Models.User.Requests;
 
 namespace BusinessLayer.Models.WishlistItem.Requests;
 
-public class WishlistItemDetailDto
+public class WishlistItemDetailDto : WishlistItemDto
 {
     [Required] public UserDto? User { get; set; } = null;
 
