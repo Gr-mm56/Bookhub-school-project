@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLayer.Services.Implementations;
 
-public class BaseService<TContext>(TContext context)
+public abstract class BaseService<TContext>(TContext context)
     where TContext : DbContext
 {
     protected readonly TContext Context = context;
