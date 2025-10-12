@@ -1,3 +1,5 @@
+using BusinessLayer.Services.Interfaces;
+using BusinessLayer.Services.Implementations;
 using DataAccessLayer.Context;
 using DataAccessLayer.Entities;
 using DataAccessLayer.Interfaces;
@@ -21,8 +23,8 @@ builder.Services.AddScoped<IRepository<Author>, AuthorRepository>();
 builder.Services.AddScoped<IRepository<Publisher>, PublisherRepository>();
 builder.Services.AddScoped<IRepository<Image>, ImageRepository>();
 builder.Services.AddScoped<IRatingRepository, RatingRepository>();
-builder.Services.AddScoped<IGenreRepository, GenreRepository>();
 builder.Services.AddScoped<IBookRepository, BookRepository>();
+builder.Services.AddScoped<IGenreService, GenreService>();
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
