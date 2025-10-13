@@ -5,14 +5,15 @@ using BusinessLayer.Models.Cart.Responses;
 namespace BusinessLayer.Services.Interfaces;
 
 public interface ICartService
+    : ICrudService<CartDto, CartCreateDto, CartUpdateDto>
 {
-    Task<PagedResultDto<CartDto>> GetCartsAsync(int limit = 20, int offset = 0);
+    Task<PagedResultDto<CartDto>> GetAllAsync(int limit = 20, int offset = 0);
 
-    Task<CartDto?> GetCartByIdAsync(int id);
+    Task<CartDto?> GetByIdAsync(int id);
 
-    Task<CartDto> CreateCartAsync(CartCreateDto requestDto);
+    Task<CartDto> CreateAsync(CartCreateDto requestDto);
 
-    Task<CartDto?> UpdateCartAsync(int id, CartUpdateDto requestDto);
+    Task<CartDto?> UpdateAsync(int id, CartUpdateDto requestDto);
 
-    Task<bool> DeleteCartAsync(int id);
+    Task<bool> DeleteAsync(int id);
 }

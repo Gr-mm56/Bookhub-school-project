@@ -1,12 +1,13 @@
 ﻿using BusinessLayer.Models.Common;
+using BusinessLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
-namespace WebAPI.Controllers;
+namespace WebAPI.Controllers.Base;
 
 [ApiController]
 [Route("[controller]")]
 public abstract class BaseController<TEntityDto, TCreateDto, TUpdateDto, TService> : Controller
-    where TService : class
+    where TService : ICrudService<TEntityDto, TCreateDto, TUpdateDto>
 {
     protected readonly TService _service;
 
@@ -15,31 +16,70 @@ public abstract class BaseController<TEntityDto, TCreateDto, TUpdateDto, TServic
         _service = service;
     }
 
-    [HttpGet("list")]
+    [HttpGet]
+    [Route("list")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public abstract Task<IActionResult> GetAll([FromQuery] PagedRequestDto pagedRequest);
+    public virtual async Task<IActionResult> GetAll([FromQuery] PagedRequestDto pagedRequest)
+    {
+        if (!ModelState.IsValid)
+            return ValidationProblem(ModelState);
 
-    [HttpGet("details/{id:int}")]
+        var result = await _service.GetAllAsync(pagedRequest.Limit, pagedRequest.Offset);
+        return result.Items.Any() ? Ok(result) : NoContent();
+    }
+
+    [HttpGet]
+    [Route("details/{id:int}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public abstract Task<IActionResult> GetById(int id);
+    public virtual async Task<IActionResult> GetById(int id)
+    {
+        if (id <= 0)
+            return BadRequest();
+
+        var entity = await _service.GetByIdAsync(id);
+        return entity == null ? NotFound() : Ok(entity);
+    }
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public abstract Task<IActionResult> Create([FromBody] TCreateDto entity);
+    public virtual async Task<IActionResult> Create([FromBody] TCreateDto dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
 
-    [HttpPut("{id:int}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public abstract Task<IActionResult> Update(int id, [FromBody] TUpdateDto entity);
+        await _service.CreateAsync(dto);
 
-    [HttpDelete("{id:int}")]
+        return Created();
+    }
+
+    [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public abstract Task<IActionResult> Delete(int id);
+    public virtual async Task<IActionResult> Update(int id, [FromBody] TUpdateDto dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var updated = await _service.UpdateAsync(id, dto);
+        return updated == null ? NotFound() : Ok(updated);
+    }
+
+    [HttpDelete]
+    [Route("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public virtual async Task<IActionResult> Delete(int id)
+    {
+        if (id <= 0)
+            return BadRequest();
+
+        bool deleted = await _service.DeleteAsync(id);
+        return deleted ? NoContent() : NotFound();
+    }
 }
