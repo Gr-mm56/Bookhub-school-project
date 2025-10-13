@@ -58,7 +58,7 @@ public class ImageService(BookHubDbContext context) : BaseService<BookHubDbConte
         return requestDto;
     }
 
-    public async Task<bool> DeleteImageAsync(int id)
+    public async Task<bool?> DeleteImageAsync(int id)
     {
         var image = await Context.Images.FirstOrDefaultAsync(i => i.Id == id);
         if (image == null)
@@ -75,7 +75,7 @@ public class ImageService(BookHubDbContext context) : BaseService<BookHubDbConte
         if (hasAuthorReferences || hasBookReferences || hasPublisherReferences || hasUserReferences)
         {
             // Image is referenced by other entities and cannot be deleted
-            return false;
+            return null;
         }
 
         Context.Images.Remove(image);

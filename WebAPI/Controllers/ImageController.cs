@@ -86,9 +86,14 @@ public class ImageController(IImageService imageService) : ControllerBase
     public async Task<IActionResult> DeleteImage(int id)
     {
         var result = await imageService.DeleteImageAsync(id);
-        if (!result)
+        if (result == false)
         {
             return NotFound();
+        }
+
+        if (result == null)
+        {
+            return BadRequest();
         }
 
         return NoContent();

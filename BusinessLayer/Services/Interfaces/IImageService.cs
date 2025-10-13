@@ -12,5 +12,5 @@ public interface IImageService
     Task<ImageDto?> GetImageByIdAsync(int id);
     Task<ImageRequestDto> CreateImageAsync(ImageRequestDto requestDto);
     Task<ImageRequestDto?> UpdateImageAsync(int id, ImageRequestDto requestDto);
-    Task<bool> DeleteImageAsync(int id);
+    Task<bool?> DeleteImageAsync(int id);
 }
