@@ -138,10 +138,35 @@ public class AuthorService(BookHubDbContext context) : BaseService<BookHubDbCont
 
     public async Task<bool> DeleteAuthorAsync(int id)
     {
-        var author = await Context.Authors.FirstOrDefaultAsync(a => a.Id == id);
+        var author = await Context.Authors
+            .Include(a => a.Books)
+                .ThenInclude(b => b.Authors)
+            .Include(a => a.Books)
+                .ThenInclude(b => b.Ratings)
+            .Include(a => a.Books)
+                .ThenInclude(b => b.Genres)
+            .FirstOrDefaultAsync(a => a.Id == id);
+
         if (author == null)
         {
             return false;
+        }
+
+        var booksToDelete = author.Books
+            .Where(book => book.Authors.Count == 1)
+            .ToList();
+
+        foreach (var book in booksToDelete)
+        {
+            if (book.Ratings != null)
+            {
+                foreach (var rating in book.Ratings.ToList())
+                {
+                    Context.Ratings.Remove(rating);
+                }
+            }
+            book.Genres?.Clear();
+            Context.Books.Remove(book);
         }
 
         Context.Authors.Remove(author);
