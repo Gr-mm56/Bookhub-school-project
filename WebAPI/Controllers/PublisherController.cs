@@ -1,30 +1,108 @@
-﻿using DataAccessLayer.Entities;
-using DataAccessLayer.Interfaces;
+﻿using BusinessLayer.Models.Common;
+using BusinessLayer.Models.Publisher.Requests;
+using BusinessLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class PublisherController : BaseController<Publisher>
+public class PublisherController(IPublisherService publisherService) : ControllerBase
 {
-    public PublisherController(IRepository<Publisher> repository) : base(repository)
+    [HttpGet]
+    [Route("list")]
+    public async Task<IActionResult> GetPublishers([FromQuery] PagedRequestDto pagedRequest)
     {
+        if (!ModelState.IsValid)
+        {
+            return ValidationProblem(ModelState);
+        }
 
+        var result = await publisherService.GetPublishersAsync(pagedRequest.Limit, pagedRequest.Offset);
+        return Ok(result);
     }
 
     [HttpGet]
-    public Task<IActionResult> GetAllPublishers() => GetAll();
+    [Route("{id:int}")]
+    public async Task<IActionResult> GetPublisherById(int id)
+    {
+        var publisher = await publisherService.GetPublisherByIdAsync(id);
+        if (publisher == null)
+        {
+            return NotFound();
+        }
 
-    [HttpGet("{id}")]
-    public Task<IActionResult> GetPublisher(int id) => Get(id);
+        return Ok(publisher);
+    }
+
+    [HttpGet]
+    [Route("books/{id:int}")]
+    public async Task<IActionResult> GetPublisherBooks(int id)
+    {
+        var publisherBooks = await publisherService.GetPublisherBooksAsync(id);
+        if (publisherBooks == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(publisherBooks);
+    }
 
     [HttpPost]
-    public Task<IActionResult> CreatePublisher([FromBody] Publisher entity) => Insert(entity);
+    [Route("")]
+    public async Task<IActionResult> CreatePublisher([FromBody] PublisherRequestDto requestDto)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
 
-    [HttpPut("{id}")]
-    public Task<IActionResult> UpdatePublisher(int id, [FromBody] Publisher entity) => Update(id, entity);
+        try
+        {
+            var publisher = await publisherService.CreatePublisherAsync(requestDto);
+            return CreatedAtAction(nameof(GetPublisherById), new { id = publisher.Id }, publisher);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
 
-    [HttpDelete("{id}")]
-    public Task<IActionResult> DeletePublisher(int id) => Delete(id);
+    [HttpPut]
+    [Route("{id:int}")]
+    public async Task<IActionResult> UpdatePublisher(int id, [FromBody] PublisherRequestDto requestDto)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        try
+        {
+            var publisher = await publisherService.UpdatePublisherAsync(id, requestDto);
+            if (publisher == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(publisher);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    [HttpDelete]
+    [Route("{id:int}")]
+    public async Task<IActionResult> DeletePublisher(int id)
+    {
+        var result = await publisherService.DeletePublisherAsync(id);
+        if (!result)
+        {
+            return NotFound();
+        }
+
+        return NoContent();
+    }
 }

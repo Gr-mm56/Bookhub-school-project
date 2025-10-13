@@ -17,8 +17,17 @@ builder.Services.AddDbContext<BookHubDbContext>(options =>
 // Add services to the container.
 
 builder.WebHost.UseUrls("http://localhost:5000");
+<<<<<<< WebAPI/Program.cs
 
 builder.Services.AddScoped<IRatingRepository, RatingRepository>();
+builder.Services.AddScoped<IGenreService, GenreService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<IPurchaseItemService, PurchaseItemService>();
+builder.Services.AddScoped<IWishlistItemService, WishlistItemService>();
+
+=======
+builder.Services.AddScoped<IRatingService, RatingService>();
 builder.Services.AddScoped<IGenreService, GenreService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICartService, CartService>();
