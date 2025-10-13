@@ -7,9 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Models\Author\Requests\" />
-      <Folder Include="Models\Image\Requests\" />
-      <Folder Include="Models\Publisher\Requests\" />
       <Folder Include="Models\Rating\Requests\" />
     </ItemGroup>
 

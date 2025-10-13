@@ -1,30 +1,96 @@
-﻿using DataAccessLayer.Entities;
-using DataAccessLayer.Interfaces;
+﻿using BusinessLayer.Models.Common;
+using BusinessLayer.Models.Image.Requests;
+using BusinessLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class ImageController : BaseController<Image>
+public class ImageController(IImageService imageService) : ControllerBase
 {
-    public ImageController(IRepository<Image> repository) : base(repository)
-    {
 
+    [HttpGet]
+    [Route("list")]
+    public async Task<IActionResult> GetImages([FromQuery] PagedRequestDto pagedRequest)
+    {
+        if (!ModelState.IsValid)
+        {
+            return ValidationProblem(ModelState);
+        }
+
+        var result = await imageService.GetImagesAsync(pagedRequest.Limit, pagedRequest.Offset);
+        return Ok(result);
     }
 
     [HttpGet]
-    public Task<IActionResult> GetAllImages() => GetAll();
+    [Route("{id:int}")]
+    public async Task<IActionResult> GetImageById(int id)
+    {
+        var image = await imageService.GetImageByIdAsync(id);
+        if (image == null)
+        {
+            return NotFound();
+        }
 
-    [HttpGet("{id}")]
-    public Task<IActionResult> GetImage(int id) => Get(id);
+        return Ok(image);
+    }
 
     [HttpPost]
-    public Task<IActionResult> CreateImage([FromBody] Image entity) => Insert(entity);
+    [Route("")]
+    public async Task<IActionResult> CreateImage([FromBody] ImageRequestDto requestDto)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
 
-    [HttpPut("{id}")]
-    public Task<IActionResult> UpdateImage(int id, [FromBody] Image entity) => Update(id, entity);
+        try
+        {
+            var image = await imageService.CreateImageAsync(requestDto);
+            return CreatedAtAction(nameof(GetImageById), new { id = image.FileUrl }, image);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
 
-    [HttpDelete("{id}")]
-    public Task<IActionResult> DeleteImage(int id) => Delete(id);
+    [HttpPut]
+    [Route("{id:int}")]
+    public async Task<IActionResult> UpdateImage(int id, [FromBody] ImageRequestDto requestDto)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        try
+        {
+            var image = await imageService.UpdateImageAsync(id, requestDto);
+            if (image == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(image);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    [HttpDelete]
+    [Route("{id:int}")]
+    public async Task<IActionResult> DeleteImage(int id)
+    {
+        var result = await imageService.DeleteImageAsync(id);
+        if (!result)
+        {
+            return NotFound();
+        }
+
+        return NoContent();
+    }
 }
