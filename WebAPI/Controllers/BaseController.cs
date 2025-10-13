@@ -2,7 +2,7 @@
 using BusinessLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
-namespace WebAPI.Controllers.Base;
+namespace WebAPI.Controllers;
 
 [ApiController]
 [Route("[controller]")]

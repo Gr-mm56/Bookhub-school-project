@@ -1,7 +1,7 @@
 ﻿using BusinessLayer.Models.Cart.Requests;
 using BusinessLayer.Services.Interfaces;
 using BusinessLayer.Models.Cart.Responses;
-using WebAPI.Controllers.Base;
+using WebAPI.Controllers;
 
 namespace WebAPI.Controllers;
 
