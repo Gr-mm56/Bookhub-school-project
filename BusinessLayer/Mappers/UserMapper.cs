@@ -1,4 +1,5 @@
 ﻿using BusinessLayer.Models.Cart.Responses;
+using BusinessLayer.Models.Rating.Responses;
 using BusinessLayer.Models.User.Requests;
 using BusinessLayer.Models.User.Responses;
 using BusinessLayer.Models.WishlistItem.Responses;
