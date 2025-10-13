@@ -38,7 +38,7 @@ public class BookService(BookHubDbContext context) : BaseService<BookHubDbContex
             .Include(b => b.Image)
             .Include(b => b.Authors)
             .Include(b => b.Genres)
-            .Include(b => b.Publishers)
+            .Include(b => b.Publisher)
             .FirstOrDefaultAsync(b => b.Id == id);
 
         return book != null ? BookMapper.ToDetailDto(book) : null;
@@ -51,7 +51,7 @@ public class BookService(BookHubDbContext context) : BaseService<BookHubDbContex
             .Include(b => b.Image)
             .Include(b => b.Authors)
             .Include(b => b.Genres)
-            .Include(b => b.Publishers)
+            .Include(b => b.Publisher)
             .AsQueryable();
 
         // Apply filters
@@ -77,7 +77,7 @@ public class BookService(BookHubDbContext context) : BaseService<BookHubDbContex
 
         if (!string.IsNullOrEmpty(searchDto.Publisher))
         {
-            query = query.Where(b => b.Publishers != null && b.Publishers.Any(p => p.Name.Contains(searchDto.Publisher.Trim())));
+            query = query.Where(b => b.Publisher != null);
         }
 
         if (searchDto.Price.HasValue)
@@ -107,7 +107,7 @@ public class BookService(BookHubDbContext context) : BaseService<BookHubDbContex
             .Include(b => b.Image)
             .Include(b => b.Authors)
             .Include(b => b.Genres)
-            .Include(b => b.Publishers)
+            .Include(b => b.Publisher)
             .FirstAsync(b => b.Id == book.Id);
         
         return BookMapper.ToDetailDto(createdBook);
@@ -118,7 +118,7 @@ public class BookService(BookHubDbContext context) : BaseService<BookHubDbContex
             .Include(b => b.Image)
             .Include(b => b.Authors)
             .Include(b => b.Genres)
-            .Include(b => b.Publishers)
+            .Include(b => b.Publisher)
             .FirstOrDefaultAsync(b => b.Id == id);
         
         if (book == null)
@@ -133,7 +133,6 @@ public class BookService(BookHubDbContext context) : BaseService<BookHubDbContex
         // Clear existing relationships and add new ones
         book.Authors.Clear();
         book.Genres.Clear();
-        book.Publishers?.Clear();
         
         // Load and associate new related entities
         await AssociateRelatedEntitiesAsync(book, requestDto);
@@ -180,18 +179,14 @@ public class BookService(BookHubDbContext context) : BaseService<BookHubDbContex
         }
 
         // Validate Publishers
-        if (requestDto.PublisherIds.Any())
+        if (requestDto.PublisherId > 0)
         {
-            var existingPublisherIds = await Context.Publishers
-                .Where(p => requestDto.PublisherIds.Contains(p.Id))
-                .Select(p => p.Id)
-                .ToListAsync();
+            var publisherExists = await Context.Publishers
+                .AnyAsync(p => p.Id == requestDto.PublisherId);
             
-            var invalidPublisherIds = requestDto.PublisherIds.Except(existingPublisherIds);
-            var invalidPublisherList = invalidPublisherIds.ToList();
-            if (invalidPublisherList.Any())
+            if (!publisherExists)
             {
-                errors.Add($"Invalid Publisher IDs: {string.Join(", ", invalidPublisherList)}");
+                errors.Add($"Invalid Publisher ID: {requestDto.PublisherId}");
             }
         }
 
@@ -229,15 +224,6 @@ public class BookService(BookHubDbContext context) : BaseService<BookHubDbContex
                 .Where(g => requestDto.GenreIds.Contains(g.Id))
                 .ToListAsync();
             book.Genres = genres;
-        }
-
-        // Load and associate Publishers
-        if (requestDto.PublisherIds.Any())
-        {
-            var publishers = await Context.Publishers
-                .Where(p => requestDto.PublisherIds.Contains(p.Id))
-                .ToListAsync();
-            book.Publishers = publishers;
         }
     }
 
