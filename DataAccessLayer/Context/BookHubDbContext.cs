@@ -34,7 +34,7 @@ public class BookHubDbContext: DbContext
         modelBuilder.Entity<User>().HasMany(u => u.WishlistItems);
         modelBuilder.Entity<User>().HasMany(u => u.Ratings);
         modelBuilder.Entity<Cart>().HasMany(u => u.PurchaseItems);
-        modelBuilder.Entity<Book>().HasMany(p => p.Publishers);
+        modelBuilder.Entity<Publisher>().HasMany(b => b.Books);
 
         // Book 1 Image
         modelBuilder.Entity<Book>()

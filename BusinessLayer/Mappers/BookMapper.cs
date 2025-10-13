@@ -59,11 +59,13 @@ public static class BookMapper
                 Id = g.Id,
                 Name = g.Name
             }).ToList(),
-            Publishers = book.Publishers?.Select(p => new PublisherDto
-            {
-                Id = p.Id,
-                Name = p.Name
-            }).ToList() ?? []
+            Publisher = book.Publisher != null 
+                ? new PublisherDto
+                {
+                    Id = book.Publisher.Id,
+                    Name = book.Publisher.Name
+                } 
+                : null
         };
     }
 
@@ -78,10 +80,10 @@ public static class BookMapper
             Description = requestDto.Description,
             Price = requestDto.Price,
             ImageId = requestDto.ImageId,
+            PublisherId = requestDto.PublisherId,
             CreatedAt = DateTime.UtcNow,
             Genres = new List<Genre>(),
-            Authors = new List<Author>(),
-            Publishers = new List<Publisher>()
+            Authors = new List<Author>()
         };
     }
 
