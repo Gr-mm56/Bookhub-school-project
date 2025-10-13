@@ -19,7 +19,6 @@ builder.Services.AddScoped<IRepository<PurchaseItem>, PurchaseItemRepository>();
 builder.Services.AddScoped<IRepository<WishlistItem>, WishlistItemRepository>();
 builder.Services.AddScoped<IRepository<Cart>, CartRepository>();
 builder.Services.AddScoped<IRepository<User>, UserRepository>();
-builder.Services.AddScoped<IRatingRepository, RatingRepository>();
 builder.Services.AddScoped<IGenreService, GenreService>();
 builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<IAuthorService, AuthorService>();

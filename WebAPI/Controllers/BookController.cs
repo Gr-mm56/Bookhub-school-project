@@ -7,7 +7,7 @@ namespace WebAPI.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class BookController(IBookService bookService) : ControllerBase
+public class BookController(IBookService bookService) : Controller
 {
     [HttpGet]
     [Route("list")]

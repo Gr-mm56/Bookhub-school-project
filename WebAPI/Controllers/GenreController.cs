@@ -7,10 +7,12 @@ namespace WebAPI.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class GenreController(IGenreService genreService) : ControllerBase
+public class GenreController(IGenreService genreService) : Controller
 {
     [HttpGet]
     [Route("list")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetGenres([FromQuery] PagedRequestDto pagedRequest)
     {
         if (!ModelState.IsValid)
