@@ -26,6 +26,8 @@ public class GenreController(IGenreService genreService) : Controller
 
     [HttpGet]
     [Route("search")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> SearchGenres([FromQuery] GenreSearchDto searchDto)
     {
         if (!ModelState.IsValid)
@@ -39,6 +41,8 @@ public class GenreController(IGenreService genreService) : Controller
 
     [HttpGet]
     [Route("details/{id:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetGenreWithBooks(int id)
     {
         var genre = await genreService.GetGenreWithBooksAsync(id);
@@ -52,6 +56,8 @@ public class GenreController(IGenreService genreService) : Controller
 
     [HttpGet]
     [Route("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetGenreById(int id)
     {
         var genre = await genreService.GetGenreByIdAsync(id);
@@ -65,6 +71,8 @@ public class GenreController(IGenreService genreService) : Controller
 
     [HttpPost]
     [Route("")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateGenre([FromBody] GenreRequestDto requestDto)
     {
         if (!ModelState.IsValid)
@@ -78,6 +86,9 @@ public class GenreController(IGenreService genreService) : Controller
 
     [HttpPut]
     [Route("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateGenre(int id, [FromBody] GenreRequestDto requestDto)
     {
         if (!ModelState.IsValid)
@@ -96,6 +107,8 @@ public class GenreController(IGenreService genreService) : Controller
 
     [HttpDelete]
     [Route("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteGenre(int id)
     {
         var result = await genreService.DeleteGenreAsync(id);

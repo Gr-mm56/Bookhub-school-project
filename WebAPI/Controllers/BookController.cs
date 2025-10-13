@@ -11,6 +11,8 @@ public class BookController(IBookService bookService) : Controller
 {
     [HttpGet]
     [Route("list")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetBooks([FromQuery] PagedRequestDto pagedRequest)
     {
         if (!ModelState.IsValid)
@@ -24,6 +26,8 @@ public class BookController(IBookService bookService) : Controller
 
     [HttpGet]
     [Route("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetBookById(int id)
     {
         var book = await bookService.GetBookByIdAsync(id);
@@ -37,6 +41,8 @@ public class BookController(IBookService bookService) : Controller
 
     [HttpGet]
     [Route("details/{id:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetBookDetail(int id)
     {
         var book = await bookService.GetBookDetailAsync(id);
@@ -50,6 +56,8 @@ public class BookController(IBookService bookService) : Controller
 
     [HttpGet]
     [Route("search")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> SearchBooks([FromQuery] BookSearchDto searchDto)
     {
         if (!ModelState.IsValid)
@@ -63,6 +71,8 @@ public class BookController(IBookService bookService) : Controller
 
     [HttpPost]
     [Route("")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateBook([FromBody] BookRequestDto requestDto)
     {
         if (!ModelState.IsValid)
@@ -83,6 +93,8 @@ public class BookController(IBookService bookService) : Controller
 
     [HttpPut]
     [Route("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UpdateBook(int id, [FromBody] BookRequestDto requestDto)
     {
         if (!ModelState.IsValid)
@@ -108,6 +120,8 @@ public class BookController(IBookService bookService) : Controller
 
     [HttpDelete]
     [Route("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteBook(int id)
     {
         var result = await bookService.DeleteBookAsync(id);

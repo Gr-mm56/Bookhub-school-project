@@ -11,6 +11,8 @@ public class PublisherController(IPublisherService publisherService) : Controlle
 {
     [HttpGet]
     [Route("list")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetPublishers([FromQuery] PagedRequestDto pagedRequest)
     {
         if (!ModelState.IsValid)
@@ -24,6 +26,8 @@ public class PublisherController(IPublisherService publisherService) : Controlle
 
     [HttpGet]
     [Route("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetPublisherById(int id)
     {
         var publisher = await publisherService.GetPublisherByIdAsync(id);
@@ -37,6 +41,8 @@ public class PublisherController(IPublisherService publisherService) : Controlle
 
     [HttpGet]
     [Route("books/{id:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetPublisherBooks(int id)
     {
         var publisherBooks = await publisherService.GetPublisherBooksAsync(id);
@@ -50,6 +56,8 @@ public class PublisherController(IPublisherService publisherService) : Controlle
 
     [HttpPost]
     [Route("")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreatePublisher([FromBody] PublisherRequestDto requestDto)
     {
         if (!ModelState.IsValid)
@@ -70,6 +78,9 @@ public class PublisherController(IPublisherService publisherService) : Controlle
 
     [HttpPut]
     [Route("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdatePublisher(int id, [FromBody] PublisherRequestDto requestDto)
     {
         if (!ModelState.IsValid)
@@ -95,6 +106,8 @@ public class PublisherController(IPublisherService publisherService) : Controlle
 
     [HttpDelete]
     [Route("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeletePublisher(int id)
     {
         var result = await publisherService.DeletePublisherAsync(id);

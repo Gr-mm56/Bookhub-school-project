@@ -11,6 +11,8 @@ public class AuthorController(IAuthorService authorService) : ControllerBase
 {
     [HttpGet]
     [Route("list")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetAuthors([FromQuery] PagedRequestDto pagedRequest)
     {
         if (!ModelState.IsValid)
@@ -24,6 +26,8 @@ public class AuthorController(IAuthorService authorService) : ControllerBase
 
     [HttpGet]
     [Route("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetAuthorById(int id)
     {
         var author = await authorService.GetAuthorByIdAsync(id);
@@ -37,6 +41,8 @@ public class AuthorController(IAuthorService authorService) : ControllerBase
 
     [HttpGet]
     [Route("books/{id:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetAuthorBooks(int id)
     {
         var authorBooks = await authorService.GetAuthorBooksAsync(id);
@@ -50,6 +56,8 @@ public class AuthorController(IAuthorService authorService) : ControllerBase
 
     [HttpPost]
     [Route("")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateAuthor([FromBody] AuthorRequestDto requestDto)
     {
         if (!ModelState.IsValid)
@@ -70,6 +78,9 @@ public class AuthorController(IAuthorService authorService) : ControllerBase
 
     [HttpPut]
     [Route("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateAuthor(int id, [FromBody] AuthorRequestDto requestDto)
     {
         if (!ModelState.IsValid)
@@ -95,6 +106,8 @@ public class AuthorController(IAuthorService authorService) : ControllerBase
 
     [HttpDelete]
     [Route("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteBook(int id)
     {
         var result = await authorService.DeleteAuthorAsync(id);
