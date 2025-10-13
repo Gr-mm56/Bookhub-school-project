@@ -21,7 +21,7 @@ public class BookRequestDto
 
     public int ImageId { get; set; }
 
-    public List<int> PublisherIds { get; set; } = new List<int>();
+    public int PublisherId { get; set; }
 
     public List<int> GenreIds { get; set; } = new List<int>();
 

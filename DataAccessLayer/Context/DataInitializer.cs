@@ -81,7 +81,8 @@ public static class DataInitializer
                 Price = 12.99,
                 Description =
                     "The first volume in J.R.R. Tolkien's epic adventure, starting the journey to destroy the One Ring.",
-                ImageId = 6
+                ImageId = 6,
+                PublisherId = 1
             },
 
             new Book
@@ -92,7 +93,8 @@ public static class DataInitializer
                 Price = 14.50,
                 Description =
                     "The second volume of the trilogy, where the fellowship is scattered and the war for Middle-earth escalates.",
-                ImageId = 7
+                ImageId = 7,
+                PublisherId = 1
             },
 
             new Book
@@ -103,7 +105,8 @@ public static class DataInitializer
                 Price = 15.99,
                 Description =
                     "The final volume, chronicling the final destruction of the Ring and the ultimate fate of Middle-earth.",
-                ImageId = 8
+                ImageId = 8,
+                PublisherId = 2
             }
         ];
     }

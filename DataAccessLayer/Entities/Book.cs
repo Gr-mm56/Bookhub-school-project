@@ -25,7 +25,9 @@ public class Book : BaseEntity
 
     public virtual ICollection<Author> Authors { get; set; }
 
-    public virtual ICollection<Publisher>? Publishers { get; set; }
+    [ForeignKey(nameof(PublisherId))]
+    public virtual Publisher? Publisher { get; set; }
+    public int PublisherId { get; set; }
 
 
     [ForeignKey(nameof(ImageId))]
