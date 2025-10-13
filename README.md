@@ -46,7 +46,7 @@ cd WebAPI
 dotnet run
 ```
 7. Open your web browser and go to `https://localhost:5000/swagger` to access the Swagger UI and explore the API endpoints.
-   
+>**Note:** Authentication is required to use the API. See the [Authentication](#Authentication) section below for details.  
 
 ### Database Setup
 
@@ -73,6 +73,12 @@ This solution consists of these projets (so far)
 ### WebAPI
 - provides REST API endpoints
 - Controllers directory stores endpoint definitions and logic
+
+#### Authentication
+You can authenticate yourself by clicking the 'Authorize' button with a lock icon in the top right corner. For now, there is a static token, "YourHardcodedToken", which may be replaced in the future.
+
+#### Logging
+Added two middleware components — RequestLoggingMiddleware for logging every incoming request and RequestTimingMiddleware for measuring request processing time, enabling easy monitoring of API activity and performance.
 
 todo: Business Layer
 
