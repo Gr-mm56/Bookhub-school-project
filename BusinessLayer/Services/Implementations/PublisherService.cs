@@ -64,28 +64,58 @@ public class PublisherService(BookHubDbContext context) : BaseService<BookHubDbC
 
     public async Task<PublisherBooksDto?> UpdatePublisherAsync(int id, PublisherRequestDto requestDto)
     {
-        var publisher = await Context.Publishers
-            .Include(p => p.Books)
-            .FirstOrDefaultAsync(p => p.Id == id);
+        try
+        {
+            var publisher = await Context.Publishers
+                .Include(p => p.Books)
+                .FirstOrDefaultAsync(p => p.Id == id);
 
-        if (publisher == null)
-            return null;
+            if (publisher == null)
+                return null;
 
-        // Validate that all provided IDs exist
-        await ValidateRelatedEntitiesExistAsync(requestDto);
+            // Validate that all provided IDs exist
+            await ValidateRelatedEntitiesExistAsync(requestDto);
 
-        // Update basic properties
-        PublisherMapper.UpdateEntity(publisher, requestDto);
+            // Update basic properties
+            PublisherMapper.UpdateEntity(publisher, requestDto);
 
-        // Clear existing relationships and add new ones
-        publisher.Books.Clear();
+            try
+            {
+                // Ensure all requested books exist and check if they can be used before clearing
+                if (requestDto.BookIds != null && requestDto.BookIds.Any())
+                {
+                    var existingBooks = await Context.Books
+                        .Where(b => requestDto.BookIds.Contains(b.Id))
+                        .ToListAsync();
 
-        // Load and associate new related entities
-        await AssociateRelatedEntitiesAsync(publisher, requestDto);
+                    if (existingBooks.Count != requestDto.BookIds.Count)
+                    {
+                        throw new ArgumentException("Some of the requested book IDs do not exist");
+                    }
 
-        await SaveAsync();
+                    // Clear existing relationships and add new ones
+                    // This is where the error was happening - we'll keep it but handle exceptions
+                    publisher.Books.Clear();
 
-        return PublisherMapper.ToDetailDto(publisher);
+                    // Load and associate new related entities
+                    await AssociateRelatedEntitiesAsync(publisher, requestDto);
+                }
+
+                await SaveAsync();
+
+                return PublisherMapper.ToDetailDto(publisher);
+            }
+            catch (InvalidOperationException ex)
+            {
+                // This catches the entity framework error about severed relationships
+                throw new InvalidOperationException($"Cannot update publisher's books. Books must have a publisher assigned: {ex.Message}");
+            }
+        }
+        catch (Exception ex)
+        {
+            // Add a generic catch to prevent crashes
+            throw new ArgumentException($"Error updating publisher: {ex.Message}");
+        }
     }
 
     private async Task ValidateRelatedEntitiesExistAsync(PublisherRequestDto requestDto)
@@ -138,14 +168,31 @@ public class PublisherService(BookHubDbContext context) : BaseService<BookHubDbC
 
     public async Task<bool> DeletePublisherAsync(int id)
     {
-        var publisher = await Context.Publishers.FirstOrDefaultAsync(p => p.Id == id);
-        if (publisher == null)
+        try
         {
-            return false;
-        }
+            var hasBooks = await Context.Books.AnyAsync(b => b.PublisherId == id);
+            if (hasBooks)
+            {
+                throw new InvalidOperationException("Cannot delete publisher with associated books. Reassign books to another publisher first.");
+            }
 
-        Context.Publishers.Remove(publisher);
-        await SaveAsync();
-        return true;
+            var publisher = await Context.Publishers.FirstOrDefaultAsync(p => p.Id == id);
+            if (publisher == null)
+            {
+                return false;
+            }
+
+            Context.Publishers.Remove(publisher);
+            await SaveAsync();
+            return true;
+        }
+        catch (DbUpdateException ex)
+        {
+            throw new InvalidOperationException($"Database error while deleting publisher: {ex.Message}");
+        }
+        catch (Exception ex) when (!(ex is InvalidOperationException))
+        {
+            throw new ArgumentException($"Error deleting publisher: {ex.Message}");
+        }
     }
 }
