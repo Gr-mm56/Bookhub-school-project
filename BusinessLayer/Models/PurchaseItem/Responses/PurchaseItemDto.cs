@@ -2,9 +2,19 @@
 
 namespace BusinessLayer.Models.PurchaseItem.Responses;
 
-public class PurchaseItemUpdateDto
+public class PurchaseItemDto
 {
+    public int Id { get; set; }
+
+    public int BookId { get; set; }
+
+    public int CartId { get; set; }
+
     [Required]
     [Range(0, double.MaxValue, ErrorMessage = "Count must be non-negative.")]
     public int Count { get; set; }
+
+    public DateTime CreatedAt { get; set; }
+
+    public DateTime UpdatedAt { get; set; }
 }

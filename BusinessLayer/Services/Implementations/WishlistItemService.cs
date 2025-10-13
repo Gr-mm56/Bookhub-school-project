@@ -24,13 +24,13 @@ public class WishlistItemService : BaseService<BookHubDbContext>, IWishlistItemS
         return await PageAsync(query, limit, offset, WishlistItemMapper.ToDtoList);
     }
 
-    public async Task<WishlistItemDto?> GetWishlistItemByIdAsync(int id)
+    public async Task<WishlistItemDetailDto?> GetWishlistItemByIdAsync(int id)
     {
         var wishlistItem = await Context.WishlistItems
             .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Id == id);
 
-        return wishlistItem != null ? WishlistItemMapper.ToDto(wishlistItem) : null;
+        return wishlistItem != null ? WishlistItemMapper.ToDetailDto(wishlistItem) : null;
 
     }
 
@@ -55,17 +55,4 @@ public class WishlistItemService : BaseService<BookHubDbContext>, IWishlistItemS
         await SaveAsync();
         return true;
     }
-
-    //
-    // public async Task<WishlistItemDto?> UpdateWishlistItemAsync(int id, WishlistItemUpdateDto wishlistItemUpdateDto)
-    // {
-    //     WishlistItem? wishlistItem = await Context.WishlistItems.FirstOrDefaultAsync(u => u.Id == id);
-    //     if (wishlistItem == null)
-    //         return null;
-    //
-    //     WishlistItemMapper.UpdateEntity(wishlistItem, wishlistItemUpdateDto);
-    //     await SaveAsync();
-    //
-    //     return WishlistItemMapper.ToDto(wishlistItem);
-    // }
 }

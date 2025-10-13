@@ -1,7 +1,8 @@
-﻿using BusinessLayer.Models.Cart.Requests;
+﻿using BusinessLayer.Models.Cart.Responses;
 using BusinessLayer.Models.WishlistItem.Requests;
+using BusinessLayer.Models.WishlistItem.Responses;
 
-namespace BusinessLayer.Models.User.Requests;
+namespace BusinessLayer.Models.User.Responses;
 
 public class UserDetailDto : UserDto
 {

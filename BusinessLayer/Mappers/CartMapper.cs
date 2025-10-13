@@ -1,7 +1,6 @@
 ﻿using BusinessLayer.Models.Cart.Requests;
 using BusinessLayer.Models.Cart.Responses;
-using BusinessLayer.Models.PurchaseItem.Requests;
-using BusinessLayer.Models.User.Requests;
+using BusinessLayer.Models.PurchaseItem.Responses;
 using DataAccessLayer.Entities;
 
 namespace BusinessLayer.Mappers;

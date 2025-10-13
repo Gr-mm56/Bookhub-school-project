@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace BusinessLayer.Models.User.Responses;
+namespace BusinessLayer.Models.User.Requests;
 
 public class UserCreateDto
 {

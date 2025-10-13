@@ -2,8 +2,10 @@
 
 namespace BusinessLayer.Models.Cart.Responses;
 
-public class CartCreateDto
+public class CartDto
 {
+    public int Id { get; set; }
+
     public int UserId { get; set; }
 
     [Required]
@@ -13,4 +15,8 @@ public class CartCreateDto
     public int? OrderId { get; set; }
 
     public DateTime? OrderDate { get; set; }
+
+    public DateTime CreatedAt { get; set; }
+
+    public DateTime UpdatedAt { get; set; }
 }

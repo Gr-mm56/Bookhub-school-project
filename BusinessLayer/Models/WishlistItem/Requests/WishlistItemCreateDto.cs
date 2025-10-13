@@ -1,4 +1,4 @@
-﻿namespace BusinessLayer.Models.WishlistItem.Responses;
+﻿namespace BusinessLayer.Models.WishlistItem.Requests;
 
 public class WishlistItemCreateDto
 {

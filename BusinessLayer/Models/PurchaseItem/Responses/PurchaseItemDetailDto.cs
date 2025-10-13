@@ -1,8 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using BusinessLayer.Models.Book.Responses;
-using BusinessLayer.Models.Cart.Requests;
 
-namespace BusinessLayer.Models.PurchaseItem.Requests;
+namespace BusinessLayer.Models.PurchaseItem.Responses;
 
 public class PurchaseItemDetailDto : PurchaseItemDto
 {

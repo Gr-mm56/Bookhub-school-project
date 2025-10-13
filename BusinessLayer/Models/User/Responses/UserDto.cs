@@ -2,11 +2,15 @@
 
 namespace BusinessLayer.Models.User.Responses;
 
-public class UserUpdateDto
+public class UserDto
 {
+    public int Id { get; set; }
+
+    [Required]
     [MaxLength(64)]
     public string Name { get; set; }
 
+    [Required]
     [MaxLength(64)]
     public string Surname { get; set; }
 
@@ -20,4 +24,8 @@ public class UserUpdateDto
     public string Street { get; set; }
 
     public int? ProfilePhotoId { get; set; }
+
+    public DateTime CreatedAt { get; set; }
+
+    public DateTime UpdatedAt { get; set; }
 }

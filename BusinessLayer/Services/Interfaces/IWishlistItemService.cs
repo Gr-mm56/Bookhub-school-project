@@ -8,7 +8,7 @@ public interface IWishlistItemService
 {
     Task<PagedResultDto<WishlistItemDto>> GetWishlistItemsAsync(int limit = 20, int offset = 0);
 
-    Task<WishlistItemDto?> GetWishlistItemByIdAsync(int id);
+    Task<WishlistItemDetailDto?> GetWishlistItemByIdAsync(int id);
 
     Task<WishlistItemDto> CreateWishlistItemAsync(WishlistItemCreateDto requestDto);
 

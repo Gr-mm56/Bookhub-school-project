@@ -1,7 +1,7 @@
-﻿using BusinessLayer.Models.Cart.Requests;
+﻿using BusinessLayer.Models.Cart.Responses;
 using BusinessLayer.Models.User.Requests;
 using BusinessLayer.Models.User.Responses;
-using BusinessLayer.Models.WishlistItem.Requests;
+using BusinessLayer.Models.WishlistItem.Responses;
 using DataAccessLayer.Entities;
 
 namespace BusinessLayer.Mappers;

@@ -1,101 +1,45 @@
-﻿using DataAccessLayer.Entities;
-using DataAccessLayer.Interfaces;
+﻿using BusinessLayer.Models.Common;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
 
-public abstract class BaseController<TEntity> : ControllerBase
-    where TEntity : BaseEntity
+[ApiController]
+[Route("[controller]")]
+public abstract class BaseController<TEntityDto, TCreateDto, TUpdateDto, TService> : Controller
+    where TService : class
 {
-    protected readonly IService<TEntity> _service;
+    protected readonly TService _service;
 
-    public BaseController(IRepository<TEntity> repository)
+    protected BaseController(TService service)
     {
-        _service = repository;
+        _service = service;
     }
 
-    [HttpGet]
+    [HttpGet("list")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    protected async Task<IActionResult> GetAll()
-    {
-        var entities = await _service.GetAllAsync();
+    public abstract Task<IActionResult> GetAll([FromQuery] PagedRequestDto pagedRequest);
 
-        if (entities.Any())
-        {
-            return Ok(entities);
-        }
-
-        return NoContent();
-    }
-
-    [HttpGet]
-    [HttpGet("{id}")]
+    [HttpGet("details/{id:int}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    protected async Task<IActionResult> Get(int id)
-    {
-        if (id <= 0)
-        {
-            return BadRequest();
-        }
-
-        TEntity? entity = await _service.GetByIdAsync(id);
-
-        return entity == null ? NotFound() : Ok(entity);
-    }
+    public abstract Task<IActionResult> GetById(int id);
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    protected async Task<IActionResult> Insert([FromBody] TEntity entity)
-    {
-        await _service.InsertAsync(entity);
-        return Created();
-    }
+    public abstract Task<IActionResult> Create([FromBody] TCreateDto entity);
 
-    [HttpPut("{id}")]
+    [HttpPut("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public abstract Task<IActionResult> Update(int id, [FromBody] TUpdateDto entity);
+
+    [HttpDelete("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    protected async Task<IActionResult> Update(int id, [FromBody] TEntity entity)
-    {
-        if (id <= 0)
-        {
-            return BadRequest();
-        }
-
-        TEntity? u = await _service.GetByIdAsync(id);
-
-        if (u == null)
-        {
-            return NotFound();
-        }
-
-        await _service.UpdateAsync(entity);
-        return NoContent();
-    }
-
-    [HttpDelete("{id}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    protected async Task<IActionResult> Delete(int id)
-    {
-        if (id <= 0)
-        {
-            return BadRequest();
-        }
-
-        TEntity? entity = await _service.GetByIdAsync(id);
-
-        if (entity == null)
-        {
-            return NotFound();
-        }
-
-        await _service.DeleteAsync(id);
-        return NoContent();
-    }
+    public abstract Task<IActionResult> Delete(int id);
 }
