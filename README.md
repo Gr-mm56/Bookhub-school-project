@@ -14,6 +14,13 @@ Team composition:
 | Tomáš Valent      | member |
 | Matej Alexej Helc | member |
 
+# NOTE FOR MILESTONE 1:
+The first milestone focuses on DAL layer. However, in order to a REST web API and follow best practices,
+DTOs and mapping between entities and DTOs were implemented as well. This is part of BL layer, which is not
+(to our knowledge) required for this milestone, but we decided to implement it anyway to follow best practices.
+
+We did not use Repository and Unit of Work patterns, as Entity Framework already implements these patterns, and was consulted with tutor.
+
 ## Used Technologies
 - ASP.NET Core
 - C# 9.0

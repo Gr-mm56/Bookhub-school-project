@@ -1,9 +1,6 @@
 using BusinessLayer.Services.Implementations;
 using BusinessLayer.Services.Interfaces;
 using DataAccessLayer.Context;
-using DataAccessLayer.Entities;
-using DataAccessLayer.Interfaces;
-using DataAccessLayer.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Middleware;
@@ -17,16 +14,17 @@ builder.Services.AddDbContext<BookHubDbContext>(options =>
 // Add services to the container.
 
 builder.WebHost.UseUrls("http://localhost:5000");
-builder.Services.AddScoped<IRepository<PurchaseItem>, PurchaseItemRepository>();
-builder.Services.AddScoped<IRepository<WishlistItem>, WishlistItemRepository>();
-builder.Services.AddScoped<IRepository<Cart>, CartRepository>();
-builder.Services.AddScoped<IRepository<User>, UserRepository>();
-builder.Services.AddScoped<IRepository<Author>, AuthorRepository>();
-builder.Services.AddScoped<IRepository<Publisher>, PublisherRepository>();
-builder.Services.AddScoped<IRepository<Image>, ImageRepository>();
-builder.Services.AddScoped<IRatingRepository, RatingRepository>();
-builder.Services.AddScoped<IBookRepository, BookRepository>();
+builder.Services.AddScoped<IRatingService, RatingService>();
 builder.Services.AddScoped<IGenreService, GenreService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<IPurchaseItemService, PurchaseItemService>();
+builder.Services.AddScoped<IWishlistItemService, WishlistItemService>();
+builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddScoped<IAuthorService, AuthorService>();
+builder.Services.AddScoped<IPublisherService, PublisherService>();
+builder.Services.AddScoped<IImageService, ImageService>();
+
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();

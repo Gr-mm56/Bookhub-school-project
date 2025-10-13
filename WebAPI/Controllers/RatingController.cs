@@ -1,59 +1,121 @@
-﻿using DataAccessLayer.Entities;
-using DataAccessLayer.Interfaces;
+﻿using BusinessLayer.Models.Common;
+using BusinessLayer.Models.Rating.Requests;
+using BusinessLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
 
-// todo: On Put, updatedAt should be updated, implicitly
 [Route("[controller]")]
 [ApiController]
-public class RatingController : BaseController<Rating>
+public class RatingController(IRatingService ratingService) : ControllerBase
 {
-    private readonly IRatingRepository _ratingRepository;
-
-    public RatingController(IRatingRepository ratingRepository) : base(ratingRepository)
-    {
-        _ratingRepository = ratingRepository;
-    }
-
     [HttpGet]
-    [Route("")]
-    public async Task<IActionResult> GetRatings(
-        [FromQuery] int? userId,
-        [FromQuery] int? bookId,
-        [FromQuery] int? minStars,
-        [FromQuery] int? maxStars,
-        [FromQuery] int limit = 20,
-        [FromQuery] int offset = 0)
+    [Route("list")]
+    public async Task<IActionResult> GetRatings([FromQuery] PagedRequestDto pagedRequest)
     {
-        var ratings = await _ratingRepository.GetRatingsAsync(userId, bookId, minStars, maxStars, limit, offset);
-
-        var result = ratings.Select(r => new
+        if (!ModelState.IsValid)
         {
-            r.Id,
-            r.Stars,
-            r.UserId,
-            r.BookId,
-            User = new { r.User.Id, r.User.Name },
-            Book = new { r.Book.Id, r.Book.Title }
-        });
+            return ValidationProblem(ModelState);
+        }
+
+        var result = await ratingService.GetRatingsAsync(pagedRequest.Limit, pagedRequest.Offset);
         return Ok(result);
     }
 
     [HttpGet]
+    [Route("search")]
+    public async Task<IActionResult> SearchRatings([FromQuery] RatingSearchDto searchDto)
+    {
+        if (!ModelState.IsValid)
+        {
+            return ValidationProblem(ModelState);
+        }
+
+        var result = await ratingService.SearchRatingsAsync(searchDto);
+        return Ok(result);
+    }
+
+    [HttpGet]
+    [Route("details/{id:int}")]
+    public async Task<IActionResult> GetRatingDetail(int id)
+    {
+        var rating = await ratingService.GetRatingDetailAsync(id);
+        if (rating == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(rating);
+    }
+
+    [HttpGet]
     [Route("{id:int}")]
-    public async Task<IActionResult> GetRating(int id) => await Get(id);
+    public async Task<IActionResult> GetRatingById(int id)
+    {
+        var rating = await ratingService.GetRatingByIdAsync(id);
+        if (rating == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(rating);
+    }
 
     [HttpPost]
     [Route("")]
-    public async Task<IActionResult> CreateRating([FromBody] Rating rating) => await Insert(rating);
+    public async Task<IActionResult> CreateRating([FromBody] RatingRequestDto requestDto)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        try
+        {
+            var rating = await ratingService.CreateRatingAsync(requestDto);
+            return CreatedAtAction(nameof(GetRatingById), new { id = rating.Id }, rating);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
 
     [HttpPut]
     [Route("{id:int}")]
-    public async Task<IActionResult> UpdateRating(int id, [FromBody] Rating updatedRating) =>
-        await Update(id, updatedRating);
+    public async Task<IActionResult> UpdateRating(int id, [FromBody] RatingRequestDto requestDto)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        try
+        {
+            var rating = await ratingService.UpdateRatingAsync(id, requestDto);
+            if (rating == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(rating);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
 
     [HttpDelete]
     [Route("{id:int}")]
-    public async Task<IActionResult> DeleteRating(int id) => await Delete(id);
+    public async Task<IActionResult> DeleteRating(int id)
+    {
+        var result = await ratingService.DeleteRatingAsync(id);
+        if (!result)
+        {
+            return NotFound();
+        }
+
+        return NoContent();
+    }
 }

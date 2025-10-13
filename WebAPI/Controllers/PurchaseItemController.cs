@@ -1,29 +1,107 @@
-﻿using DataAccessLayer.Entities;
-using DataAccessLayer.Interfaces;
+﻿using BusinessLayer.Models.Common;
+using BusinessLayer.Models.PurchaseItem.Requests;
+using BusinessLayer.Services.Interfaces;
+using BusinessLayer.Models.PurchaseItem.Responses;
 using Microsoft.AspNetCore.Mvc;
-using WebAPI.Controllers;
+
+namespace WebAPI.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class PurchaseItemController : BaseController<PurchaseItem>
+public class PurchaseItemController(IPurchaseItemService purchaseItemService) : Controller
 {
-    public PurchaseItemController(IRepository<PurchaseItem> repository) : base(repository)
+    [HttpGet]
+    [Route("list")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> GetAllPurchaseItems([FromQuery] PagedRequestDto pagedRequest)
     {
+        if (!ModelState.IsValid)
+        {
+            return ValidationProblem(ModelState);
+        }
 
+        var result = await purchaseItemService.GetPurchaseItemsAsync(pagedRequest.Limit, pagedRequest.Offset);
+
+        if (result.Items.Any())
+        {
+            return Ok(result);
+        }
+
+        return NoContent();
     }
 
     [HttpGet]
-    public Task<IActionResult> GetAllPurchaseItems() => GetAll();
+    [Route("details/{id:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetPurchaseItem(int id)
+    {
+        if (id <= 0)
+        {
+            return BadRequest();
+        }
 
-    [HttpGet("{id}")]
-    public Task<IActionResult> GetPurchaseItem(int id) => Get(id);
+        PurchaseItemDto? purchaseItem = await purchaseItemService.GetPurchaseItemByIdAsync(id);
+
+        return purchaseItem == null ? NotFound() : Ok(purchaseItem);
+    }
 
     [HttpPost]
-    public Task<IActionResult> CreatePurchaseItem([FromBody] PurchaseItem entity) => Insert(entity);
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> CreatePurchaseItem([FromBody] PurchaseItemCreateDto purchaseItem)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        await purchaseItemService.CreatePurchaseItemAsync(purchaseItem);
+
+        return Created();
+    }
 
     [HttpPut("{id}")]
-    public Task<IActionResult> UpdatePurchaseItem(int id, [FromBody] PurchaseItem entity) => Update(id, entity);
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateGenre(int id, [FromBody] PurchaseItemUpdateDto requestDto)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
 
-    [HttpDelete("{id}")]
-    public Task<IActionResult> DeletePurchaseItem(int id) => Delete(id);
+        var purchaseItem = await purchaseItemService.UpdatePurchaseItemAsync(id, requestDto);
+        if (purchaseItem == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(purchaseItem);
+    }
+
+    [HttpDelete]
+    [Route("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> DeletePurchaseItem(int id)
+    {
+        if (id <= 0)
+        {
+            return BadRequest();
+        }
+
+        bool result = await purchaseItemService.DeletePurchaseItemAsync(id);
+
+        if (!result)
+        {
+            return NotFound();
+        }
+
+        return NoContent();
+    }
 }

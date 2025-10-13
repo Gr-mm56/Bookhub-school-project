@@ -21,21 +21,6 @@ namespace DataAccessLayer.Migrations
                 .HasAnnotation("Proxies:CheckEquality", false)
                 .HasAnnotation("Proxies:LazyLoading", true);
 
-            modelBuilder.Entity("BookPublisher", b =>
-                {
-                    b.Property<int>("BooksId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("PublishersId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("BooksId", "PublishersId");
-
-                    b.HasIndex("PublishersId");
-
-                    b.ToTable("BookPublisher");
-                });
-
             modelBuilder.Entity("DataAccessLayer.Entities.Author", b =>
                 {
                     b.Property<int>("Id")
@@ -110,6 +95,9 @@ namespace DataAccessLayer.Migrations
                     b.Property<double>("Price")
                         .HasColumnType("REAL");
 
+                    b.Property<int>("PublisherId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -120,6 +108,8 @@ namespace DataAccessLayer.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ImageId");
+
+                    b.HasIndex("PublisherId");
 
                     b.ToTable("Books");
 
@@ -132,6 +122,7 @@ namespace DataAccessLayer.Migrations
                             ISBN = "978-0618260243",
                             ImageId = 6,
                             Price = 12.99,
+                            PublisherId = 1,
                             Title = "The Fellowship of the Ring",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
@@ -143,6 +134,7 @@ namespace DataAccessLayer.Migrations
                             ISBN = "978-0618260281",
                             ImageId = 7,
                             Price = 14.5,
+                            PublisherId = 1,
                             Title = "The Two Towers",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
@@ -154,6 +146,7 @@ namespace DataAccessLayer.Migrations
                             ISBN = "978-0618260304",
                             ImageId = 8,
                             Price = 15.99,
+                            PublisherId = 2,
                             Title = "The Return of the King",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
@@ -906,21 +899,6 @@ namespace DataAccessLayer.Migrations
                         });
                 });
 
-            modelBuilder.Entity("BookPublisher", b =>
-                {
-                    b.HasOne("DataAccessLayer.Entities.Book", null)
-                        .WithMany()
-                        .HasForeignKey("BooksId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("DataAccessLayer.Entities.Publisher", null)
-                        .WithMany()
-                        .HasForeignKey("PublishersId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("DataAccessLayer.Entities.Author", b =>
                 {
                     b.HasOne("DataAccessLayer.Entities.Image", "ProfilePhoto")
@@ -939,7 +917,15 @@ namespace DataAccessLayer.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("DataAccessLayer.Entities.Publisher", "Publisher")
+                        .WithMany("Books")
+                        .HasForeignKey("PublisherId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Image");
+
+                    b.Navigation("Publisher");
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.Cart", b =>
@@ -1068,6 +1054,11 @@ namespace DataAccessLayer.Migrations
             modelBuilder.Entity("DataAccessLayer.Entities.Cart", b =>
                 {
                     b.Navigation("PurchaseItems");
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Entities.Publisher", b =>
+                {
+                    b.Navigation("Books");
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.User", b =>

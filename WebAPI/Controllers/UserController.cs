@@ -1,29 +1,107 @@
-﻿using DataAccessLayer.Entities;
-using DataAccessLayer.Interfaces;
+﻿using BusinessLayer.Models.Common;
+using BusinessLayer.Models.User.Requests;
+using BusinessLayer.Services.Interfaces;
+using BusinessLayer.Models.User.Responses;
 using Microsoft.AspNetCore.Mvc;
-using WebAPI.Controllers;
 
-[Route("users")]
+namespace WebAPI.Controllers;
+
+[Route("[controller]")]
 [ApiController]
-public class UserController : BaseController<User>
+public class UserController(IUserService userService) : Controller
 {
-    public UserController(IRepository<User> repository) : base(repository)
+    [HttpGet]
+    [Route("list")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> GetAllUsers([FromQuery] PagedRequestDto pagedRequest)
     {
+        if (!ModelState.IsValid)
+        {
+            return ValidationProblem(ModelState);
+        }
 
+        var result = await userService.GetUsersAsync(pagedRequest.Limit, pagedRequest.Offset);
+
+        if (result.Items.Any())
+        {
+            return Ok(result);
+        }
+
+        return NoContent();
     }
 
     [HttpGet]
-    public Task<IActionResult> GetAllUsers() => GetAll();
+    [Route("details/{id:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetUser(int id)
+    {
+        if (id <= 0)
+        {
+            return BadRequest();
+        }
 
-    [HttpGet("{id}")]
-    public Task<IActionResult> GetUser(int id) => Get(id);
+        UserDto? user = await userService.GetUserByIdAsync(id);
+
+        return user == null ? NotFound() : Ok(user);
+    }
 
     [HttpPost]
-    public Task<IActionResult> CreateUser([FromBody] User entity) => Insert(entity);
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> CreateUser([FromBody] UserCreateDto user)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        await userService.CreateUserAsync(user);
+
+        return Created();
+    }
 
     [HttpPut("{id}")]
-    public Task<IActionResult> UpdateUser(int id, [FromBody] User entity) => Update(id, entity);
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateGenre(int id, [FromBody] UserUpdateDto requestDto)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
 
-    [HttpDelete("{id}")]
-    public Task<IActionResult> DeleteUser(int id) => Delete(id);
+        var user = await userService.UpdateUserAsync(id, requestDto);
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(user);
+    }
+
+    [HttpDelete]
+    [Route("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> DeleteUser(int id)
+    {
+        if (id <= 0)
+        {
+            return BadRequest();
+        }
+
+        bool result = await userService.DeleteUserAsync(id);
+
+        if (!result)
+        {
+            return NotFound();
+        }
+
+        return NoContent();
+    }
 }

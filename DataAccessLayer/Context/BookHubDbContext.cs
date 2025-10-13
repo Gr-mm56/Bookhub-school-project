@@ -26,15 +26,29 @@ public class BookHubDbContext: DbContext
         // Book M:N Genre
         modelBuilder.Entity<Book>().HasMany(b => b.Genres).WithMany(g => g.Books).UsingEntity<RelBookGenre>();
 
-        // Book M:N Author
-        modelBuilder.Entity<Book>().HasMany(a => a.Authors).WithMany(b => b.Books).UsingEntity<RelBookAuthor>();
+        // Book M:N Author with cascade delete configuration
+        modelBuilder.Entity<Book>()
+            .HasMany(b => b.Authors)
+            .WithMany(a => a.Books)
+            .UsingEntity<RelBookAuthor>(
+                j => j
+                    .HasOne(rel => rel.Author)
+                    .WithMany()
+                    .HasForeignKey(rel => rel.AuthorId)
+                    .OnDelete(DeleteBehavior.Cascade),
+                j => j
+                    .HasOne(rel => rel.Book)
+                    .WithMany()
+                    .HasForeignKey(rel => rel.BookId)
+                    .OnDelete(DeleteBehavior.Cascade)
+            );
 
         // One-to-many relationships
         modelBuilder.Entity<User>().HasMany(u => u.Carts);
         modelBuilder.Entity<User>().HasMany(u => u.WishlistItems);
         modelBuilder.Entity<User>().HasMany(u => u.Ratings);
         modelBuilder.Entity<Cart>().HasMany(u => u.PurchaseItems);
-        modelBuilder.Entity<Book>().HasMany(p => p.Publishers);
+        modelBuilder.Entity<Publisher>().HasMany(b => b.Books);
 
         // Book 1 Image
         modelBuilder.Entity<Book>()
@@ -63,7 +77,11 @@ public class BookHubDbContext: DbContext
             .HasForeignKey(p => p.ProfilePhotoId)
             .IsRequired(false);
 
-        foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
+        foreach (var relationship in modelBuilder.Model.GetEntityTypes()
+                 .SelectMany(e => e.GetForeignKeys())
+                 .Where(fk => 
+                     !(fk.PrincipalEntityType.ClrType == typeof(Book) && fk.DeclaringEntityType.ClrType == typeof(RelBookAuthor)) &&
+                     !(fk.PrincipalEntityType.ClrType == typeof(Author) && fk.DeclaringEntityType.ClrType == typeof(RelBookAuthor))))
         {
             relationship.DeleteBehavior = DeleteBehavior.Restrict;
         }

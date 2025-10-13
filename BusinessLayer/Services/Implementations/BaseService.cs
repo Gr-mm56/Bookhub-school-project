@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLayer.Services.Implementations;
 
-public class BaseService<TContext>(TContext context)
+public abstract class BaseService<TContext>(TContext context)
     where TContext : DbContext
 {
     protected readonly TContext Context = context;
@@ -18,7 +18,7 @@ public class BaseService<TContext>(TContext context)
 
     private static IQueryable<T> ApplyPaging<T>(IQueryable<T> query, int limit, int offset)
         => query.Skip(offset).Take(limit);
-    
+
     protected async Task<PagedResultDto<TOut>> PageAsync<TEntity, TOut>(
         IQueryable<TEntity> query,
         int limit,
