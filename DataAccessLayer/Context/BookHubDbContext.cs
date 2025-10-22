@@ -79,12 +79,40 @@ public class BookHubDbContext: DbContext
 
         foreach (var relationship in modelBuilder.Model.GetEntityTypes()
                  .SelectMany(e => e.GetForeignKeys())
-                 .Where(fk => 
+                 .Where(fk =>
                      !(fk.PrincipalEntityType.ClrType == typeof(Book) && fk.DeclaringEntityType.ClrType == typeof(RelBookAuthor)) &&
                      !(fk.PrincipalEntityType.ClrType == typeof(Author) && fk.DeclaringEntityType.ClrType == typeof(RelBookAuthor))))
         {
             relationship.DeleteBehavior = DeleteBehavior.Restrict;
         }
+
+        // User -> Cart - On Delete Cascade
+        modelBuilder.Entity<Cart>()
+            .HasOne(c => c.User)
+            .WithMany(u => u.Carts)
+            .HasForeignKey(c => c.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // User -> WishlistItem - On Delete Cascade
+        modelBuilder.Entity<WishlistItem>()
+            .HasOne(w => w.User)
+            .WithMany(u => u.WishlistItems)
+            .HasForeignKey(w => w.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // User -> Rating - On Delete Cascade
+        modelBuilder.Entity<Rating>()
+            .HasOne(r => r.User)
+            .WithMany(u => u.Ratings)
+            .HasForeignKey(r => r.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Cart -> PurchaseItem - On Delete Cascade
+        modelBuilder.Entity<PurchaseItem>()
+            .HasOne(p => p.Cart)
+            .WithMany(c => c.PurchaseItems)
+            .HasForeignKey(p => p.CartId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Seed();
         base.OnModelCreating(modelBuilder);

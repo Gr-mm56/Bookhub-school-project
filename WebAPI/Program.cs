@@ -79,4 +79,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+Console.WriteLine($"Swagger UI available at: http://localhost:5000/swagger/index.html");
+
 app.Run();
