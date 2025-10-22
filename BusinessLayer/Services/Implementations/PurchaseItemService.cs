@@ -15,7 +15,7 @@ public class PurchaseItemService : BaseService<BookHubDbContext>, IPurchaseItemS
     {
     }
 
-    public async Task<PagedResultDto<PurchaseItemDto>> GetPurchaseItemsAsync(int limit = 20, int offset = 0)
+    public async Task<PagedResultDto<PurchaseItemDto>> GetAllAsync(int limit = 20, int offset = 0)
     {
         var query = Context.PurchaseItems
             .AsNoTracking()
@@ -24,7 +24,7 @@ public class PurchaseItemService : BaseService<BookHubDbContext>, IPurchaseItemS
         return await PageAsync(query, limit, offset, PurchaseItemMapper.ToDtoList);
     }
 
-    public async Task<PurchaseItemDto?> GetPurchaseItemByIdAsync(int id)
+    public async Task<PurchaseItemDto?> GetByIdAsync(int id)
     {
         var purchaseItem = await Context.PurchaseItems
             .AsNoTracking()
@@ -34,7 +34,7 @@ public class PurchaseItemService : BaseService<BookHubDbContext>, IPurchaseItemS
 
     }
 
-    public async Task<PurchaseItemDto> CreatePurchaseItemAsync(PurchaseItemCreateDto purchaseItemCreateDto)
+    public async Task<PurchaseItemDto> CreateAsync(PurchaseItemCreateDto purchaseItemCreateDto)
     {
         PurchaseItem purchaseItem = PurchaseItemMapper.CreateDtoToEntity(purchaseItemCreateDto);
 
@@ -45,7 +45,7 @@ public class PurchaseItemService : BaseService<BookHubDbContext>, IPurchaseItemS
 
     }
 
-    public async Task<bool> DeletePurchaseItemAsync(int id)
+    public async Task<bool> DeleteAsync(int id)
     {
         PurchaseItem? purchaseItem = await Context.PurchaseItems.FirstOrDefaultAsync(g => g.Id == id);
         if (purchaseItem == null)
@@ -56,7 +56,7 @@ public class PurchaseItemService : BaseService<BookHubDbContext>, IPurchaseItemS
         return true;
     }
 
-    public async Task<PurchaseItemDto?> UpdatePurchaseItemAsync(int id, PurchaseItemUpdateDto purchaseItemUpdateDto)
+    public async Task<PurchaseItemDto?> UpdateAsync(int id, PurchaseItemUpdateDto purchaseItemUpdateDto)
     {
         PurchaseItem? purchaseItem = await Context.PurchaseItems.FirstOrDefaultAsync(u => u.Id == id);
         if (purchaseItem == null)

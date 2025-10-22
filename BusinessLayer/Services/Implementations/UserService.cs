@@ -15,7 +15,7 @@ public class UserService : BaseService<BookHubDbContext>, IUserService
     {
     }
 
-    public async Task<PagedResultDto<UserDto>> GetUsersAsync(int limit = 20, int offset = 0)
+    public async Task<PagedResultDto<UserDto>> GetAllAsync(int limit = 20, int offset = 0)
     {
         var query = Context.Users
             .AsNoTracking()
@@ -24,7 +24,7 @@ public class UserService : BaseService<BookHubDbContext>, IUserService
         return await PageAsync(query, limit, offset, UserMapper.ToDtoList);
     }
 
-    public async Task<UserDto?> GetUserByIdAsync(int id)
+    public async Task<UserDto?> GetByIdAsync(int id)
     {
         var user = await Context.Users
             .AsNoTracking()
@@ -34,7 +34,7 @@ public class UserService : BaseService<BookHubDbContext>, IUserService
 
     }
 
-    public async Task<UserDto> CreateUserAsync(UserCreateDto userCreateDto)
+    public async Task<UserDto> CreateAsync(UserCreateDto userCreateDto)
     {
         User user = UserMapper.CreateDtoToEntity(userCreateDto);
 
@@ -45,7 +45,7 @@ public class UserService : BaseService<BookHubDbContext>, IUserService
 
     }
 
-    public async Task<bool> DeleteUserAsync(int id)
+    public async Task<bool> DeleteAsync(int id)
     {
         User? user = await Context.Users.FirstOrDefaultAsync(g => g.Id == id);
         if (user == null)
@@ -56,7 +56,7 @@ public class UserService : BaseService<BookHubDbContext>, IUserService
         return true;
     }
 
-    public async Task<UserDto?> UpdateUserAsync(int id, UserUpdateDto userUpdateDto)
+    public async Task<UserDto?> UpdateAsync(int id, UserUpdateDto userUpdateDto)
     {
         User? user = await Context.Users.FirstOrDefaultAsync(u => u.Id == id);
         if (user == null)

@@ -4,8 +4,7 @@ using BusinessLayer.Models.Cart.Responses;
 
 namespace BusinessLayer.Services.Interfaces;
 
-public interface ICartService
-    : ICrudService<CartDto, CartCreateDto, CartUpdateDto>
+public interface ICartService : ICrudService<CartDto, CartCreateDto, CartUpdateDto>
 {
     Task<PagedResultDto<CartDto>> GetAllAsync(int limit = 20, int offset = 0);
 

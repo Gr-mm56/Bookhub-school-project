@@ -4,15 +4,15 @@ using BusinessLayer.Models.PurchaseItem.Responses;
 
 namespace BusinessLayer.Services.Interfaces;
 
-public interface IPurchaseItemService
+public interface IPurchaseItemService : ICrudService<PurchaseItemDto, PurchaseItemCreateDto, PurchaseItemUpdateDto>
 {
-    Task<PagedResultDto<PurchaseItemDto>> GetPurchaseItemsAsync(int limit = 20, int offset = 0);
+    Task<PagedResultDto<PurchaseItemDto>> GetAllAsync(int limit = 20, int offset = 0);
 
-    Task<PurchaseItemDto?> GetPurchaseItemByIdAsync(int id);
+    Task<PurchaseItemDto?> GetByIdAsync(int id);
 
-    Task<PurchaseItemDto> CreatePurchaseItemAsync(PurchaseItemCreateDto requestDto);
+    Task<PurchaseItemDto> CreateAsync(PurchaseItemCreateDto requestDto);
 
-    Task<PurchaseItemDto?> UpdatePurchaseItemAsync(int id, PurchaseItemUpdateDto requestDto);
+    Task<PurchaseItemDto?> UpdateAsync(int id, PurchaseItemUpdateDto requestDto);
 
-    Task<bool> DeletePurchaseItemAsync(int id);
+    Task<bool> DeleteAsync(int id);
 }

@@ -4,13 +4,13 @@ using BusinessLayer.Models.WishlistItem.Responses;
 
 namespace BusinessLayer.Services.Interfaces;
 
-public interface IWishlistItemService
+public interface IWishlistItemService : ICrudService<WishlistItemDetailDto, WishlistItemCreateDto, WishlistItemCreateDto>
 {
-    Task<PagedResultDto<WishlistItemDto>> GetWishlistItemsAsync(int limit = 20, int offset = 0);
+    Task<PagedResultDto<WishlistItemDetailDto>> GetAllAsync(int limit = 20, int offset = 0);
 
-    Task<WishlistItemDetailDto?> GetWishlistItemByIdAsync(int id);
+    Task<WishlistItemDetailDto?> GetByIdAsync(int id);
 
-    Task<WishlistItemDto> CreateWishlistItemAsync(WishlistItemCreateDto requestDto);
+    Task<WishlistItemDetailDto> CreateAsync(WishlistItemCreateDto requestDto);
 
-    Task<bool> DeleteWishlistItemAsync(int id);
+    Task<bool> DeleteAsync(int id);
 }
