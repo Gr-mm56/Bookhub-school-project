@@ -85,6 +85,12 @@ public class BookHubDbContext: DbContext
         {
             relationship.DeleteBehavior = DeleteBehavior.Restrict;
         }
+        // Book -> Rating - On Delete Cascade
+        modelBuilder.Entity<Rating>()
+            .HasOne(r => r.Book)
+            .WithMany(b => b.Ratings)
+            .HasForeignKey(r => r.BookId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         // User -> Cart - On Delete Cascade
         modelBuilder.Entity<Cart>()
