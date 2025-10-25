@@ -13,7 +13,6 @@ builder.Services.AddDbContext<BookHubDbContext>(options =>
 });
 // Add services to the container.
 
-builder.WebHost.UseUrls("http://localhost:5000");
 builder.Services.AddScoped<IRatingService, RatingService>();
 builder.Services.AddScoped<IGenreService, GenreService>();
 builder.Services.AddScoped<IUserService, UserService>();
