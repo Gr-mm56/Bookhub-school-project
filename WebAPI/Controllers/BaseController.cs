@@ -45,10 +45,15 @@ public abstract class BaseController<TEntityDto, TCreateDto, TUpdateDto, TServic
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
-
-        await Service.CreateAsync(dto);
-
-        return Created();
+        try
+        {
+            await Service.CreateAsync(dto);
+            return Created();
+        }
+        catch (Exception)
+        {
+            return BadRequest();
+        }
     }
 
     [HttpPut("{id:int}")]
@@ -59,9 +64,15 @@ public abstract class BaseController<TEntityDto, TCreateDto, TUpdateDto, TServic
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
-
-        var updated = await Service.UpdateAsync(id, dto);
-        return updated == null ? NotFound() : Ok(updated);
+        try
+        {
+            var updated = await Service.UpdateAsync(id, dto);
+            return updated == null ? NotFound() : Ok(updated);
+        }
+        catch (Exception)
+        {
+            return BadRequest();
+        }
     }
 
     [HttpDelete]
