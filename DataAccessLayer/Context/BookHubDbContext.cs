@@ -24,7 +24,21 @@ public class BookHubDbContext: DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Book M:N Genre
-        modelBuilder.Entity<Book>().HasMany(b => b.Genres).WithMany(g => g.Books).UsingEntity<RelBookGenre>();
+        modelBuilder.Entity<Book>()
+            .HasMany(b => b.Genres)
+            .WithMany(g => g.Books)
+            .UsingEntity<RelBookGenre>(
+                j => j
+                    .HasOne<Genre>()
+                    .WithMany()
+                    .HasForeignKey(rel => rel.GenreId)
+                    .OnDelete(DeleteBehavior.Restrict), 
+                j => j
+                    .HasOne<Book>()
+                    .WithMany()
+                    .HasForeignKey(rel => rel.BookId)
+                    .OnDelete(DeleteBehavior.Cascade) 
+            );
 
         // Book M:N Author with cascade delete configuration
         modelBuilder.Entity<Book>()
@@ -81,7 +95,10 @@ public class BookHubDbContext: DbContext
                  .SelectMany(e => e.GetForeignKeys())
                  .Where(fk =>
                      !(fk.PrincipalEntityType.ClrType == typeof(Book) && fk.DeclaringEntityType.ClrType == typeof(RelBookAuthor)) &&
-                     !(fk.PrincipalEntityType.ClrType == typeof(Author) && fk.DeclaringEntityType.ClrType == typeof(RelBookAuthor))))
+                     !(fk.PrincipalEntityType.ClrType == typeof(Author) && fk.DeclaringEntityType.ClrType == typeof(RelBookAuthor)) &&
+                     !(fk.PrincipalEntityType.ClrType == typeof(Book) && fk.DeclaringEntityType.ClrType == typeof(RelBookGenre)) &&
+                     !(fk.PrincipalEntityType.ClrType == typeof(Genre) && fk.DeclaringEntityType.ClrType == typeof(RelBookGenre))
+                     ))
         {
             relationship.DeleteBehavior = DeleteBehavior.Restrict;
         }

@@ -20,6 +20,8 @@ public static class BookMapper
             Title = book.Title,
             Description = book.Description,
             Price = book.Price,
+            CreatedAt = book.CreatedAt,
+            UpdatedAt = book.UpdatedAt,
             Image = book.Image != null
                 ? new ImageDto
                 {
@@ -41,6 +43,8 @@ public static class BookMapper
             Description = book.Description,
             Price = book.Price,
             ISBN = book.ISBN,
+            CreatedAt = book.CreatedAt,
+            UpdatedAt = book.UpdatedAt,
             Image = book.Image != null
                 ? new ImageDto
                 {
