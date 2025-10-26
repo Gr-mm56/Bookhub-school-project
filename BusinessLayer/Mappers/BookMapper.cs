@@ -101,6 +101,7 @@ public static class BookMapper
         book.Description = requestDto.Description;
         book.Price = requestDto.Price;
         book.ImageId = requestDto.ImageId;
+        book.UpdatedAt = DateTime.Now;
     }
 
     public static IEnumerable<BookDto> ToDtoList(IEnumerable<Book> books)
