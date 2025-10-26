@@ -86,6 +86,7 @@ public static class BookMapper
             ImageId = requestDto.ImageId,
             PublisherId = requestDto.PublisherId,
             CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
             Genres = new List<Genre>(),
             Authors = new List<Author>()
         };
