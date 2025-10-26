@@ -2,6 +2,7 @@
 using BusinessLayer.Models.Rating.Responses;
 using BusinessLayer.Models.Book.Responses;
 using BusinessLayer.Models.Image.Responses;
+using BusinessLayer.Models.User.Responses;
 using DataAccessLayer.Entities;
 
 namespace BusinessLayer.Mappers;
@@ -17,7 +18,9 @@ public static class RatingMapper
             Id = rating.Id,
             Stars = rating.Stars,
             UserId = rating.UserId,
-            BookId = rating.BookId
+            BookId = rating.BookId,
+            CreatedAt = rating.CreatedAt,
+            UpdatedAt = rating.UpdatedAt,
         };
     }
 
@@ -29,6 +32,8 @@ public static class RatingMapper
         {
             Id = rating.Id,
             Stars = rating.Stars,
+            CreatedAt = rating.CreatedAt,
+            UpdatedAt = rating.UpdatedAt,
             Book = new BookDto
             {
                 Id = rating.Book.Id,
@@ -40,8 +45,19 @@ public static class RatingMapper
                     Id = rating.Book.Image.Id,
                     FileUrl = rating.Book.Image.FileUrl
                 } : null,
+            },
+            User = new UserDto
+            {
+                Id = rating.User.Id,
+                City = rating.User.City,
+                Country = rating.User.Country,
+                CreatedAt = rating.User.CreatedAt,
+                UpdatedAt = rating.User.UpdatedAt,
+                Name = rating.User.Name,
+                ProfilePhotoId = rating.User.ProfilePhotoId,
+                Surname = rating.User.Surname,
+                Street = rating.User.Street,
             }
-            // User will be added when UserDto is ready
         };
     }
 
@@ -54,7 +70,8 @@ public static class RatingMapper
             Stars = requestDto.Stars,
             UserId = requestDto.UserId,
             BookId = requestDto.BookId,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
         };
     }
 

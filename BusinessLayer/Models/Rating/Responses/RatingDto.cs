@@ -9,4 +9,6 @@ public class RatingDto
  public int Stars { get; set; }
  public int BookId { get; set; }
  public int UserId { get; set; }
+ public DateTime CreatedAt { get; set; }
+ public DateTime UpdatedAt { get; set; }
 }

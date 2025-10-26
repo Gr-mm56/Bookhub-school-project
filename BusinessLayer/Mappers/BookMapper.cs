@@ -20,6 +20,8 @@ public static class BookMapper
             Title = book.Title,
             Description = book.Description,
             Price = book.Price,
+            CreatedAt = book.CreatedAt,
+            UpdatedAt = book.UpdatedAt,
             Image = book.Image != null
                 ? new ImageDto
                 {
@@ -41,6 +43,8 @@ public static class BookMapper
             Description = book.Description,
             Price = book.Price,
             ISBN = book.ISBN,
+            CreatedAt = book.CreatedAt,
+            UpdatedAt = book.UpdatedAt,
             Image = book.Image != null
                 ? new ImageDto
                 {
@@ -82,6 +86,7 @@ public static class BookMapper
             ImageId = requestDto.ImageId,
             PublisherId = requestDto.PublisherId,
             CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
             Genres = new List<Genre>(),
             Authors = new List<Author>()
         };
@@ -97,6 +102,7 @@ public static class BookMapper
         book.Description = requestDto.Description;
         book.Price = requestDto.Price;
         book.ImageId = requestDto.ImageId;
+        book.UpdatedAt = DateTime.Now;
     }
 
     public static IEnumerable<BookDto> ToDtoList(IEnumerable<Book> books)

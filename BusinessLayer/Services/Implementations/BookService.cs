@@ -9,9 +9,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLayer.Services.Implementations;
 
-public class BookService(BookHubDbContext context) : BaseService<BookHubDbContext>(context), IBookService
+public class BookService : BaseService<BookHubDbContext>, IBookService
 {
-    public async Task<PagedResultDto<BookDto>> GetBooksAsync(int limit = 20, int offset = 0)
+    public BookService(BookHubDbContext dbContext) : base(dbContext)
+    {
+        
+    }
+    public async Task<PagedResultDto<BookDto>> GetAllAsync(int limit = 20, int offset = 0)
     {
         var query = Context.Books
             .AsNoTracking()
@@ -21,7 +25,7 @@ public class BookService(BookHubDbContext context) : BaseService<BookHubDbContex
         return await PageAsync(query, limit, offset, BookMapper.ToDtoList);
     }
 
-    public async Task<BookDto?> GetBookByIdAsync(int id)
+    public async Task<BookDto?> GetByIdAsync(int id)
     {
         var book = await Context.Books
             .AsNoTracking()
@@ -89,8 +93,12 @@ public class BookService(BookHubDbContext context) : BaseService<BookHubDbContex
 
         return await PageAsync(query, searchDto.Limit, searchDto.Offset, BookMapper.ToDetailDtoList);
     }
-    public async Task<BookDetailDto> CreateBookAsync(BookRequestDto requestDto)
+    public async Task<BookDto> CreateAsync(BookRequestDto requestDto)
     {
+        if (requestDto.GenreIds.Count == 0 || requestDto.AuthorIds.Count == 0)
+        {
+            throw new ArgumentException("You must provide at least one genre and author");
+        }
         // Validate that all provided IDs exist
         await ValidateRelatedEntitiesExistAsync(requestDto);
 
@@ -110,9 +118,10 @@ public class BookService(BookHubDbContext context) : BaseService<BookHubDbContex
             .Include(b => b.Publisher)
             .FirstAsync(b => b.Id == book.Id);
         
-        return BookMapper.ToDetailDto(createdBook);
+        return BookMapper.ToDto(createdBook);
     }
-    public async Task<BookDetailDto?> UpdateBookAsync(int id, BookRequestDto requestDto)
+    
+    public async Task<BookDto?> UpdateAsync(int id, BookRequestDto requestDto)
     {
         var book = await Context.Books
             .Include(b => b.Image)
@@ -139,7 +148,7 @@ public class BookService(BookHubDbContext context) : BaseService<BookHubDbContex
         
         await SaveAsync();
         
-        return BookMapper.ToDetailDto(book);
+        return BookMapper.ToDto(book);
     }
 
     private async Task ValidateRelatedEntitiesExistAsync(BookRequestDto requestDto)
@@ -147,7 +156,7 @@ public class BookService(BookHubDbContext context) : BaseService<BookHubDbContex
         var errors = new List<string>();
 
         // Validate Authors
-        if (requestDto.AuthorIds.Any())
+        if (requestDto.AuthorIds.Count != 0)
         {
             var existingAuthorIds = await Context.Authors
                 .Where(a => requestDto.AuthorIds.Contains(a.Id))
@@ -163,7 +172,7 @@ public class BookService(BookHubDbContext context) : BaseService<BookHubDbContex
         }
 
         // Validate Genres
-        if (requestDto.GenreIds.Any())
+        if (requestDto.GenreIds.Count != 0)
         {
             var existingGenreIds = await Context.Genres
                 .Where(g => requestDto.GenreIds.Contains(g.Id))
@@ -178,7 +187,7 @@ public class BookService(BookHubDbContext context) : BaseService<BookHubDbContex
             }
         }
 
-        // Validate Publishers
+        // Validate Publisher
         if (requestDto.PublisherId > 0)
         {
             var publisherExists = await Context.Publishers
@@ -200,7 +209,7 @@ public class BookService(BookHubDbContext context) : BaseService<BookHubDbContex
             }
         }
 
-        if (errors.Any())
+        if (errors.Count != 0)
         {
             throw new ArgumentException($"Validation failed: {string.Join("; ", errors)}");
         }
@@ -209,7 +218,7 @@ public class BookService(BookHubDbContext context) : BaseService<BookHubDbContex
     private async Task AssociateRelatedEntitiesAsync(Book book, BookRequestDto requestDto)
     {
         // Load and associate Authors
-        if (requestDto.AuthorIds.Any())
+        if (requestDto.AuthorIds.Count != 0)
         {
             var authors = await Context.Authors
                 .Where(a => requestDto.AuthorIds.Contains(a.Id))
@@ -218,7 +227,7 @@ public class BookService(BookHubDbContext context) : BaseService<BookHubDbContex
         }
 
         // Load and associate Genres
-        if (requestDto.GenreIds.Any())
+        if (requestDto.GenreIds.Count != 0)
         {
             var genres = await Context.Genres
                 .Where(g => requestDto.GenreIds.Contains(g.Id))
@@ -227,7 +236,7 @@ public class BookService(BookHubDbContext context) : BaseService<BookHubDbContex
         }
     }
 
-    public async Task<bool> DeleteBookAsync(int id)
+    public async Task<bool> DeleteAsync(int id)
     {
         var book = await Context.Books.FirstOrDefaultAsync(b => b.Id == id);
         if (book == null)

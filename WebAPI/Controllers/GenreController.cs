@@ -1,5 +1,5 @@
-﻿using BusinessLayer.Models.Common;
-using BusinessLayer.Models.Genre.Requests;
+﻿using BusinessLayer.Models.Genre.Requests;
+using BusinessLayer.Models.Genre.Responses;
 using BusinessLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,21 +7,10 @@ namespace WebAPI.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class GenreController(IGenreService genreService) : Controller
+public class GenreController : BaseController<GenreDto, GenreRequestDto, GenreRequestDto, IGenreService>
 {
-    [HttpGet]
-    [Route("list")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetGenres([FromQuery] PagedRequestDto pagedRequest)
+    public GenreController(IGenreService genreService) : base(genreService)
     {
-        if (!ModelState.IsValid)
-        {
-            return ValidationProblem(ModelState);
-        }
-
-        var result = await genreService.GetGenresAsync(pagedRequest.Limit, pagedRequest.Offset);
-        return Ok(result);
     }
 
     [HttpGet]
@@ -35,88 +24,23 @@ public class GenreController(IGenreService genreService) : Controller
             return ValidationProblem(ModelState);
         }
 
-        var result = await genreService.SearchGenresAsync(searchDto);
+        var result = await Service.SearchGenresAsync(searchDto);
+        
         return Ok(result);
     }
 
     [HttpGet]
-    [Route("details/{id:int}")]
+    [Route("books/{id:int}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetGenreWithBooks(int id)
     {
-        var genre = await genreService.GetGenreWithBooksAsync(id);
+        var genre = await Service.GetGenreWithBooksAsync(id);
         if (genre == null)
         {
             return NotFound();
         }
 
         return Ok(genre);
-    }
-
-    [HttpGet]
-    [Route("{id:int}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetGenreById(int id)
-    {
-        var genre = await genreService.GetGenreByIdAsync(id);
-        if (genre == null)
-        {
-            return NotFound();
-        }
-
-        return Ok(genre);
-    }
-
-    [HttpPost]
-    [Route("")]
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreateGenre([FromBody] GenreRequestDto requestDto)
-    {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
-        var genre = await genreService.CreateGenreAsync(requestDto);
-        return CreatedAtAction(nameof(GetGenreById), new { id = genre.Id }, genre);
-    }
-
-    [HttpPut]
-    [Route("{id:int}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> UpdateGenre(int id, [FromBody] GenreRequestDto requestDto)
-    {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
-        var genre = await genreService.UpdateGenreAsync(id, requestDto);
-        if (genre == null)
-        {
-            return NotFound();
-        }
-
-        return Ok(genre);
-    }
-
-    [HttpDelete]
-    [Route("{id:int}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> DeleteGenre(int id)
-    {
-        var result = await genreService.DeleteGenreAsync(id);
-        if (!result)
-        {
-            return NotFound();
-        }
-
-        return NoContent();
     }
 }

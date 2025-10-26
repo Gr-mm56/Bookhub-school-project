@@ -6,15 +6,10 @@ namespace WebAPI.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public abstract class BaseController<TEntityDto, TCreateDto, TUpdateDto, TService> : Controller
+public abstract class BaseController<TEntityDto, TCreateDto, TUpdateDto, TService>(TService service) : Controller
     where TService : ICrudService<TEntityDto, TCreateDto, TUpdateDto>
 {
-    protected readonly TService _service;
-
-    protected BaseController(TService service)
-    {
-        _service = service;
-    }
+    protected readonly TService Service = service;
 
     [HttpGet]
     [Route("list")]
@@ -25,7 +20,7 @@ public abstract class BaseController<TEntityDto, TCreateDto, TUpdateDto, TServic
         if (!ModelState.IsValid)
             return ValidationProblem(ModelState);
 
-        var result = await _service.GetAllAsync(pagedRequest.Limit, pagedRequest.Offset);
+        var result = await Service.GetAllAsync(pagedRequest.Limit, pagedRequest.Offset);
         return result.Items.Any() ? Ok(result) : NoContent();
     }
 
@@ -39,7 +34,7 @@ public abstract class BaseController<TEntityDto, TCreateDto, TUpdateDto, TServic
         if (id <= 0)
             return BadRequest();
 
-        var entity = await _service.GetByIdAsync(id);
+        var entity = await Service.GetByIdAsync(id);
         return entity == null ? NotFound() : Ok(entity);
     }
 
@@ -50,13 +45,18 @@ public abstract class BaseController<TEntityDto, TCreateDto, TUpdateDto, TServic
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
-
-        await _service.CreateAsync(dto);
-
-        return Created();
+        try
+        {
+            await Service.CreateAsync(dto);
+            return Created();
+        }
+        catch (Exception)
+        {
+            return BadRequest();
+        }
     }
 
-    [HttpPut("{id}")]
+    [HttpPut("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -64,9 +64,15 @@ public abstract class BaseController<TEntityDto, TCreateDto, TUpdateDto, TServic
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
-
-        var updated = await _service.UpdateAsync(id, dto);
-        return updated == null ? NotFound() : Ok(updated);
+        try
+        {
+            var updated = await Service.UpdateAsync(id, dto);
+            return updated == null ? NotFound() : Ok(updated);
+        }
+        catch (Exception)
+        {
+            return BadRequest();
+        }
     }
 
     [HttpDelete]
@@ -79,7 +85,7 @@ public abstract class BaseController<TEntityDto, TCreateDto, TUpdateDto, TServic
         if (id <= 0)
             return BadRequest();
 
-        bool deleted = await _service.DeleteAsync(id);
+        var deleted = await Service.DeleteAsync(id);
         return deleted ? NoContent() : NotFound();
     }
 }
