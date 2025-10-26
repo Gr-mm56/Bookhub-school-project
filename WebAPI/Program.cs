@@ -75,7 +75,7 @@ app.UseMiddleware<TokenAuthenticationMiddleware>();
 // Configure the HTTP request pipeline.
 
 app.UseAuthorization();
-
+app.UseMiddleware<JsonXmlMiddleware>();
 app.MapControllers();
 
 Console.WriteLine($"Swagger UI available at: http://localhost:5000/swagger/index.html");
