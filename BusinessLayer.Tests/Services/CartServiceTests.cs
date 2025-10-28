@@ -238,8 +238,10 @@ public class CartServiceTests
         };
 
         // Act & Assert
-        var updated = await cartService.UpdateAsync(created.Id, updateDto); // Non-existing cart ID
-        Assert.Null(updated);
+        await Assert.ThrowsAsync<ArgumentException>(async () =>
+        {
+            await cartService.UpdateAsync(created.Id, updateDto);
+        });
     }
     [Fact]
     public async Task DeleteCart_ExistingId_ReturnsTrue()
