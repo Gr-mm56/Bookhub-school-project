@@ -4,7 +4,6 @@ using BusinessLayer.Models.Rating.Requests;
 using BusinessLayer.Models.Rating.Responses;
 using BusinessLayer.Services.Interfaces;
 using DataAccessLayer.Context;
-using DataAccessLayer.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLayer.Services.Implementations;
@@ -15,7 +14,7 @@ public class RatingService : BaseService<BookHubDbContext>, IRatingService
     {
     }
 
-    public async Task<PagedResultDto<RatingDto>> GetRatingsAsync(int limit = 20, int offset = 0)
+    public async Task<PagedResultDto<RatingDto>> GetAllAsync(int limit = 20, int offset = 0)
     {
         var query = Context.Ratings
             .AsNoTracking()
@@ -24,13 +23,13 @@ public class RatingService : BaseService<BookHubDbContext>, IRatingService
         return await PageAsync(query, limit, offset, RatingMapper.ToDtoList);
     }
 
-    public async Task<RatingDto?> GetRatingByIdAsync(int id)
+    public async Task<RatingDetailDto?> GetByIdAsync(int id)
     {
         var rating = await Context.Ratings
             .AsNoTracking()
             .FirstOrDefaultAsync(r => r.Id == id);
 
-        return rating != null ? RatingMapper.ToDto(rating) : null;
+        return rating != null ? RatingMapper.ToDetailDto(rating) : null;
     }
 
     public async Task<RatingDetailDto?> GetRatingDetailAsync(int id)
@@ -76,7 +75,7 @@ public class RatingService : BaseService<BookHubDbContext>, IRatingService
         return await PageAsync(query, searchDto.Limit, searchDto.Offset, RatingMapper.ToDtoList);
     }
 
-    public async Task<RatingDto> CreateRatingAsync(RatingRequestDto requestDto)
+    public async Task<RatingDto> CreateAsync(RatingRequestDto requestDto)
     {
         // Validate that User and Book exist
         await ValidateRelatedEntitiesExistAsync(requestDto);
@@ -98,7 +97,7 @@ public class RatingService : BaseService<BookHubDbContext>, IRatingService
         return RatingMapper.ToDto(rating);
     }
 
-    public async Task<RatingDto?> UpdateRatingAsync(int id, RatingRequestDto requestDto)
+    public async Task<RatingDto?> UpdateAsync(int id, RatingRequestDto requestDto)
     {
         var rating = await Context.Ratings.FirstOrDefaultAsync(r => r.Id == id);
         if (rating == null)
@@ -125,7 +124,7 @@ public class RatingService : BaseService<BookHubDbContext>, IRatingService
         return RatingMapper.ToDto(rating);
     }
 
-    public async Task<bool> DeleteRatingAsync(int id)
+    public async Task<bool> DeleteAsync(int id)
     {
         var rating = await Context.Ratings.FirstOrDefaultAsync(r => r.Id == id);
         if (rating == null)

@@ -15,7 +15,7 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
     {
     }
 
-    public async Task<PagedResultDto<CartDto>> GetCartsAsync(int limit = 20, int offset = 0)
+    public async Task<PagedResultDto<CartDto>> GetAllAsync(int limit = 20, int offset = 0)
     {
         var query = Context.Carts
             .AsNoTracking()
@@ -24,17 +24,16 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
         return await PageAsync(query, limit, offset, CartMapper.ToDtoList);
     }
 
-    public async Task<CartDto?> GetCartByIdAsync(int id)
+    public async Task<CartDetailDto?> GetByIdAsync(int id)
     {
         var cart = await Context.Carts
             .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Id == id);
 
-        return cart != null ? CartMapper.ToDto(cart) : null;
-
+        return cart != null ? CartMapper.ToDetailDto(cart) : null;
     }
 
-    public async Task<CartDto> CreateCartAsync(CartCreateDto cartCreateDto)
+    public async Task<CartDto> CreateAsync(CartCreateDto cartCreateDto)
     {
         Cart cart = CartMapper.CreateDtoToEntity(cartCreateDto);
 
@@ -42,10 +41,9 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
         await SaveAsync();
 
         return CartMapper.ToDto(cart);
-
     }
 
-    public async Task<bool> DeleteCartAsync(int id)
+    public async Task<bool> DeleteAsync(int id)
     {
         Cart? cart = await Context.Carts.FirstOrDefaultAsync(g => g.Id == id);
         if (cart == null)
@@ -53,10 +51,11 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
 
         Context.Carts.Remove(cart);
         await SaveAsync();
+
         return true;
     }
 
-    public async Task<CartDto?> UpdateCartAsync(int id, CartUpdateDto cartUpdateDto)
+    public async Task<CartDto?> UpdateAsync(int id, CartUpdateDto cartUpdateDto)
     {
         Cart? cart = await Context.Carts.FirstOrDefaultAsync(u => u.Id == id);
         if (cart == null)

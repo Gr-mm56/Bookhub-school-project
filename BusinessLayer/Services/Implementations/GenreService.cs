@@ -14,7 +14,7 @@ public class GenreService : BaseService<BookHubDbContext>, IGenreService
     {
     }
 
-    public async Task<PagedResultDto<GenreDto>> GetGenresAsync(int limit = 20, int offset = 0)
+    public async Task<PagedResultDto<GenreDto>> GetAllAsync(int limit = 20, int offset = 0)
     {
         var query = Context.Genres
             .AsNoTracking()
@@ -23,13 +23,13 @@ public class GenreService : BaseService<BookHubDbContext>, IGenreService
         return await PageAsync(query, limit, offset, GenreMapper.ToDtoList);
     }
 
-    public async Task<GenreDto?> GetGenreByIdAsync(int id)
+    public async Task<GenreDetailDto?> GetByIdAsync(int id)
     {
         var genre = await Context.Genres
             .AsNoTracking()
             .FirstOrDefaultAsync(g => g.Id == id);
-        
-        return genre != null ? GenreMapper.ToDto(genre) : null;
+
+        return genre != null ? GenreMapper.ToDetailDto(genre) : null;
     }
 
     public async Task<GenreDetailDto?> GetGenreWithBooksAsync(int id)
@@ -38,7 +38,7 @@ public class GenreService : BaseService<BookHubDbContext>, IGenreService
             .AsNoTracking()
             .Include(g => g.Books)
             .FirstOrDefaultAsync(g => g.Id == id);
-        
+
         return genre != null ? GenreMapper.ToDetailDto(genre) : null;
     }
 
@@ -53,17 +53,17 @@ public class GenreService : BaseService<BookHubDbContext>, IGenreService
         return await PageAsync(query, searchDto.Limit, searchDto.Offset, GenreMapper.ToDtoList);
     }
 
-    public async Task<GenreDto> CreateGenreAsync(GenreRequestDto requestDto)
+    public async Task<GenreDto> CreateAsync(GenreRequestDto requestDto)
     {
         var genre = GenreMapper.ToEntity(requestDto);
-        
+
         await Context.Genres.AddAsync(genre);
         await SaveAsync();
-        
+
         return GenreMapper.ToDto(genre);
     }
 
-    public async Task<GenreDto?> UpdateGenreAsync(int id, GenreRequestDto requestDto)
+    public async Task<GenreDto?> UpdateAsync(int id, GenreRequestDto requestDto)
     {
         var genre = await Context.Genres.FirstOrDefaultAsync(g => g.Id == id);
         if (genre == null)
@@ -71,11 +71,11 @@ public class GenreService : BaseService<BookHubDbContext>, IGenreService
 
         GenreMapper.UpdateEntity(genre, requestDto);
         await SaveAsync();
-        
+
         return GenreMapper.ToDto(genre);
     }
 
-    public async Task<bool> DeleteGenreAsync(int id)
+    public async Task<bool> DeleteAsync(int id)
     {
         var genre = await Context.Genres.FirstOrDefaultAsync(g => g.Id == id);
         if (genre == null)
