@@ -35,6 +35,9 @@ public class PurchaseItemService : BaseService<BookHubDbContext>, IPurchaseItemS
 
     public async Task<PurchaseItemDto> CreateAsync(PurchaseItemCreateDto purchaseItemCreateDto)
     {
+        // Validate that Cart and Book exist
+        await ValidateRelatedEntitiesExistAsync(purchaseItemCreateDto);
+
         PurchaseItem purchaseItem = PurchaseItemMapper.CreateDtoToEntity(purchaseItemCreateDto);
 
         await Context.PurchaseItems.AddAsync(purchaseItem);
@@ -65,5 +68,29 @@ public class PurchaseItemService : BaseService<BookHubDbContext>, IPurchaseItemS
         await SaveAsync();
 
         return PurchaseItemMapper.ToDto(purchaseItem);
+    }
+
+    private async Task ValidateRelatedEntitiesExistAsync(PurchaseItemCreateDto purchaseItemDto)
+    {
+        var errors = new List<string>();
+
+        // Validate Cart exists
+        var cartExists = await Context.Carts.AnyAsync(u => u.Id == purchaseItemDto.CartId);
+        if (!cartExists)
+        {
+            errors.Add($"Invalid User ID: {purchaseItemDto.CartId}");
+        }
+
+        // Validate Book exists
+        var bookExists = await Context.Books.AnyAsync(b => b.Id == purchaseItemDto.BookId);
+        if (!bookExists)
+        {
+            errors.Add($"Invalid Book ID: {purchaseItemDto.BookId}");
+        }
+
+        if (errors.Any())
+        {
+            throw new ArgumentException($"Validation failed: {string.Join("; ", errors)}");
+        }
     }
 }

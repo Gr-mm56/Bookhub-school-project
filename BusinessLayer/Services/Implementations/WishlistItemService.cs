@@ -35,6 +35,9 @@ public class WishlistItemService : BaseService<BookHubDbContext>, IWishlistItemS
 
     public async Task<WishlistItemDetailDto> CreateAsync(WishlistItemCreateDto wishlistItemCreateDto)
     {
+        // Validate that User and Book exist
+        await ValidateRelatedEntitiesExistAsync(wishlistItemCreateDto);
+
         WishlistItem wishlistItem = WishlistItemMapper.CreateDtoToEntity(wishlistItemCreateDto);
 
         await Context.WishlistItems.AddAsync(wishlistItem);
@@ -59,5 +62,29 @@ public class WishlistItemService : BaseService<BookHubDbContext>, IWishlistItemS
     {
         // Wishlist items cannot be updated.
         return Task.FromResult<WishlistItemDetailDto?>(null);
+    }
+
+    private async Task ValidateRelatedEntitiesExistAsync(WishlistItemCreateDto wishlistItemDto)
+    {
+        var errors = new List<string>();
+
+        // Validate User exists
+        var userExists = await Context.Users.AnyAsync(u => u.Id == wishlistItemDto.UserId);
+        if (!userExists)
+        {
+            errors.Add($"Invalid User ID: {wishlistItemDto.UserId}");
+        }
+
+        // Validate Book exists
+        var bookExists = await Context.Books.AnyAsync(b => b.Id == wishlistItemDto.BookId);
+        if (!bookExists)
+        {
+            errors.Add($"Invalid Book ID: {wishlistItemDto.BookId}");
+        }
+
+        if (errors.Any())
+        {
+            throw new ArgumentException($"Validation failed: {string.Join("; ", errors)}");
+        }
     }
 }

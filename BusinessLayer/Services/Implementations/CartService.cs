@@ -35,6 +35,9 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
 
     public async Task<CartDto> CreateAsync(CartCreateDto cartCreateDto)
     {
+        // Validate that User exists
+        await ValidateRelatedEntitiesExistAsync(cartCreateDto);
+
         Cart cart = CartMapper.CreateDtoToEntity(cartCreateDto);
 
         await Context.Carts.AddAsync(cart);
@@ -65,5 +68,22 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
         await SaveAsync();
 
         return CartMapper.ToDto(cart);
+    }
+
+    private async Task ValidateRelatedEntitiesExistAsync(CartCreateDto cartDto)
+    {
+        var errors = new List<string>();
+
+        // Validate User exists
+        var userExists = await Context.Users.AnyAsync(u => u.Id == cartDto.UserId);
+        if (!userExists)
+        {
+            errors.Add($"Invalid User ID: {cartDto.UserId}");
+        }
+
+        if (errors.Any())
+        {
+            throw new ArgumentException($"Validation failed: {string.Join("; ", errors)}");
+        }
     }
 }
