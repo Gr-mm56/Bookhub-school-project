@@ -3,23 +3,31 @@ using BusinessLayer.Services.Interfaces;
 using DataAccessLayer.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using TestUtilities.Data;
 
 namespace TestUtilities.MockedObjects;
 
 public class MockedDependencyInjectionBuilder
 {
-    private static string RandomDbName => Guid.NewGuid().ToString();
     private IServiceCollection _serviceCollection = new ServiceCollection();
 
-    public MockedDependencyInjectionBuilder()
-    {
-    }
-
-    public MockedDependencyInjectionBuilder AddMockedDBContext()
+    public MockedDependencyInjectionBuilder AddMockedDbContext()
     {
         _serviceCollection = _serviceCollection
             .AddDbContext<BookHubDbContext>(options => options
-                .UseInMemoryDatabase(RandomDbName));
+                .UseInMemoryDatabase(MockedDbContext.RandomDbName));
+
+        return this;
+    }
+
+    // Add a seeded DbContext instance (uses TestDataHelper via MockedDbContext.CreateFromOptions)
+    public MockedDependencyInjectionBuilder AddSeededDbContext()
+    {
+        var options = MockedDbContext.GenerateNewInMemoryDbContextOptions();
+        var seededContext = MockedDbContext.CreateFromOptions(options);
+
+        _serviceCollection = _serviceCollection
+            .AddScoped<BookHubDbContext>(_ => seededContext);
 
         return this;
     }
@@ -49,6 +57,7 @@ public class MockedDependencyInjectionBuilder
 
         return this;
     }
+    
 
     public ServiceProvider Create()
     {

@@ -7,12 +7,7 @@ namespace BusinessLayer.Tests.Services;
 
 public class CartServiceTests
 {
-    private MockedDependencyInjectionBuilder _serviceProviderBuilder;
-
-    public CartServiceTests()
-    {
-        _serviceProviderBuilder = new MockedDependencyInjectionBuilder().AddMockedDBContext().AddServices();
-    }
+    private readonly MockedDependencyInjectionBuilder _serviceProviderBuilder = new MockedDependencyInjectionBuilder().AddServices().AddSeededDbContext();
 
     [Fact]
     public async Task CreateCart_ValidInput_ReturnsCartDto()
@@ -56,12 +51,12 @@ public class CartServiceTests
         {
             UserId = 9999, // non-existing user
             TotalValue = 30.00,
-            OrderId = null,
+            OrderId = 54,
             OrderDate = null
         };
 
         // Act & Assert
-        await Assert.ThrowsAsync<Exception>(async () =>
+        await Assert.ThrowsAsync<ArgumentException>(async () =>
         {
             await cartService.CreateAsync(createDto);
         });
