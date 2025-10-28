@@ -35,6 +35,13 @@ public class UserService : BaseService<BookHubDbContext>, IUserService
 
     public async Task<UserDto> CreateAsync(UserCreateDto userCreateDto)
     {
+        // Validate that Image exists
+        var imageExists = await Context.Images.AnyAsync(u => u.Id == userCreateDto.ProfilePhotoId);
+        if (!imageExists)
+        {
+            throw new ArgumentException($"Invalid User ID: {userCreateDto.ProfilePhotoId}");
+        }
+
         User user = UserMapper.CreateDtoToEntity(userCreateDto);
 
         await Context.Users.AddAsync(user);
@@ -56,6 +63,13 @@ public class UserService : BaseService<BookHubDbContext>, IUserService
 
     public async Task<UserDto?> UpdateAsync(int id, UserUpdateDto userUpdateDto)
     {
+        // Validate that Image exists
+        var imageExists = await Context.Users.AnyAsync(u => u.Id == userUpdateDto.ProfilePhotoId);
+        if (!imageExists)
+        {
+            throw new ArgumentException($"Invalid User ID: {userUpdateDto.ProfilePhotoId}");
+        }
+
         User? user = await Context.Users.FirstOrDefaultAsync(u => u.Id == id);
         if (user == null)
             return null;
