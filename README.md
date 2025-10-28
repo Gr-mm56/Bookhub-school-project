@@ -87,6 +87,10 @@ You can authenticate yourself by clicking the 'Authorize' button with a lock ico
 #### Logging
 Added two middleware components — RequestLoggingMiddleware for logging every incoming request and RequestTimingMiddleware for measuring request processing time, enabling easy monitoring of API activity and performance.
 
+#### XML responses
+The API supports XML responses in addition to JSON. To receive XML responses, set the `Accept` header in your request to `application/xml`.
+
+
 todo: Business Layer
 
 todo: Infrastructure layer

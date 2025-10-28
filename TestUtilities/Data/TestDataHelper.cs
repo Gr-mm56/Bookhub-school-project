@@ -1,52 +1,10 @@
 ﻿using DataAccessLayer.Entities;
-using Microsoft.EntityFrameworkCore;
 
-namespace DataAccessLayer.Context;
+namespace TestUtilities.Data;
 
-public static class DataInitializer
+public class TestDataHelper
 {
-    public static void Seed(this ModelBuilder modelBuilder)
-    {
-        var images = PrepareImageModels();
-        modelBuilder.Entity<Image>().HasData(AddDates(images));
-
-        var authors = PrepareAuthorModels();
-        modelBuilder.Entity<Author>().HasData(AddDates(authors));
-
-        var publishers = PreparePublisherModels();
-        modelBuilder.Entity<Publisher>().HasData(AddDates(publishers));
-
-        var genres = PrepareGenreModels();
-        modelBuilder.Entity<Genre>().HasData(AddDates(genres));
-
-        var books = PrepareBookModels();
-        modelBuilder.Entity<Book>().HasData(AddDates(books));
-
-        var users = PrepareUserModels();
-        modelBuilder.Entity<User>().HasData(AddDates(users));
-
-        var ratings = PrepareRatingModels();
-        modelBuilder.Entity<Rating>().HasData(AddDates(ratings));
-
-        var carts = PrepareCartModels();
-        modelBuilder.Entity<Cart>().HasData(AddDates(carts));
-
-        var purchaseItems = PreparePurchaseItemModels();
-        modelBuilder.Entity<PurchaseItem>().HasData(AddDates(purchaseItems));
-
-        var wishlistItems = PrepareWishlistItemModels();
-        modelBuilder.Entity<WishlistItem>().HasData(AddDates(wishlistItems));
-
-        var bookAuthors = PrepareBookAuthorRelationships();
-        modelBuilder.Entity<RelBookAuthor>().HasData(bookAuthors);
-        
-        var bookGenres = PrepareBookGenreRelationships();
-        modelBuilder.Entity<RelBookGenre>().HasData(bookGenres);
-
-
-    }
-
-    private static List<Genre> PrepareGenreModels()
+    public static List<Genre> GetGenres()
     {
         return
         [
@@ -68,7 +26,7 @@ public static class DataInitializer
         ];
     }
 
-    private static List<Book> PrepareBookModels()
+    public static List<Book> GetBooks()
     {
         return
         [
@@ -109,12 +67,9 @@ public static class DataInitializer
             }
         ];
     }
-    
-    
 
-    private static List<User> PrepareUserModels()
+    public static List<User> GetUsers()
     {
-        // TODO seed images
         return
         [
             new User
@@ -170,7 +125,7 @@ public static class DataInitializer
         ];
     }
 
-    private static List<Rating> PrepareRatingModels()
+    public static List<Rating> GetRatings()
     {
         return
         [
@@ -189,10 +144,10 @@ public static class DataInitializer
                 BookId = 2,
                 UserId = 2
             }
-        ];
+        ]; 
     }
 
-    private static List<Cart> PrepareCartModels()
+    public static List<Cart> GetCarts()
     {
         var seedDate = new DateTime(2025, 09, 15);
 
@@ -241,7 +196,7 @@ public static class DataInitializer
         ];
     }
 
-    private static List<PurchaseItem> PreparePurchaseItemModels()
+    public static List<PurchaseItem> GetPurchaseItems()
     {
         return
         [
@@ -283,7 +238,7 @@ public static class DataInitializer
         ];
     }
 
-    private static List<WishlistItem> PrepareWishlistItemModels()
+    public static List<WishlistItem> GetWishlistItems()
     {
         return
         [
@@ -317,10 +272,9 @@ public static class DataInitializer
                 UserId = 4,
                 BookId = 4
             }
-        ];
+        ]; 
     }
-
-    private static List<T> AddDates<T>(List<T> data) where T : BaseEntity
+    public static List<T> AddDates<T>(List<T> data) where T : BaseEntity
     {
         var creationDate = new DateTime(2025, 09, 16);
         var updateDate = new DateTime(2025, 09, 17);
@@ -334,7 +288,7 @@ public static class DataInitializer
         return data;
     }
 
-    private static List<Image> PrepareImageModels()
+    public static List<Image> GetImages()
     {
         return
         [
@@ -353,7 +307,7 @@ public static class DataInitializer
         ];
     }
 
-    private static List<Author> PrepareAuthorModels()
+    public static List<Author> GetAuthors()
     {
         return
         [
@@ -374,7 +328,7 @@ public static class DataInitializer
         ];
     }
 
-    private static List<Publisher> PreparePublisherModels()
+    public static List<Publisher> GetPublishers()
     {
         return
         [
@@ -395,7 +349,7 @@ public static class DataInitializer
         ];
     }
 
-    private static List<RelBookGenre> PrepareBookGenreRelationships()
+    public static List<RelBookGenre> GetRelBookGenres()
     {
         return
         [
@@ -406,20 +360,17 @@ public static class DataInitializer
 
         ];
     }
-    private static List<RelBookAuthor> PrepareBookAuthorRelationships()
+
+    public static List<RelBookAuthor> GetRelBookAuthors()
     {
         return
         [
-            // Tolkien's books
             new RelBookAuthor { BookId = 1, AuthorId = 1 },
             new RelBookAuthor { BookId = 2, AuthorId = 1 },
             new RelBookAuthor { BookId = 3, AuthorId = 1 },
-        
-            // Add fictional collaborations to demonstrate many-to-many
-            // Book 1 has both Tolkien and Rowling as co-authors (fictional example)
+
             new RelBookAuthor { BookId = 1, AuthorId = 2 },
-        
-            // Book 3 also has a secondary author (fictional example)
+
             new RelBookAuthor { BookId = 3, AuthorId = 2 }
         ];
     }
