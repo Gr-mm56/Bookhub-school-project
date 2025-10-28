@@ -38,6 +38,12 @@ public class PurchaseItemService : BaseService<BookHubDbContext>, IPurchaseItemS
         // Validate that Cart and Book exist
         await ValidateRelatedEntitiesExistAsync(purchaseItemCreateDto);
 
+        // Validate Count value
+        if (purchaseItemCreateDto.Count < 0)
+        {
+            throw new ArgumentException($"Invalid Count: {purchaseItemCreateDto.Count} - Cannot be negative");
+        }
+
         PurchaseItem purchaseItem = PurchaseItemMapper.CreateDtoToEntity(purchaseItemCreateDto);
 
         await Context.PurchaseItems.AddAsync(purchaseItem);
@@ -60,6 +66,12 @@ public class PurchaseItemService : BaseService<BookHubDbContext>, IPurchaseItemS
 
     public async Task<PurchaseItemDto?> UpdateAsync(int id, PurchaseItemUpdateDto purchaseItemUpdateDto)
     {
+        // Validate Count value
+        if (purchaseItemUpdateDto.Count < 0)
+        {
+            throw new ArgumentException($"Invalid Count: {purchaseItemUpdateDto.Count} - Cannot be negative");
+        }
+
         PurchaseItem? purchaseItem = await Context.PurchaseItems.FirstOrDefaultAsync(u => u.Id == id);
         if (purchaseItem == null)
             return null;

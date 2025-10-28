@@ -7,12 +7,7 @@ namespace BusinessLayer.Tests.Services;
 
 public class CartServiceTests
 {
-    private MockedDependencyInjectionBuilder _serviceProviderBuilder;
-
-    public CartServiceTests()
-    {
-        _serviceProviderBuilder = new MockedDependencyInjectionBuilder().AddMockedDBContext().AddServices();
-    }
+    private readonly MockedDependencyInjectionBuilder _serviceProviderBuilder = new MockedDependencyInjectionBuilder().AddServices().AddSeededDbContext();
 
     [Fact]
     public async Task CreateCart_ValidInput_ReturnsCartDto()
@@ -56,12 +51,12 @@ public class CartServiceTests
         {
             UserId = 9999, // non-existing user
             TotalValue = 30.00,
-            OrderId = null,
+            OrderId = 54,
             OrderDate = null
         };
 
         // Act & Assert
-        await Assert.ThrowsAsync<Exception>(async () =>
+        await Assert.ThrowsAsync<ArgumentException>(async () =>
         {
             await cartService.CreateAsync(createDto);
         });
@@ -75,14 +70,14 @@ public class CartServiceTests
 
         var createDto = new CartCreateDto
         {
-            UserId = 1, 
+            UserId = 1,
             TotalValue = -10.00,
             OrderId = null,
             OrderDate = null
         };
 
         // Act & Assert
-        await Assert.ThrowsAsync<Exception>(async () =>
+        await Assert.ThrowsAsync<ArgumentException>(async () =>
         {
             await cartService.CreateAsync(createDto);
         });
@@ -121,7 +116,7 @@ public class CartServiceTests
         var cartService = provider.GetRequiredService<ICartService>();
 
         // Act
-        var fetched = await cartService.GetByIdAsync(9999); 
+        var fetched = await cartService.GetByIdAsync(9999);
 
         // Assert
         Assert.Null(fetched);
@@ -153,7 +148,7 @@ public class CartServiceTests
         Assert.Equal(3, pagedResult.Items.Count());
         Assert.True(pagedResult.Total >= 5);
     }
-    
+
     [Fact]
     public async Task PutCart_ValidUpdate_ReturnsUpdatedCartDto()
     {
@@ -243,8 +238,10 @@ public class CartServiceTests
         };
 
         // Act & Assert
-        var updated = await cartService.UpdateAsync(created.Id, updateDto); // Non-existing cart ID
-        Assert.Null(updated);
+        await Assert.ThrowsAsync<ArgumentException>(async () =>
+        {
+            await cartService.UpdateAsync(created.Id, updateDto);
+        });
     }
     [Fact]
     public async Task DeleteCart_ExistingId_ReturnsTrue()

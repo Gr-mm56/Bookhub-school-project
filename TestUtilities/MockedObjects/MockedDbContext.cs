@@ -5,14 +5,14 @@ using TestUtilities.Data;
 
 namespace TestUtilities.MockedObjects;
 
-public class MockedDBContext
+public class MockedDbContext
 {
-    public static string RandomDBName => Guid.NewGuid().ToString();
+    public static string RandomDbName => Guid.NewGuid().ToString();
 
-    public static DbContextOptions<BookHubDbContext> GenerateNewInMemoryDBContextOptons()
+    public static DbContextOptions<BookHubDbContext> GenerateNewInMemoryDbContextOptions()
     {
         var dbContextOptions = new DbContextOptionsBuilder<BookHubDbContext>()
-            .UseInMemoryDatabase(RandomDBName)
+            .UseInMemoryDatabase(RandomDbName)
             .Options;
 
         return dbContextOptions;
@@ -21,17 +21,11 @@ public class MockedDBContext
     public static BookHubDbContext CreateFromOptions(DbContextOptions<BookHubDbContext> options)
     {
         var dbContextToMock = new BookHubDbContext(options);
+        PrepareData(dbContextToMock);
 
-        var dbContext = new MockedDbContextBuilder<BookHubDbContext>()
-            .UseDbContext(dbContextToMock)
-            .UseConstructorWithParameters(options)
-            .MockedDbContext;
-
-        PrepareData(dbContext);
-
-        return dbContext;
+        return dbContextToMock;
     }
-    public static void PrepareData(BookHubDbContext dbContext)
+    private static void PrepareData(BookHubDbContext dbContext)
     {
         dbContext.Images.AddRange(TestDataHelper.GetImages());
         dbContext.Authors.AddRange(TestDataHelper.GetAuthors());
