@@ -38,6 +38,9 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
         // Validate that User exists
         await ValidateRelatedEntitiesExistAsync(cartCreateDto);
 
+        // Validate other values
+        await ValidateValues(cartCreateDto.OrderId, cartCreateDto.TotalValue);
+
         Cart cart = CartMapper.CreateDtoToEntity(cartCreateDto);
 
         await Context.Carts.AddAsync(cart);
@@ -60,6 +63,9 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
 
     public async Task<CartDto?> UpdateAsync(int id, CartUpdateDto cartUpdateDto)
     {
+        // Validate other values
+        await ValidateValues(cartUpdateDto.OrderId, cartUpdateDto.TotalValue);
+
         Cart? cart = await Context.Carts.FirstOrDefaultAsync(u => u.Id == id);
         if (cart == null)
             return null;
@@ -72,18 +78,25 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
 
     private async Task ValidateRelatedEntitiesExistAsync(CartCreateDto cartDto)
     {
-        var errors = new List<string>();
-
         // Validate User exists
         var userExists = await Context.Users.AnyAsync(u => u.Id == cartDto.UserId);
         if (!userExists)
         {
-            errors.Add($"Invalid User ID: {cartDto.UserId}");
+            throw new ArgumentException($"Invalid User ID: {cartDto.UserId}");
+        }
+    }
+
+    private async Task ValidateValues(int? orderId, double totalValue)
+    {
+        // Validate values
+        if (orderId is < 0)
+        {
+            throw new ArgumentException($"Invalid Order ID: {orderId} - Cannot be negative");
         }
 
-        if (errors.Any())
+        if (totalValue < 0)
         {
-            throw new ArgumentException($"Validation failed: {string.Join("; ", errors)}");
+            throw new ArgumentException($"Invalid Total Value: {totalValue} - Cannot be negative");
         }
     }
 }

@@ -70,14 +70,14 @@ public class CartServiceTests
 
         var createDto = new CartCreateDto
         {
-            UserId = 1, 
+            UserId = 1,
             TotalValue = -10.00,
             OrderId = null,
             OrderDate = null
         };
 
         // Act & Assert
-        await Assert.ThrowsAsync<Exception>(async () =>
+        await Assert.ThrowsAsync<ArgumentException>(async () =>
         {
             await cartService.CreateAsync(createDto);
         });
@@ -116,7 +116,7 @@ public class CartServiceTests
         var cartService = provider.GetRequiredService<ICartService>();
 
         // Act
-        var fetched = await cartService.GetByIdAsync(9999); 
+        var fetched = await cartService.GetByIdAsync(9999);
 
         // Assert
         Assert.Null(fetched);
@@ -148,7 +148,7 @@ public class CartServiceTests
         Assert.Equal(3, pagedResult.Items.Count());
         Assert.True(pagedResult.Total >= 5);
     }
-    
+
     [Fact]
     public async Task PutCart_ValidUpdate_ReturnsUpdatedCartDto()
     {
