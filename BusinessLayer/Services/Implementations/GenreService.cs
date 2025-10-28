@@ -23,13 +23,13 @@ public class GenreService : BaseService<BookHubDbContext>, IGenreService
         return await PageAsync(query, limit, offset, GenreMapper.ToDtoList);
     }
 
-    public async Task<GenreDto?> GetByIdAsync(int id)
+    public async Task<GenreDetailDto?> GetByIdAsync(int id)
     {
         var genre = await Context.Genres
             .AsNoTracking()
             .FirstOrDefaultAsync(g => g.Id == id);
-        
-        return genre != null ? GenreMapper.ToDto(genre) : null;
+
+        return genre != null ? GenreMapper.ToDetailDto(genre) : null;
     }
 
     public async Task<GenreDetailDto?> GetGenreWithBooksAsync(int id)
@@ -38,7 +38,7 @@ public class GenreService : BaseService<BookHubDbContext>, IGenreService
             .AsNoTracking()
             .Include(g => g.Books)
             .FirstOrDefaultAsync(g => g.Id == id);
-        
+
         return genre != null ? GenreMapper.ToDetailDto(genre) : null;
     }
 
@@ -56,10 +56,10 @@ public class GenreService : BaseService<BookHubDbContext>, IGenreService
     public async Task<GenreDto> CreateAsync(GenreRequestDto requestDto)
     {
         var genre = GenreMapper.ToEntity(requestDto);
-        
+
         await Context.Genres.AddAsync(genre);
         await SaveAsync();
-        
+
         return GenreMapper.ToDto(genre);
     }
 
@@ -71,7 +71,7 @@ public class GenreService : BaseService<BookHubDbContext>, IGenreService
 
         GenreMapper.UpdateEntity(genre, requestDto);
         await SaveAsync();
-        
+
         return GenreMapper.ToDto(genre);
     }
 

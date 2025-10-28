@@ -31,7 +31,6 @@ public class WishlistItemService : BaseService<BookHubDbContext>, IWishlistItemS
             .FirstOrDefaultAsync(u => u.Id == id);
 
         return wishlistItem != null ? WishlistItemMapper.ToDetailDto(wishlistItem) : null;
-
     }
 
     public async Task<WishlistItemDetailDto> CreateAsync(WishlistItemCreateDto wishlistItemCreateDto)
@@ -42,7 +41,6 @@ public class WishlistItemService : BaseService<BookHubDbContext>, IWishlistItemS
         await SaveAsync();
 
         return WishlistItemMapper.ToDetailDto(wishlistItem);
-
     }
 
     public async Task<bool> DeleteAsync(int id)
@@ -53,6 +51,7 @@ public class WishlistItemService : BaseService<BookHubDbContext>, IWishlistItemS
 
         Context.WishlistItems.Remove(wishlistItem);
         await SaveAsync();
+
         return true;
     }
 

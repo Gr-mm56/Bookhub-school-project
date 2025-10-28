@@ -24,14 +24,13 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
         return await PageAsync(query, limit, offset, CartMapper.ToDtoList);
     }
 
-    public async Task<CartDto?> GetByIdAsync(int id)
+    public async Task<CartDetailDto?> GetByIdAsync(int id)
     {
         var cart = await Context.Carts
             .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Id == id);
 
-        return cart != null ? CartMapper.ToDto(cart) : null;
-
+        return cart != null ? CartMapper.ToDetailDto(cart) : null;
     }
 
     public async Task<CartDto> CreateAsync(CartCreateDto cartCreateDto)
@@ -42,7 +41,6 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
         await SaveAsync();
 
         return CartMapper.ToDto(cart);
-
     }
 
     public async Task<bool> DeleteAsync(int id)
@@ -53,6 +51,7 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
 
         Context.Carts.Remove(cart);
         await SaveAsync();
+
         return true;
     }
 

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace WebAPI.Controllers;
 
 public class WishlistItemController
-    : BaseController<WishlistItemDetailDto, WishlistItemCreateDto, WishlistItemCreateDto, IWishlistItemService>
+    : BaseController<WishlistItemDetailDto, WishlistItemDetailDto, WishlistItemCreateDto, WishlistItemCreateDto, IWishlistItemService>
 {
     public WishlistItemController(IWishlistItemService service) : base(service)
     {

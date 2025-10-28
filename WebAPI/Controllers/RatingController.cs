@@ -8,11 +8,11 @@ namespace WebAPI.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class RatingController : BaseController<RatingDto, RatingRequestDto, RatingRequestDto, IRatingService>
+public class RatingController : BaseController<RatingDto, RatingDetailDto, RatingRequestDto, RatingRequestDto, IRatingService>
 {
     public RatingController(IRatingService service): base(service)
     {
-        
+
     }
 
     [HttpGet]
@@ -40,6 +40,4 @@ public class RatingController : BaseController<RatingDto, RatingRequestDto, Rati
 
         return Ok(rating);
     }
-    
-
 }

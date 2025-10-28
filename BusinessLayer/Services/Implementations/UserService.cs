@@ -24,14 +24,13 @@ public class UserService : BaseService<BookHubDbContext>, IUserService
         return await PageAsync(query, limit, offset, UserMapper.ToDtoList);
     }
 
-    public async Task<UserDto?> GetByIdAsync(int id)
+    public async Task<UserDetailDto?> GetByIdAsync(int id)
     {
         var user = await Context.Users
             .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Id == id);
 
-        return user != null ? UserMapper.ToDto(user) : null;
-
+        return user != null ? UserMapper.ToDetailDto(user) : null;
     }
 
     public async Task<UserDto> CreateAsync(UserCreateDto userCreateDto)
@@ -42,7 +41,6 @@ public class UserService : BaseService<BookHubDbContext>, IUserService
         await SaveAsync();
 
         return UserMapper.ToDto(user);
-
     }
 
     public async Task<bool> DeleteAsync(int id)

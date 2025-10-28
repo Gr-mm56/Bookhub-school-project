@@ -24,14 +24,13 @@ public class PurchaseItemService : BaseService<BookHubDbContext>, IPurchaseItemS
         return await PageAsync(query, limit, offset, PurchaseItemMapper.ToDtoList);
     }
 
-    public async Task<PurchaseItemDto?> GetByIdAsync(int id)
+    public async Task<PurchaseItemDetailDto?> GetByIdAsync(int id)
     {
         var purchaseItem = await Context.PurchaseItems
             .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Id == id);
 
-        return purchaseItem != null ? PurchaseItemMapper.ToDto(purchaseItem) : null;
-
+        return purchaseItem != null ? PurchaseItemMapper.ToDetailDto(purchaseItem) : null;
     }
 
     public async Task<PurchaseItemDto> CreateAsync(PurchaseItemCreateDto purchaseItemCreateDto)
@@ -42,7 +41,6 @@ public class PurchaseItemService : BaseService<BookHubDbContext>, IPurchaseItemS
         await SaveAsync();
 
         return PurchaseItemMapper.ToDto(purchaseItem);
-
     }
 
     public async Task<bool> DeleteAsync(int id)
@@ -53,6 +51,7 @@ public class PurchaseItemService : BaseService<BookHubDbContext>, IPurchaseItemS
 
         Context.PurchaseItems.Remove(purchaseItem);
         await SaveAsync();
+
         return true;
     }
 

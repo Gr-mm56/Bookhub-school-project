@@ -7,7 +7,7 @@ namespace WebAPI.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class GenreController : BaseController<GenreDto, GenreRequestDto, GenreRequestDto, IGenreService>
+public class GenreController : BaseController<GenreDto, GenreDetailDto, GenreRequestDto, GenreRequestDto, IGenreService>
 {
     public GenreController(IGenreService genreService) : base(genreService)
     {
@@ -25,7 +25,7 @@ public class GenreController : BaseController<GenreDto, GenreRequestDto, GenreRe
         }
 
         var result = await Service.SearchGenresAsync(searchDto);
-        
+
         return Ok(result);
     }
 

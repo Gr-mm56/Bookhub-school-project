@@ -23,13 +23,13 @@ public class RatingService : BaseService<BookHubDbContext>, IRatingService
         return await PageAsync(query, limit, offset, RatingMapper.ToDtoList);
     }
 
-    public async Task<RatingDto?> GetByIdAsync(int id)
+    public async Task<RatingDetailDto?> GetByIdAsync(int id)
     {
         var rating = await Context.Ratings
             .AsNoTracking()
             .FirstOrDefaultAsync(r => r.Id == id);
 
-        return rating != null ? RatingMapper.ToDto(rating) : null;
+        return rating != null ? RatingMapper.ToDetailDto(rating) : null;
     }
 
     public async Task<RatingDetailDto?> GetRatingDetailAsync(int id)

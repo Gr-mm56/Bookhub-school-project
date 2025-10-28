@@ -4,8 +4,9 @@ using BusinessLayer.Models.Genre.Responses;
 
 namespace BusinessLayer.Services.Interfaces;
 
-public interface IGenreService : ICrudService<GenreDto, GenreRequestDto, GenreRequestDto>
+public interface IGenreService : ICrudService<GenreDto, GenreDetailDto, GenreRequestDto, GenreRequestDto>
 {
     Task<GenreDetailDto?> GetGenreWithBooksAsync(int id);
+
     Task<PagedResultDto<GenreDto>> SearchGenresAsync(GenreSearchDto searchDto);
 }

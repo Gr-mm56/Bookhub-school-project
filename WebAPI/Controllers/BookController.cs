@@ -7,13 +7,13 @@ namespace WebAPI.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class BookController: BaseController<BookDto, BookRequestDto, BookRequestDto, IBookService>
+public class BookController: BaseController<BookDto, BookDetailDto, BookRequestDto, BookRequestDto, IBookService>
 {
     public BookController(IBookService bookService) : base(bookService)
     {
-        
+
     }
-    
+
     [HttpGet]
     [Route("allDetails/{id:int}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -43,5 +43,4 @@ public class BookController: BaseController<BookDto, BookRequestDto, BookRequest
         var result = await Service.SearchBooksAsync(searchDto);
         return Ok(result);
     }
-    
 }

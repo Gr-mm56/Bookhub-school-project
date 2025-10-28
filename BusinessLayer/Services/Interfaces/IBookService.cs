@@ -4,8 +4,9 @@ using BusinessLayer.Models.Common;
 
 namespace BusinessLayer.Services.Interfaces;
 
-public interface IBookService : ICrudService<BookDto, BookRequestDto, BookRequestDto>
+public interface IBookService : ICrudService<BookDto, BookDetailDto, BookRequestDto, BookRequestDto>
 {
     Task<BookDetailDto?> GetBookDetailAsync(int id);
+
     Task<PagedResultDto<BookDetailDto>> SearchBooksAsync(BookSearchDto searchDto);
 }

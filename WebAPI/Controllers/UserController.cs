@@ -4,7 +4,7 @@ using BusinessLayer.Models.User.Responses;
 
 namespace WebAPI.Controllers;
 
-public class UserController : BaseController<UserDto, UserCreateDto, UserUpdateDto, IUserService>
+public class UserController : BaseController<UserDto, UserDetailDto, UserCreateDto, UserUpdateDto, IUserService>
 {
     public UserController(IUserService service) : base(service)
     {
