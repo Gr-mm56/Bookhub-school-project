@@ -154,23 +154,6 @@ public class AuthorService(BookHubDbContext context) : BaseService<BookHubDbCont
             return false;
         }
 
-        var booksToDelete = author.Books
-            .Where(book => book.Authors.Count == 1)
-            .ToList();
-
-        foreach (var book in booksToDelete)
-        {
-            if (book.Ratings != null)
-            {
-                foreach (var rating in book.Ratings.ToList())
-                {
-                    Context.Ratings.Remove(rating);
-                }
-            }
-            book.Genres?.Clear();
-            Context.Books.Remove(book);
-        }
-
         Context.Authors.Remove(author);
         await SaveAsync();
         return true;
