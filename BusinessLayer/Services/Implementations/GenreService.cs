@@ -67,7 +67,9 @@ public class GenreService : BaseService<BookHubDbContext>, IGenreService
     {
         var genre = await Context.Genres.FirstOrDefaultAsync(g => g.Id == id);
         if (genre == null)
+        {
             return null;
+        }
 
         GenreMapper.UpdateEntity(genre, requestDto);
         await SaveAsync();
@@ -79,7 +81,9 @@ public class GenreService : BaseService<BookHubDbContext>, IGenreService
     {
         var genre = await Context.Genres.FirstOrDefaultAsync(g => g.Id == id);
         if (genre == null)
+        {
             return false;
+        }
 
         Context.Genres.Remove(genre);
         await SaveAsync();

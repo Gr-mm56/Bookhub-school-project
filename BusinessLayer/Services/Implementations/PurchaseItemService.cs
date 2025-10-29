@@ -56,7 +56,9 @@ public class PurchaseItemService : BaseService<BookHubDbContext>, IPurchaseItemS
     {
         PurchaseItem? purchaseItem = await Context.PurchaseItems.FirstOrDefaultAsync(g => g.Id == id);
         if (purchaseItem == null)
+        {
             return false;
+        }
 
         Context.PurchaseItems.Remove(purchaseItem);
         await SaveAsync();
@@ -74,7 +76,9 @@ public class PurchaseItemService : BaseService<BookHubDbContext>, IPurchaseItemS
 
         PurchaseItem? purchaseItem = await Context.PurchaseItems.FirstOrDefaultAsync(u => u.Id == id);
         if (purchaseItem == null)
+        {
             return null;
+        }
 
         PurchaseItemMapper.UpdateEntity(purchaseItem, purchaseItemUpdateDto);
         await SaveAsync();

@@ -131,7 +131,9 @@ public class BookService : BaseService<BookHubDbContext>, IBookService
             .FirstOrDefaultAsync(b => b.Id == id);
 
         if (book == null)
+        {
             return null;
+        }
 
         // Validate that all provided IDs exist
         await ValidateRelatedEntitiesExistAsync(requestDto);
@@ -240,7 +242,9 @@ public class BookService : BaseService<BookHubDbContext>, IBookService
     {
         var book = await Context.Books.FirstOrDefaultAsync(b => b.Id == id);
         if (book == null)
+        {
             return false;
+        }
 
         Context.Books.Remove(book);
         await SaveAsync();

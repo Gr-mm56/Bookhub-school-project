@@ -19,7 +19,9 @@ public abstract class BaseController<TEntityDto, TEntityDetailDto, TCreateDto, T
     public virtual async Task<IActionResult> GetAll([FromQuery] PagedRequestDto pagedRequest)
     {
         if (!ModelState.IsValid)
+        {
             return ValidationProblem(ModelState);
+        }
 
         var result = await Service.GetAllAsync(pagedRequest.Limit, pagedRequest.Offset);
         return result.Items.Any() ? Ok(result) : NoContent();
@@ -33,7 +35,9 @@ public abstract class BaseController<TEntityDto, TEntityDetailDto, TCreateDto, T
     public virtual async Task<IActionResult> GetById(int id)
     {
         if (id <= 0)
+        {
             return BadRequest();
+        }
 
         var entity = await Service.GetByIdAsync(id);
         return entity == null ? NotFound() : Ok(entity);
@@ -45,7 +49,10 @@ public abstract class BaseController<TEntityDto, TEntityDetailDto, TCreateDto, T
     public virtual async Task<IActionResult> Create([FromBody] TCreateDto dto)
     {
         if (!ModelState.IsValid)
+        {
             return BadRequest(ModelState);
+        }
+
         try
         {
             await Service.CreateAsync(dto);
@@ -64,7 +71,10 @@ public abstract class BaseController<TEntityDto, TEntityDetailDto, TCreateDto, T
     public virtual async Task<IActionResult> Update(int id, [FromBody] TUpdateDto dto)
     {
         if (!ModelState.IsValid)
+        {
             return BadRequest(ModelState);
+        }
+
         try
         {
             var updated = await Service.UpdateAsync(id, dto);
@@ -84,7 +94,9 @@ public abstract class BaseController<TEntityDto, TEntityDetailDto, TCreateDto, T
     public virtual async Task<IActionResult> Delete(int id)
     {
         if (id <= 0)
+        {
             return BadRequest();
+        }
 
         var deleted = await Service.DeleteAsync(id);
         return deleted ? NoContent() : NotFound();

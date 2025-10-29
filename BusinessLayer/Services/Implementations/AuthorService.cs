@@ -69,7 +69,9 @@ public class AuthorService(BookHubDbContext context) : BaseService<BookHubDbCont
             .FirstOrDefaultAsync(a => a.Id == id);
 
         if (author == null)
+        {
             return null;
+        }
 
         // Validate that all provided IDs exist
         await ValidateRelatedEntitiesExistAsync(requestDto);

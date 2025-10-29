@@ -53,7 +53,9 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
     {
         Cart? cart = await Context.Carts.FirstOrDefaultAsync(g => g.Id == id);
         if (cart == null)
+        {
             return false;
+        }
 
         Context.Carts.Remove(cart);
         await SaveAsync();
@@ -68,7 +70,9 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
 
         Cart? cart = await Context.Carts.FirstOrDefaultAsync(u => u.Id == id);
         if (cart == null)
+        {
             return null;
+        }
 
         CartMapper.UpdateEntity(cart, cartUpdateDto);
         await SaveAsync();

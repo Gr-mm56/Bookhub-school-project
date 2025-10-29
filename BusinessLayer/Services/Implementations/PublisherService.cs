@@ -71,7 +71,9 @@ public class PublisherService(BookHubDbContext context) : BaseService<BookHubDbC
                 .FirstOrDefaultAsync(p => p.Id == id);
 
             if (publisher == null)
+            {
                 return null;
+            }
 
             // Validate that all provided IDs exist
             await ValidateRelatedEntitiesExistAsync(requestDto);

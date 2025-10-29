@@ -101,7 +101,9 @@ public class RatingService : BaseService<BookHubDbContext>, IRatingService
     {
         var rating = await Context.Ratings.FirstOrDefaultAsync(r => r.Id == id);
         if (rating == null)
+        {
             return null;
+        }
 
         // Validate that User and Book exist
         await ValidateRelatedEntitiesExistAsync(requestDto);
@@ -128,7 +130,9 @@ public class RatingService : BaseService<BookHubDbContext>, IRatingService
     {
         var rating = await Context.Ratings.FirstOrDefaultAsync(r => r.Id == id);
         if (rating == null)
+        {
             return false;
+        }
 
         Context.Ratings.Remove(rating);
         await SaveAsync();

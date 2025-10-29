@@ -48,7 +48,9 @@ public class ImageService(BookHubDbContext context) : BaseService<BookHubDbConte
             .FirstOrDefaultAsync(i => i.Id == id);
 
         if (image == null)
+        {
             return null;
+        }
 
         // Update properties
         ImageMapper.UpdateEntity(image, requestDto);

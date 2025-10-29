@@ -32,12 +32,12 @@ public class BookHubDbContext: DbContext
                     .HasOne<Genre>()
                     .WithMany()
                     .HasForeignKey(rel => rel.GenreId)
-                    .OnDelete(DeleteBehavior.Restrict), 
+                    .OnDelete(DeleteBehavior.Restrict),
                 j => j
                     .HasOne<Book>()
                     .WithMany()
                     .HasForeignKey(rel => rel.BookId)
-                    .OnDelete(DeleteBehavior.Cascade) 
+                    .OnDelete(DeleteBehavior.Cascade)
             );
 
         // Book M:N Author with cascade delete configuration
@@ -128,6 +128,13 @@ public class BookHubDbContext: DbContext
             .HasOne(r => r.User)
             .WithMany(u => u.Ratings)
             .HasForeignKey(r => r.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // User -> Image - On Delete Cascade
+        modelBuilder.Entity<User>()
+            .HasOne(u => u.ProfilePhoto)
+            .WithOne(i => i.User)
+            .HasForeignKey<User>(u => u.ProfilePhotoId)
             .OnDelete(DeleteBehavior.Cascade);
 
         // Cart -> PurchaseItem - On Delete Cascade
