@@ -5,8 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
 
-[Route("[controller]")]
-[ApiController]
 public class BookController: BaseController<BookDto, BookDetailDto, BookRequestDto, BookRequestDto, IBookService>
 {
     public BookController(IBookService bookService) : base(bookService)

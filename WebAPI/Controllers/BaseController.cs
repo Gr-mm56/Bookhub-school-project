@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace WebAPI.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("/api/[controller]")]
 public abstract class BaseController<TEntityDto, TEntityDetailDto, TCreateDto, TUpdateDto, TService>(TService service)
     : Controller
     where TService : ICrudService<TEntityDto, TEntityDetailDto, TCreateDto, TUpdateDto>

@@ -5,8 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
 
-[Route("[controller]")]
-[ApiController]
 public class GenreController : BaseController<GenreDto, GenreDetailDto, GenreRequestDto, GenreRequestDto, IGenreService>
 {
     public GenreController(IGenreService genreService) : base(genreService)

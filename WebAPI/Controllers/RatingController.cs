@@ -6,8 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
 
-[Route("[controller]")]
-[ApiController]
 public class RatingController : BaseController<RatingDto, RatingDetailDto, RatingRequestDto, RatingRequestDto, IRatingService>
 {
     public RatingController(IRatingService service): base(service)
