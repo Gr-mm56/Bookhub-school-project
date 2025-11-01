@@ -12,8 +12,9 @@ public class RatingDetailDto
 
     [Required]
     public required BookDto Book { get; set; }
+    [Required]
 
-     public UserDto User { get; set; }
+     public required UserDto User { get; set; }
 
      public DateTime CreatedAt { get; set; }
 

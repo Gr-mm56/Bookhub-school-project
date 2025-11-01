@@ -1,9 +1,5 @@
-﻿using BusinessLayer.Models.Author.Responses;
-using BusinessLayer.Models.Book.Requests;
+﻿using BusinessLayer.Models.Book.Requests;
 using BusinessLayer.Models.Book.Responses;
-using BusinessLayer.Models.Genre.Responses;
-using BusinessLayer.Models.Image.Responses;
-using BusinessLayer.Models.Publisher.Responses;
 using DataAccessLayer.Entities;
 
 namespace BusinessLayer.Mappers;
@@ -22,13 +18,7 @@ public static class BookMapper
             Price = book.Price,
             CreatedAt = book.CreatedAt,
             UpdatedAt = book.UpdatedAt,
-            Image = book.Image != null
-                ? new ImageDto
-                {
-                    Id = book.Image.Id,
-                    FileUrl = book.Image.FileUrl
-                }
-                : null
+            Image = book.Image != null ? ImageMapper.ToDto(book.Image) : null
         };
     }
 
@@ -45,31 +35,10 @@ public static class BookMapper
             ISBN = book.ISBN,
             CreatedAt = book.CreatedAt,
             UpdatedAt = book.UpdatedAt,
-            Image = book.Image != null
-                ? new ImageDto
-                {
-                    Id = book.Image.Id,
-                    FileUrl = book.Image.FileUrl
-                }
-                : null,
-            Authors = book.Authors.Select(a => new AuthorDto
-            {
-                Id = a.Id,
-                Name = a.Name,
-                Surname = a.Surname
-            }).ToList(),
-            Genres = book.Genres.Select(g => new GenreDto
-            {
-                Id = g.Id,
-                Name = g.Name
-            }).ToList(),
-            Publisher = book.Publisher != null 
-                ? new PublisherDto
-                {
-                    Id = book.Publisher.Id,
-                    Name = book.Publisher.Name
-                } 
-                : null
+            Image = book.Image != null ? ImageMapper.ToDto(book.Image) : null,
+            Authors = AuthorMapper.ToDtoList(book.Authors).ToList(),
+            Genres = GenreMapper.ToDtoList(book.Genres).ToList(),
+            Publisher = book.Publisher != null ? PublisherMapper.ToDto(book.Publisher) : null
         };
     }
 

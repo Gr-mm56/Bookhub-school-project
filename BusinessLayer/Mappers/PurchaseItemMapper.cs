@@ -29,7 +29,7 @@ public static class PurchaseItemMapper
         {
             Id = purchaseItem.Id,
             BookId = purchaseItem.BookId,
-            Book = BookMapper.ToDto(purchaseItem.Book ?? new Book()),
+            Book = purchaseItem.Book != null ? BookMapper.ToDto(purchaseItem.Book) : null,
             CartId = purchaseItem.CartId,
             Cart = CartMapper.ToDto(purchaseItem.Cart ?? new Cart()),
             Count = purchaseItem.Count,
