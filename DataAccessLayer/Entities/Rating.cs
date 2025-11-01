@@ -6,7 +6,8 @@ namespace DataAccessLayer.Entities;
 public class Rating : BaseEntity
 {
     [Required]
-    [Range(0, 5)] public required int Stars { get; set; }
+    [Range(0, 5)] 
+    public required int Stars { get; set; }
 
     [ForeignKey(nameof(UserId))]
     public virtual User User { get; set; }
