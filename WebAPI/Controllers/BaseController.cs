@@ -6,11 +6,15 @@ namespace WebAPI.Controllers;
 
 [ApiController]
 [Route("/api/[controller]")]
-public abstract class BaseController<TEntityDto, TEntityDetailDto, TCreateDto, TUpdateDto, TService>(TService service)
-    : Controller
+public abstract class BaseController<TEntityDto, TEntityDetailDto, TCreateDto, TUpdateDto, TService> : Controller
     where TService : ICrudService<TEntityDto, TEntityDetailDto, TCreateDto, TUpdateDto>
 {
-    protected readonly TService Service = service;
+    protected readonly TService Service;
+
+    protected BaseController(TService service)
+    {
+        Service = service;
+    }
 
     [HttpGet]
     [Route("list")]

@@ -9,9 +9,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLayer.Services.Implementations;
 
-public class AuthorService(BookHubDbContext context) : BaseService<BookHubDbContext>(context), IAuthorService
+public class AuthorService : BaseService<BookHubDbContext>, IAuthorService
 {
-    public async Task<PagedResultDto<AuthorDto>> GetAuthorsAsync(int limit = 20, int offset = 0)
+    public AuthorService(BookHubDbContext dbContext) : base(dbContext)
+    {
+
+    }
+
+    public async Task<PagedResultDto<AuthorDto>> GetAllAsync(int limit = 20, int offset = 0)
     {
         var query = Context.Authors
             .AsNoTracking()
@@ -21,27 +26,17 @@ public class AuthorService(BookHubDbContext context) : BaseService<BookHubDbCont
         return await PageAsync(query, limit, offset, AuthorMapper.ToDtoList);
     }
 
-    public async Task<AuthorDto?> GetAuthorByIdAsync(int id)
+    public async Task<AuthorBooksDto?> GetByIdAsync(int id)
     {
         var author = await Context.Authors
             .AsNoTracking()
             .Include(a => a.ProfilePhoto)
             .FirstOrDefaultAsync(a => a.Id == id);
 
-        return author != null ? AuthorMapper.ToDto(author) : null;
-    }
-
-    public async Task<AuthorBooksDto?> GetAuthorBooksAsync(int id)
-    {
-        var author = await Context.Authors
-            .AsNoTracking()
-            .Include(a => a.Books)
-            .FirstOrDefaultAsync(a => a.Id == id);
-
         return author != null ? AuthorMapper.ToDetailDto(author) : null;
     }
 
-    public async Task<AuthorBooksDto> CreateAuthorAsync(AuthorRequestDto requestDto)
+    public async Task<AuthorDto> CreateAsync(AuthorRequestDto requestDto)
     {
         // Validate that all provided IDs exist
         await ValidateRelatedEntitiesExistAsync(requestDto);
@@ -62,7 +57,7 @@ public class AuthorService(BookHubDbContext context) : BaseService<BookHubDbCont
         return AuthorMapper.ToDetailDto(createdAuthor);
     }
 
-    public async Task<AuthorBooksDto?> UpdateAuthorAsync(int id, AuthorRequestDto requestDto)
+    public async Task<AuthorDto?> UpdateAsync(int id, AuthorRequestDto requestDto)
     {
         var author = await Context.Authors
             .Include(b => b.Books)
@@ -138,7 +133,7 @@ public class AuthorService(BookHubDbContext context) : BaseService<BookHubDbCont
         }
     }
 
-    public async Task<bool> DeleteAuthorAsync(int id)
+    public async Task<bool> DeleteAsync(int id)
     {
         var author = await Context.Authors
             .Include(a => a.Books)
