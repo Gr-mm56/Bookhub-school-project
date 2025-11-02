@@ -77,6 +77,13 @@ This solution consists of these projets (so far)
 - Migrations directory contains EF migrations
 - Context directory contains DbContext class that represents a session with the database and allows querying and saving data. It also contains seeder.
 
+### Business Layer
+Business layer contains:
+- DTO definitions split into requests and responses
+- mappers between entities and DTOs,
+- services that implement business logic.
+
+
 ### WebAPI
 - provides REST API endpoints
 - Controllers directory stores endpoint definitions and logic
@@ -91,17 +98,23 @@ Added two middleware components — RequestLoggingMiddleware for logging every i
 The API supports XML responses in addition to JSON. To receive XML responses, set the `Accept` header in your request to `application/xml`.
 
 
-todo: Business Layer
-
-todo: Infrastructure layer
 
 todo: frontend
 
-todo: tests
+## Testing
+Unit tests are implemented using XUnit framework.
+
+Tests cover business layer services.
+
+To run the tests, navigate to the test project directory and execute:
+
+```bash
+dotnet test
+```
 
 ## Data Model:
 An ER diagram illustrates data model in this application:
-todo: upload a final version...
+
 ![ERdiagram](/assets/erd.png)
 
 ## Action Model
