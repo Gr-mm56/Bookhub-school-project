@@ -8,14 +8,12 @@ public class WishlistItem : BaseEntity
 {
     public int UserId { get; set; }
 
-    [Required]
     [ForeignKey(nameof(UserId))]
     [JsonIgnore]
     public virtual User? User { get; set; }
 
     public int BookId { get; set; }
 
-    [Required]
     [ForeignKey(nameof(BookId))]
     [JsonIgnore]
     public virtual Book? Book { get; set; }
