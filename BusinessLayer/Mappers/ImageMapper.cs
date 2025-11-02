@@ -1,7 +1,4 @@
-﻿using BusinessLayer.Models.Author.Requests;
-using BusinessLayer.Models.Author.Responses;
-using BusinessLayer.Models.Book.Responses;
-using BusinessLayer.Models.Image.Requests;
+﻿using BusinessLayer.Models.Image.Requests;
 using BusinessLayer.Models.Image.Responses;
 using DataAccessLayer.Entities;
 
@@ -20,13 +17,15 @@ public static class ImageMapper
         };
     }
 
-    public static Image ToEntity(ImageRequestDto requestDto)
+    public static Image CreateEntity(ImageRequestDto requestDto)
     {
         ArgumentNullException.ThrowIfNull(requestDto);
 
         return new Image
         {
             FileUrl = requestDto.FileUrl,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
         };
     }
 

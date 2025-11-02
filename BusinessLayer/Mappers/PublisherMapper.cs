@@ -33,7 +33,7 @@ public static class PublisherMapper
         };
     }
 
-    public static Publisher ToEntity(PublisherRequestDto requestDto)
+    public static Publisher CreateEntity(PublisherRequestDto requestDto)
     {
         ArgumentNullException.ThrowIfNull(requestDto);
 

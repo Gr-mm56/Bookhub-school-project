@@ -36,7 +36,7 @@ public static class RatingMapper
         };
     }
 
-    public static Rating ToEntity(RatingRequestDto requestDto)
+    public static Rating CreateEntity(RatingRequestDto requestDto)
     {
         ArgumentNullException.ThrowIfNull(requestDto);
 

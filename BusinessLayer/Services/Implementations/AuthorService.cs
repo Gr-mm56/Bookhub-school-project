@@ -46,7 +46,7 @@ public class AuthorService(BookHubDbContext context) : BaseService<BookHubDbCont
         // Validate that all provided IDs exist
         await ValidateRelatedEntitiesExistAsync(requestDto);
 
-        var author = AuthorMapper.ToEntity(requestDto);
+        var author = AuthorMapper.CreateEntity(requestDto);
 
         // Load related entities and associate them with the author
         await AssociateRelatedEntitiesAsync(author, requestDto);

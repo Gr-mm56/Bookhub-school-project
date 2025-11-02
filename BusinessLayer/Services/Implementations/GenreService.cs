@@ -55,7 +55,7 @@ public class GenreService : BaseService<BookHubDbContext>, IGenreService
 
     public async Task<GenreDto> CreateAsync(GenreRequestDto requestDto)
     {
-        var genre = GenreMapper.ToEntity(requestDto);
+        var genre = GenreMapper.CreateEntity(requestDto);
 
         await Context.Genres.AddAsync(genre);
         await SaveAsync();

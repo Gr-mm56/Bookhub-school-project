@@ -42,7 +42,7 @@ public static class BookMapper
         };
     }
 
-    public static Book ToEntity(BookRequestDto requestDto)
+    public static Book CreateEntity(BookRequestDto requestDto)
     {
         ArgumentNullException.ThrowIfNull(requestDto);
 

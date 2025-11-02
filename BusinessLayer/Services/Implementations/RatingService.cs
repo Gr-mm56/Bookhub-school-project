@@ -89,7 +89,7 @@ public class RatingService : BaseService<BookHubDbContext>, IRatingService
             throw new ArgumentException($"User {requestDto.UserId} has already rated book {requestDto.BookId}");
         }
 
-        var rating = RatingMapper.ToEntity(requestDto);
+        var rating = RatingMapper.CreateEntity(requestDto);
 
         await Context.Ratings.AddAsync(rating);
         await SaveAsync();

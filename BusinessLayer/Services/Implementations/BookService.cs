@@ -102,7 +102,7 @@ public class BookService : BaseService<BookHubDbContext>, IBookService
         // Validate that all provided IDs exist
         await ValidateRelatedEntitiesExistAsync(requestDto);
 
-        var book = BookMapper.ToEntity(requestDto);
+        var book = BookMapper.CreateEntity(requestDto);
 
         // Load related entities and associate them with the book
         await AssociateRelatedEntitiesAsync(book, requestDto);

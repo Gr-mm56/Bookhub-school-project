@@ -30,11 +30,7 @@ public class ImageService(BookHubDbContext context) : BaseService<BookHubDbConte
 
     public async Task<ImageRequestDto> CreateImageAsync(ImageRequestDto requestDto)
     {
-        var image = ImageMapper.ToEntity(requestDto);
-
-        // Set timestamps
-        image.CreatedAt = DateTime.UtcNow;
-        image.UpdatedAt = DateTime.UtcNow;
+        var image = ImageMapper.CreateEntity(requestDto);
 
         await Context.Images.AddAsync(image);
         await SaveAsync();

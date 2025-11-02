@@ -46,7 +46,7 @@ public class PublisherService(BookHubDbContext context) : BaseService<BookHubDbC
         // Validate that all provided IDs exist
         await ValidateRelatedEntitiesExistAsync(requestDto);
 
-        var publisher = PublisherMapper.ToEntity(requestDto);
+        var publisher = PublisherMapper.CreateEntity(requestDto);
 
         // Load related entities and associate them with the publisher
         await AssociateRelatedEntitiesAsync(publisher, requestDto);

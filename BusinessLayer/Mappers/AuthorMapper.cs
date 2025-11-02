@@ -1,4 +1,4 @@
-﻿﻿using BusinessLayer.Models.Author.Requests;
+﻿using BusinessLayer.Models.Author.Requests;
 using BusinessLayer.Models.Author.Responses;
 using DataAccessLayer.Entities;
 
@@ -33,7 +33,7 @@ public static class AuthorMapper
         };
     }
 
-    public static Author ToEntity(AuthorRequestDto requestDto)
+    public static Author CreateEntity(AuthorRequestDto requestDto)
     {
         ArgumentNullException.ThrowIfNull(requestDto);
 
