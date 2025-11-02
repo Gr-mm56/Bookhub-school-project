@@ -27,15 +27,6 @@ public class GenreService : BaseService<BookHubDbContext>, IGenreService
     {
         var genre = await Context.Genres
             .AsNoTracking()
-            .FirstOrDefaultAsync(g => g.Id == id);
-
-        return genre != null ? GenreMapper.ToDetailDto(genre) : null;
-    }
-
-    public async Task<GenreDetailDto?> GetGenreWithBooksAsync(int id)
-    {
-        var genre = await Context.Genres
-            .AsNoTracking()
             .Include(g => g.Books)
             .FirstOrDefaultAsync(g => g.Id == id);
 
