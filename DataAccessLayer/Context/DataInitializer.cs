@@ -114,7 +114,6 @@ public static class DataInitializer
 
     private static List<User> PrepareUserModels()
     {
-        // TODO seed images
         return
         [
             new User
