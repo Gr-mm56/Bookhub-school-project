@@ -27,6 +27,7 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
     public async Task<CartDetailDto?> GetByIdAsync(int id)
     {
         var cart = await Context.Carts
+            .Include(c => c.User)
             .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Id == id);
 

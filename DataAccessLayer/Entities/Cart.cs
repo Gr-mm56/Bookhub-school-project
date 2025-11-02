@@ -10,11 +10,11 @@ namespace DataAccessLayer.Entities;
  */
 public class Cart : BaseEntity
 {
-    public int UserId { get; set; }
+    public required int UserId { get; set; }
 
     [ForeignKey(nameof(UserId))]
     [JsonIgnore]
-    public virtual User? User { get; set; }
+    public virtual User User { get; set; }
 
     [Required]
     [Range(0, double.MaxValue, ErrorMessage = "TotalValue must be non-negative.")]
