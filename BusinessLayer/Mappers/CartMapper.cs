@@ -1,0 +1,79 @@
+﻿using BusinessLayer.Models.Cart.Requests;
+using BusinessLayer.Models.Cart.Responses;
+using BusinessLayer.Models.PurchaseItem.Responses;
+using DataAccessLayer.Entities;
+
+namespace BusinessLayer.Mappers;
+
+public static class CartMapper
+{
+    public static CartDto ToDto(Cart cart)
+    {
+        ArgumentNullException.ThrowIfNull(cart);
+
+        return new CartDto
+        {
+            Id = cart.Id,
+            UserId = cart.UserId,
+            TotalValue = cart.TotalValue,
+            OrderId = cart.OrderId,
+            OrderDate = cart.OrderDate,
+            CreatedAt = cart.CreatedAt,
+            UpdatedAt = cart.UpdatedAt,
+        };
+    }
+
+    public static CartDetailDto ToDetailDto(Cart cart)
+    {
+        ArgumentNullException.ThrowIfNull(cart);
+
+        return new CartDetailDto
+        {
+            Id = cart.Id,
+            UserId = cart.UserId,
+            User = UserMapper.ToDto(cart.User ?? new User()),
+            TotalValue = cart.TotalValue,
+            OrderId = cart.OrderId,
+            OrderDate = cart.OrderDate,
+            PurchaseItems = cart.PurchaseItems?.Select(PurchaseItemMapper.ToDto).ToList() ?? new List<PurchaseItemDto>(),
+            CreatedAt = cart.CreatedAt,
+            UpdatedAt = cart.UpdatedAt,
+        };
+    }
+
+    public static Cart CreateDtoToEntity(CartCreateDto createDto)
+    {
+        ArgumentNullException.ThrowIfNull(createDto);
+
+        return new Cart
+        {
+            UserId = createDto.UserId,
+            TotalValue = createDto.TotalValue,
+            OrderId = createDto.OrderId,
+            OrderDate = createDto.OrderDate,
+            CreatedAt = DateTime.Now,
+            UpdatedAt = DateTime.Now,
+        };
+    }
+
+    public static void UpdateEntity(Cart cart, CartUpdateDto updateDto)
+    {
+        ArgumentNullException.ThrowIfNull(cart);
+        ArgumentNullException.ThrowIfNull(updateDto);
+
+        cart.TotalValue = updateDto.TotalValue;
+        cart.OrderId = updateDto.OrderId;
+        cart.OrderDate = updateDto.OrderDate;
+        cart.UpdatedAt = DateTime.Now;
+    }
+
+    public static IEnumerable<CartDto> ToDtoList(IEnumerable<Cart> carts)
+    {
+        return carts.Select(ToDto);
+    }
+
+    public static IEnumerable<CartDetailDto> ToDetailDtoList(IEnumerable<Cart> carts)
+    {
+        return carts.Select(ToDetailDto);
+    }
+}
