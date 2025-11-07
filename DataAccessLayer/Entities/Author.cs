@@ -6,16 +6,18 @@ namespace DataAccessLayer.Entities;
 public class Author : BaseEntity
 {
     [Required]
-    public string Name { get; set; }
+    [MaxLength(30, ErrorMessage = "The Name cannot exceed 30 characters.")]
+    public required string Name { get; set; }
 
     [Required]
-    public string Surname { get; set; }
+    [MaxLength(30, ErrorMessage = "The Surname cannot exceed 30 characters.")]
+    public required string Surname { get; set; }
 
     [ForeignKey(nameof(ProfilePhotoId))]
     [JsonIgnore]
     public virtual Image? ProfilePhoto { get; set; }
 
-    public int ProfilePhotoId { get; set; }
+    public int? ProfilePhotoId { get; set; }
 
     [JsonIgnore]
     public virtual ICollection<Book> Books { get; set; }

@@ -50,7 +50,9 @@ public class WishlistItemService : BaseService<BookHubDbContext>, IWishlistItemS
     {
         WishlistItem? wishlistItem = await Context.WishlistItems.FirstOrDefaultAsync(g => g.Id == id);
         if (wishlistItem == null)
+        {
             return false;
+        }
 
         Context.WishlistItems.Remove(wishlistItem);
         await SaveAsync();

@@ -1,8 +1,5 @@
 ﻿using BusinessLayer.Models.Rating.Requests;
 using BusinessLayer.Models.Rating.Responses;
-using BusinessLayer.Models.Book.Responses;
-using BusinessLayer.Models.Image.Responses;
-using BusinessLayer.Models.User.Responses;
 using DataAccessLayer.Entities;
 
 namespace BusinessLayer.Mappers;
@@ -34,34 +31,12 @@ public static class RatingMapper
             Stars = rating.Stars,
             CreatedAt = rating.CreatedAt,
             UpdatedAt = rating.UpdatedAt,
-            Book = new BookDto
-            {
-                Id = rating.Book.Id,
-                Title = rating.Book.Title,
-                Description = rating.Book.Description,
-                Price = rating.Book.Price,
-                Image = rating.Book.Image != null ? new ImageDto
-                {
-                    Id = rating.Book.Image.Id,
-                    FileUrl = rating.Book.Image.FileUrl
-                } : null,
-            },
-            User = new UserDto
-            {
-                Id = rating.User.Id,
-                City = rating.User.City,
-                Country = rating.User.Country,
-                CreatedAt = rating.User.CreatedAt,
-                UpdatedAt = rating.User.UpdatedAt,
-                Name = rating.User.Name,
-                ProfilePhotoId = rating.User.ProfilePhotoId,
-                Surname = rating.User.Surname,
-                Street = rating.User.Street,
-            }
+            Book = BookMapper.ToDto(rating.Book),
+            User = UserMapper.ToDto(rating.User)
         };
     }
 
-    public static Rating ToEntity(RatingRequestDto requestDto)
+    public static Rating CreateEntity(RatingRequestDto requestDto)
     {
         ArgumentNullException.ThrowIfNull(requestDto);
 
@@ -88,11 +63,11 @@ public static class RatingMapper
 
     public static IEnumerable<RatingDto> ToDtoList(IEnumerable<Rating> ratings)
     {
-        return ratings?.Select(ToDto) ?? [];
+        return ratings.Select(ToDto);
     }
 
     public static IEnumerable<RatingDetailDto> ToDetailDtoList(IEnumerable<Rating> ratings)
     {
-        return ratings?.Select(ToDetailDto) ?? [];
+        return ratings.Select(ToDetailDto);
     }
 }

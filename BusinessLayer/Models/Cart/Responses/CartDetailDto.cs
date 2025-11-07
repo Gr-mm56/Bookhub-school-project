@@ -6,7 +6,7 @@ namespace BusinessLayer.Models.Cart.Responses;
 
 public class CartDetailDto : CartDto
 {
-    public UserDto? User { get; set; } = null;
+    public UserDto User { get; set; }
 
     public ICollection<PurchaseItemDto>? PurchaseItems { get; set; } = new List<PurchaseItemDto>();
 }

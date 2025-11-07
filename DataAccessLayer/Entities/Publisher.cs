@@ -6,10 +6,12 @@ namespace DataAccessLayer.Entities;
 public class Publisher : BaseEntity
 {
     [Required]
-    public string Name { get; set; }
+    [MaxLength(100, ErrorMessage = "The Name cannot exceed 100 characters.")]
+    public required string Name { get; set; }
 
     [Required]
-    public string Address { get; set; }
+    [MaxLength(150, ErrorMessage = "The Adress cannot exceed 150 characters.")]
+    public required string Address { get; set; }
 
     [JsonIgnore]
     public virtual ICollection<Book> Books { get; set; }
@@ -18,6 +20,6 @@ public class Publisher : BaseEntity
     [JsonIgnore]
     public virtual Image? ProfilePhoto { get; set; }
 
-    public int ProfilePhotoId { get; set; }
+    public int? ProfilePhotoId { get; set; }
 
 }

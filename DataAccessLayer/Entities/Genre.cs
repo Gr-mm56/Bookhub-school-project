@@ -5,8 +5,8 @@ namespace DataAccessLayer.Entities;
 public class Genre: BaseEntity
 {
     [Required]
-    [MaxLength(50)]
-    public string Name { get; set; }
+    [MaxLength(50, ErrorMessage = "The Name cannot exceed 50 characters.")]
+    public required string Name { get; set; }
 
     public virtual ICollection<Book> Books { get; set; }
 }

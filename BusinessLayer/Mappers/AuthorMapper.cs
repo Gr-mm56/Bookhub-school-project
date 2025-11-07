@@ -1,7 +1,5 @@
-﻿using BusinessLayer.Models.Author.Requests;
+﻿﻿using BusinessLayer.Models.Author.Requests;
 using BusinessLayer.Models.Author.Responses;
-using BusinessLayer.Models.Book.Responses;
-using BusinessLayer.Models.Image.Responses;
 using DataAccessLayer.Entities;
 
 namespace BusinessLayer.Mappers;
@@ -17,13 +15,7 @@ public static class AuthorMapper
             Id = author.Id,
             Name = author.Name,
             Surname = author.Surname,
-            ProfilePhoto = author.ProfilePhoto != null
-                ? new ImageDto
-                {
-                    Id = author.ProfilePhoto.Id,
-                    FileUrl = author.ProfilePhoto.FileUrl
-                }
-                : null,
+            ProfilePhoto = author.ProfilePhoto != null ? ImageMapper.ToDto(author.ProfilePhoto) : null,
         };
     }
 
@@ -36,31 +28,12 @@ public static class AuthorMapper
             Id = author.Id,
             Name = author.Name,
             Surname = author.Surname,
-            ProfilePhoto = author.ProfilePhoto != null
-                ? new ImageDto
-                {
-                    Id = author.ProfilePhoto.Id,
-                    FileUrl = author.ProfilePhoto.FileUrl
-                }
-                : null,
-            Books = author.Books.Select(b => new BookDto
-            {
-                Id = b.Id,
-                Title = b.Title,
-                Description = b.Description,
-                Price = b.Price,
-                Image = b.Image != null
-                        ? new ImageDto
-                        {
-                            Id = b.Image.Id,
-                            FileUrl = b.Image.FileUrl
-                        }
-                        : null
-            }).ToList() ?? [],
+            ProfilePhoto = author.ProfilePhoto != null ? ImageMapper.ToDto(author.ProfilePhoto) : null,
+            Books = author.Books.Select(BookMapper.ToDto).ToList() ?? [],
         };
     }
 
-    public static Author ToEntity(AuthorRequestDto requestDto)
+    public static Author CreateEntity(AuthorRequestDto requestDto)
     {
         ArgumentNullException.ThrowIfNull(requestDto);
 

@@ -8,7 +8,7 @@ public class CartCreateDto
 
     [Required]
     [Range(0, double.MaxValue, ErrorMessage = "TotalValue must be non-negative.")]
-    public double TotalValue { get; set; }
+    public required double TotalValue { get; set; }
 
     public int? OrderId { get; set; }
 

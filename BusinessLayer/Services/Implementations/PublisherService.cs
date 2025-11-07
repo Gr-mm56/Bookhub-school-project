@@ -9,9 +9,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLayer.Services.Implementations;
 
-public class PublisherService(BookHubDbContext context) : BaseService<BookHubDbContext>(context), IPublisherService
+public class PublisherService : BaseService<BookHubDbContext>, IPublisherService
 {
-    public async Task<PagedResultDto<PublisherDto>> GetPublishersAsync(int limit = 20, int offset = 0)
+    public PublisherService(BookHubDbContext dbContext) : base(dbContext)
+    {
+
+    }
+
+    public async Task<PagedResultDto<PublisherDto>> GetAllAsync(int limit = 20, int offset = 0)
     {
         var query = Context.Publishers
             .AsNoTracking()
@@ -21,32 +26,22 @@ public class PublisherService(BookHubDbContext context) : BaseService<BookHubDbC
         return await PageAsync(query, limit, offset, PublisherMapper.ToDtoList);
     }
 
-    public async Task<PublisherDto?> GetPublisherByIdAsync(int id)
+    public async Task<PublisherBooksDto?> GetByIdAsync(int id)
     {
         var publisher = await Context.Publishers
             .AsNoTracking()
             .Include(p => p.ProfilePhoto)
             .FirstOrDefaultAsync(p => p.Id == id);
 
-        return publisher != null ? PublisherMapper.ToDto(publisher) : null;
-    }
-
-    public async Task<PublisherBooksDto?> GetPublisherBooksAsync(int id)
-    {
-        var publisher = await Context.Publishers
-            .AsNoTracking()
-            .Include(p => p.Books)
-            .FirstOrDefaultAsync(p => p.Id == id);
-
         return publisher != null ? PublisherMapper.ToDetailDto(publisher) : null;
     }
 
-    public async Task<PublisherBooksDto> CreatePublisherAsync(PublisherRequestDto requestDto)
+    public async Task<PublisherDto> CreateAsync(PublisherRequestDto requestDto)
     {
         // Validate that all provided IDs exist
         await ValidateRelatedEntitiesExistAsync(requestDto);
 
-        var publisher = PublisherMapper.ToEntity(requestDto);
+        var publisher = PublisherMapper.CreateEntity(requestDto);
 
         // Load related entities and associate them with the publisher
         await AssociateRelatedEntitiesAsync(publisher, requestDto);
@@ -62,7 +57,7 @@ public class PublisherService(BookHubDbContext context) : BaseService<BookHubDbC
         return PublisherMapper.ToDetailDto(createdPublisher);
     }
 
-    public async Task<PublisherBooksDto?> UpdatePublisherAsync(int id, PublisherRequestDto requestDto)
+    public async Task<PublisherDto?> UpdateAsync(int id, PublisherRequestDto requestDto)
     {
         try
         {
@@ -71,7 +66,9 @@ public class PublisherService(BookHubDbContext context) : BaseService<BookHubDbC
                 .FirstOrDefaultAsync(p => p.Id == id);
 
             if (publisher == null)
+            {
                 return null;
+            }
 
             // Validate that all provided IDs exist
             await ValidateRelatedEntitiesExistAsync(requestDto);
@@ -166,7 +163,7 @@ public class PublisherService(BookHubDbContext context) : BaseService<BookHubDbC
         }
     }
 
-    public async Task<bool> DeletePublisherAsync(int id)
+    public async Task<bool> DeleteAsync(int id)
     {
         try
         {

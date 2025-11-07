@@ -3,6 +3,7 @@ using System;
 using DataAccessLayer.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccessLayer.Migrations
 {
     [DbContext(typeof(BookHubDbContext))]
-    partial class BookHubDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251029172652_UserImageCascadeDelete")]
+    partial class UserImageCascadeDelete
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -32,15 +35,13 @@ namespace DataAccessLayer.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(30)
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("ProfilePhotoId")
+                    b.Property<int>("ProfilePhotoId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Surname")
                         .IsRequired()
-                        .HasMaxLength(30)
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -48,8 +49,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProfilePhotoId")
-                        .IsUnique();
+                    b.HasIndex("ProfilePhotoId");
 
                     b.ToTable("Authors");
 
@@ -368,6 +368,9 @@ namespace DataAccessLayer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("AuthorId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
@@ -382,6 +385,8 @@ namespace DataAccessLayer.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
 
                     b.HasIndex("PublisherId");
 
@@ -482,7 +487,6 @@ namespace DataAccessLayer.Migrations
 
                     b.Property<string>("Address")
                         .IsRequired()
-                        .HasMaxLength(150)
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreatedAt")
@@ -490,10 +494,9 @@ namespace DataAccessLayer.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("ProfilePhotoId")
+                    b.Property<int>("ProfilePhotoId")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -914,9 +917,9 @@ namespace DataAccessLayer.Migrations
             modelBuilder.Entity("DataAccessLayer.Entities.Author", b =>
                 {
                     b.HasOne("DataAccessLayer.Entities.Image", "ProfilePhoto")
-                        .WithOne("Author")
-                        .HasForeignKey("DataAccessLayer.Entities.Author", "ProfilePhotoId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .WithMany()
+                        .HasForeignKey("ProfilePhotoId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("ProfilePhoto");
                 });
@@ -953,10 +956,17 @@ namespace DataAccessLayer.Migrations
 
             modelBuilder.Entity("DataAccessLayer.Entities.Image", b =>
                 {
+                    b.HasOne("DataAccessLayer.Entities.Author", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("DataAccessLayer.Entities.Publisher", "Publisher")
                         .WithMany()
                         .HasForeignKey("PublisherId")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Author");
 
                     b.Navigation("Publisher");
                 });
@@ -1030,21 +1040,17 @@ namespace DataAccessLayer.Migrations
 
             modelBuilder.Entity("DataAccessLayer.Entities.RelBookGenre", b =>
                 {
-                    b.HasOne("DataAccessLayer.Entities.Book", "Book")
+                    b.HasOne("DataAccessLayer.Entities.Book", null)
                         .WithMany()
                         .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DataAccessLayer.Entities.Genre", "Genre")
+                    b.HasOne("DataAccessLayer.Entities.Genre", null)
                         .WithMany()
                         .HasForeignKey("GenreId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("Book");
-
-                    b.Navigation("Genre");
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.User", b =>
@@ -1088,9 +1094,8 @@ namespace DataAccessLayer.Migrations
 
             modelBuilder.Entity("DataAccessLayer.Entities.Image", b =>
                 {
-                    b.Navigation("Author");
-
-                    b.Navigation("User");
+                    b.Navigation("User")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.Publisher", b =>

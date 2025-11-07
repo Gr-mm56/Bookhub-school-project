@@ -53,7 +53,9 @@ public class UserService : BaseService<BookHubDbContext>, IUserService
     {
         User? user = await Context.Users.FirstOrDefaultAsync(g => g.Id == id);
         if (user == null)
+        {
             return false;
+        }
 
         Context.Users.Remove(user);
         await SaveAsync();
@@ -69,7 +71,9 @@ public class UserService : BaseService<BookHubDbContext>, IUserService
 
         User? user = await Context.Users.FirstOrDefaultAsync(u => u.Id == id);
         if (user == null)
+        {
             return null;
+        }
 
         UserMapper.UpdateEntity(user, userUpdateDto);
         await SaveAsync();

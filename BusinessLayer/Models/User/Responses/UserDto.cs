@@ -8,11 +8,11 @@ public class UserDto
 
     [Required]
     [MaxLength(64)]
-    public string Name { get; set; }
+    public required string Name { get; set; }
 
     [Required]
     [MaxLength(64)]
-    public string Surname { get; set; }
+    public required string Surname { get; set; }
 
     [MaxLength(64)]
     public string Country { get; set; }

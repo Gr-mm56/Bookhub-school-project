@@ -27,15 +27,6 @@ public class RatingService : BaseService<BookHubDbContext>, IRatingService
     {
         var rating = await Context.Ratings
             .AsNoTracking()
-            .FirstOrDefaultAsync(r => r.Id == id);
-
-        return rating != null ? RatingMapper.ToDetailDto(rating) : null;
-    }
-
-    public async Task<RatingDetailDto?> GetRatingDetailAsync(int id)
-    {
-        var rating = await Context.Ratings
-            .AsNoTracking()
             .Include(r => r.Book)
             .ThenInclude(b => b.Image)
             .FirstOrDefaultAsync(r => r.Id == id);
@@ -43,13 +34,13 @@ public class RatingService : BaseService<BookHubDbContext>, IRatingService
         return rating != null ? RatingMapper.ToDetailDto(rating) : null;
     }
 
+
     public async Task<PagedResultDto<RatingDto>> SearchRatingsAsync(RatingSearchDto searchDto)
     {
         var query = Context.Ratings
             .AsNoTracking()
             .AsQueryable();
 
-        // Apply filters
         if (searchDto.UserId.HasValue)
         {
             query = query.Where(r => r.UserId == searchDto.UserId.Value);
@@ -77,10 +68,8 @@ public class RatingService : BaseService<BookHubDbContext>, IRatingService
 
     public async Task<RatingDto> CreateAsync(RatingRequestDto requestDto)
     {
-        // Validate that User and Book exist
         await ValidateRelatedEntitiesExistAsync(requestDto);
 
-        // Check if user already rated this book
         var existingRating = await Context.Ratings
             .FirstOrDefaultAsync(r => r.UserId == requestDto.UserId && r.BookId == requestDto.BookId);
 
@@ -89,7 +78,7 @@ public class RatingService : BaseService<BookHubDbContext>, IRatingService
             throw new ArgumentException($"User {requestDto.UserId} has already rated book {requestDto.BookId}");
         }
 
-        var rating = RatingMapper.ToEntity(requestDto);
+        var rating = RatingMapper.CreateEntity(requestDto);
 
         await Context.Ratings.AddAsync(rating);
         await SaveAsync();
@@ -101,12 +90,12 @@ public class RatingService : BaseService<BookHubDbContext>, IRatingService
     {
         var rating = await Context.Ratings.FirstOrDefaultAsync(r => r.Id == id);
         if (rating == null)
+        {
             return null;
+        }
 
-        // Validate that User and Book exist
         await ValidateRelatedEntitiesExistAsync(requestDto);
 
-        // Check if trying to change to a different user/book combination that already has a rating
         if ((rating.UserId != requestDto.UserId || rating.BookId != requestDto.BookId))
         {
             var existingRating = await Context.Ratings
@@ -128,7 +117,9 @@ public class RatingService : BaseService<BookHubDbContext>, IRatingService
     {
         var rating = await Context.Ratings.FirstOrDefaultAsync(r => r.Id == id);
         if (rating == null)
+        {
             return false;
+        }
 
         Context.Ratings.Remove(rating);
         await SaveAsync();
@@ -139,14 +130,12 @@ public class RatingService : BaseService<BookHubDbContext>, IRatingService
     {
         var errors = new List<string>();
 
-        // Validate User exists
         var userExists = await Context.Users.AnyAsync(u => u.Id == requestDto.UserId);
         if (!userExists)
         {
             errors.Add($"Invalid User ID: {requestDto.UserId}");
         }
 
-        // Validate Book exists
         var bookExists = await Context.Books.AnyAsync(b => b.Id == requestDto.BookId);
         if (!bookExists)
         {

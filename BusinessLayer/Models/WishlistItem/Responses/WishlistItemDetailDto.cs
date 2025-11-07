@@ -6,7 +6,9 @@ namespace BusinessLayer.Models.WishlistItem.Responses;
 
 public class WishlistItemDetailDto : WishlistItemDto
 {
-    [Required] public UserDto? User { get; set; } = null;
+    [Required]
+    public required UserDto User { get; set; }
 
-    [Required] public BookDto? Book { get; set; } = null;
+    [Required]
+    public required BookDto Book { get; set; }
 }

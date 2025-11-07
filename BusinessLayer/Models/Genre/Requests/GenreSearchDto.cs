@@ -8,5 +8,5 @@ public class GenreSearchDto : PagedRequestDto
     [Required]
     [MinLength(1)]
     [MaxLength(50)]
-    public string Name { get; set; } = string.Empty;
+    public required string Name { get; set; } = string.Empty;
 }

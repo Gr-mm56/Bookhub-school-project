@@ -33,7 +33,7 @@ public static class GenreMapper
         };
     }
 
-    public static Genre ToEntity(GenreRequestDto requestDto)
+    public static Genre CreateEntity(GenreRequestDto requestDto)
     {
         ArgumentNullException.ThrowIfNull(requestDto);
 

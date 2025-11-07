@@ -5,8 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
 
-[Route("[controller]")]
-[ApiController]
 public class GenreController : BaseController<GenreDto, GenreDetailDto, GenreRequestDto, GenreRequestDto, IGenreService>
 {
     public GenreController(IGenreService genreService) : base(genreService)
@@ -27,20 +25,5 @@ public class GenreController : BaseController<GenreDto, GenreDetailDto, GenreReq
         var result = await Service.SearchGenresAsync(searchDto);
 
         return Ok(result);
-    }
-
-    [HttpGet]
-    [Route("books/{id:int}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetGenreWithBooks(int id)
-    {
-        var genre = await Service.GetGenreWithBooksAsync(id);
-        if (genre == null)
-        {
-            return NotFound();
-        }
-
-        return Ok(genre);
     }
 }

@@ -5,28 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
 
-[Route("[controller]")]
-[ApiController]
 public class BookController: BaseController<BookDto, BookDetailDto, BookRequestDto, BookRequestDto, IBookService>
 {
     public BookController(IBookService bookService) : base(bookService)
     {
 
-    }
-
-    [HttpGet]
-    [Route("allDetails/{id:int}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetBookDetail(int id)
-    {
-        var book = await Service.GetBookDetailAsync(id);
-        if (book == null)
-        {
-            return NotFound();
-        }
-
-        return Ok(book);
     }
 
     [HttpGet]

@@ -6,8 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
 
-[Route("[controller]")]
-[ApiController]
 public class RatingController : BaseController<RatingDto, RatingDetailDto, RatingRequestDto, RatingRequestDto, IRatingService>
 {
     public RatingController(IRatingService service): base(service)
@@ -26,18 +24,5 @@ public class RatingController : BaseController<RatingDto, RatingDetailDto, Ratin
 
         var result = await Service.SearchRatingsAsync(searchDto);
         return Ok(result);
-    }
-
-    [HttpGet]
-    [Route("userBookDetail/{id:int}")]
-    public async Task<IActionResult> GetRatingDetail(int id)
-    {
-        var rating = await Service.GetRatingDetailAsync(id);
-        if (rating == null)
-        {
-            return NotFound();
-        }
-
-        return Ok(rating);
     }
 }

@@ -28,33 +28,17 @@ public class BookHubDbContext: DbContext
             .HasMany(b => b.Genres)
             .WithMany(g => g.Books)
             .UsingEntity<RelBookGenre>(
-                j => j
-                    .HasOne<Genre>()
-                    .WithMany()
-                    .HasForeignKey(rel => rel.GenreId)
-                    .OnDelete(DeleteBehavior.Restrict), 
-                j => j
-                    .HasOne<Book>()
-                    .WithMany()
-                    .HasForeignKey(rel => rel.BookId)
-                    .OnDelete(DeleteBehavior.Cascade) 
+                j => j.HasOne(x => x.Genre).WithMany().OnDelete(DeleteBehavior.Restrict),
+                j => j.HasOne(x => x.Book).WithMany().OnDelete(DeleteBehavior.Cascade)
             );
 
-        // Book M:N Author with cascade delete configuration
+        // Book M:N Author
         modelBuilder.Entity<Book>()
             .HasMany(b => b.Authors)
             .WithMany(a => a.Books)
             .UsingEntity<RelBookAuthor>(
-                j => j
-                    .HasOne(rel => rel.Author)
-                    .WithMany()
-                    .HasForeignKey(rel => rel.AuthorId)
-                    .OnDelete(DeleteBehavior.Cascade),
-                j => j
-                    .HasOne(rel => rel.Book)
-                    .WithMany()
-                    .HasForeignKey(rel => rel.BookId)
-                    .OnDelete(DeleteBehavior.Cascade)
+                j => j.HasOne(x => x.Author).WithMany().OnDelete(DeleteBehavior.Cascade),
+                j => j.HasOne(x => x.Book).WithMany().OnDelete(DeleteBehavior.Cascade)
             );
 
         // One-to-many relationships
@@ -67,29 +51,22 @@ public class BookHubDbContext: DbContext
         // Book 1 Image
         modelBuilder.Entity<Book>()
             .HasOne(b => b.Image)
-            .WithMany()
-            .HasForeignKey(b => b.ImageId);
+            .WithMany();
 
         // User 0..1 Image
         modelBuilder.Entity<User>()
             .HasOne(u => u.ProfilePhoto)
-            .WithMany()
-            .HasForeignKey(u => u.ProfilePhotoId)
-            .IsRequired(false);
+            .WithMany();
 
         // Author 0..1 Image
         modelBuilder.Entity<Author>()
             .HasOne(a => a.ProfilePhoto)
-            .WithMany()
-            .HasForeignKey(a => a.ProfilePhotoId)
-            .IsRequired(false);
+            .WithMany();
 
         // Publisher 0..1 Image
         modelBuilder.Entity<Publisher>()
             .HasOne(p => p.ProfilePhoto)
-            .WithMany()
-            .HasForeignKey(p => p.ProfilePhotoId)
-            .IsRequired(false);
+            .WithMany();
 
         foreach (var relationship in modelBuilder.Model.GetEntityTypes()
                  .SelectMany(e => e.GetForeignKeys())
@@ -102,39 +79,47 @@ public class BookHubDbContext: DbContext
         {
             relationship.DeleteBehavior = DeleteBehavior.Restrict;
         }
+
         // Book -> Rating - On Delete Cascade
         modelBuilder.Entity<Rating>()
             .HasOne(r => r.Book)
             .WithMany(b => b.Ratings)
-            .HasForeignKey(r => r.BookId)
             .OnDelete(DeleteBehavior.Cascade);
 
         // User -> Cart - On Delete Cascade
         modelBuilder.Entity<Cart>()
             .HasOne(c => c.User)
             .WithMany(u => u.Carts)
-            .HasForeignKey(c => c.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
         // User -> WishlistItem - On Delete Cascade
         modelBuilder.Entity<WishlistItem>()
             .HasOne(w => w.User)
             .WithMany(u => u.WishlistItems)
-            .HasForeignKey(w => w.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
         // User -> Rating - On Delete Cascade
         modelBuilder.Entity<Rating>()
             .HasOne(r => r.User)
             .WithMany(u => u.Ratings)
-            .HasForeignKey(r => r.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // User -> Image - On Delete Cascade
+        modelBuilder.Entity<User>()
+            .HasOne(u => u.ProfilePhoto)
+            .WithOne(i => i.User)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Author -> Image - On Delete Cascade
+        modelBuilder.Entity<Author>()
+            .HasOne(a => a.ProfilePhoto)
+            .WithOne(i => i.Author)
             .OnDelete(DeleteBehavior.Cascade);
 
         // Cart -> PurchaseItem - On Delete Cascade
         modelBuilder.Entity<PurchaseItem>()
             .HasOne(p => p.Cart)
             .WithMany(c => c.PurchaseItems)
-            .HasForeignKey(p => p.CartId)
             .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Seed();

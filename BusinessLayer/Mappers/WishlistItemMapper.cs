@@ -28,9 +28,9 @@ public static class WishlistItemMapper
         {
             Id = wishlistItem.Id,
             UserId = wishlistItem.UserId,
-            User = UserMapper.ToDto(wishlistItem.User ?? new User()),
+            User = UserMapper.ToDto(wishlistItem.User),
             BookId = wishlistItem.BookId,
-            Book = BookMapper.ToDto(wishlistItem.Book ?? new Book()),
+            Book = BookMapper.ToDto(wishlistItem.Book),
             CreatedAt = wishlistItem.CreatedAt,
             UpdatedAt = wishlistItem.UpdatedAt
         };
