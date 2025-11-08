@@ -16,14 +16,21 @@ public class PublisherService : BaseService<BookHubDbContext>, IPublisherService
 
     }
 
-    public async Task<PagedResultDto<PublisherDto>> GetAllAsync(int limit = 20, int offset = 0)
+    public async Task<PagedResultDto<PublisherBooksDto>> GetAllAsync(int limit = 20, int offset = 0)
     {
         var query = Context.Publishers
             .AsNoTracking()
             .Include(p => p.ProfilePhoto)
+            .Include(b => b.Books)
+                .ThenInclude(i => i.Image)
             .OrderBy(p => p.Name);
 
-        return await PageAsync(query, limit, offset, PublisherMapper.ToDtoList);
+        return await PageAsync<Publisher, PublisherBooksDto>(
+            query, 
+            limit, 
+            offset, 
+            publishers => PublisherMapper.ToDetailDtoList(publishers)
+        );
     }
 
     public async Task<PublisherBooksDto?> GetByIdAsync(int id)
@@ -38,7 +45,7 @@ public class PublisherService : BaseService<BookHubDbContext>, IPublisherService
         return publisher != null ? PublisherMapper.ToDetailDto(publisher) : null;
     }
 
-    public async Task<PublisherDto> CreateAsync(PublisherRequestDto requestDto)
+    public async Task<PublisherBooksDto> CreateAsync(PublisherRequestDto requestDto)
     {
         // Validate that all provided IDs exist
         await ValidateRelatedEntitiesExistAsync(requestDto);
@@ -52,7 +59,7 @@ public class PublisherService : BaseService<BookHubDbContext>, IPublisherService
         }
 
         // Load related entities and associate them with the publisher
-        await AssociateRelatedEntitiesAsync(publisher, requestDto);
+        await ExtendBooksCollectionAsync(publisher, requestDto);
 
         await Context.Publishers.AddAsync(publisher);
         await SaveAsync();
@@ -67,7 +74,7 @@ public class PublisherService : BaseService<BookHubDbContext>, IPublisherService
         return PublisherMapper.ToDetailDto(createdPublisher);
     }
 
-    public async Task<PublisherDto?> UpdateAsync(int id, PublisherRequestDto requestDto)
+    public async Task<PublisherBooksDto?> UpdateAsync(int id, PublisherRequestDto requestDto)
     {
         var publisher = await Context.Publishers
             .Include(p => p.ProfilePhoto)
@@ -137,24 +144,6 @@ public class PublisherService : BaseService<BookHubDbContext>, IPublisherService
         if (errors.Any())
         {
             throw new ArgumentException($"Validation failed: {string.Join("; ", errors)}");
-        }
-    }
-
-    private async Task AssociateRelatedEntitiesAsync(Publisher publisher, PublisherRequestDto requestDto)
-    {
-        // Load and associate Books
-        if (requestDto.BookIds.Any())
-        {
-            var books = await Context.Books
-                .Where(b => requestDto.BookIds.Contains(b.Id))
-                .ToListAsync();
-            
-            foreach (var book in books)
-            {
-                book.PublisherId = publisher.Id;
-            }
-            
-            publisher.Books = books;
         }
     }
 

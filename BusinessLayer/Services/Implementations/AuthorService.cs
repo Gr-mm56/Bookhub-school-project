@@ -16,14 +16,21 @@ public class AuthorService : BaseService<BookHubDbContext>, IAuthorService
 
     }
 
-    public async Task<PagedResultDto<AuthorDto>> GetAllAsync(int limit = 20, int offset = 0)
+    public async Task<PagedResultDto<AuthorBooksDto>> GetAllAsync(int limit = 20, int offset = 0)
     {
         var query = Context.Authors
             .AsNoTracking()
             .Include(a => a.ProfilePhoto)
+            .Include(a => a.Books)
+                .ThenInclude(b => b.Image)
             .OrderBy(a => a.Surname);
 
-        return await PageAsync(query, limit, offset, AuthorMapper.ToDtoList);
+        return await PageAsync<Author, AuthorBooksDto>(
+            query, 
+            limit, 
+            offset, 
+            authors => AuthorMapper.ToDetailDtoList(authors)
+        );
     }
 
     public async Task<AuthorBooksDto?> GetByIdAsync(int id)
@@ -38,7 +45,7 @@ public class AuthorService : BaseService<BookHubDbContext>, IAuthorService
         return author != null ? AuthorMapper.ToDetailDto(author) : null;
     }
 
-    public async Task<AuthorDto> CreateAsync(AuthorRequestDto requestDto)
+    public async Task<AuthorBooksDto> CreateAsync(AuthorRequestDto requestDto)
     {
         // Validate that all provided IDs exist
         await ValidateRelatedEntitiesExistAsync(requestDto);
@@ -67,7 +74,7 @@ public class AuthorService : BaseService<BookHubDbContext>, IAuthorService
         return AuthorMapper.ToDetailDto(createdAuthor);
     }
 
-    public async Task<AuthorDto?> UpdateAsync(int id, AuthorRequestDto requestDto)
+    public async Task<AuthorBooksDto?> UpdateAsync(int id, AuthorRequestDto requestDto)
     {
         var author = await Context.Authors
             .Include(a => a.ProfilePhoto)

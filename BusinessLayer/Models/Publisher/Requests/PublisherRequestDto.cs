@@ -12,7 +12,7 @@ public class PublisherRequestDto
     [MaxLength(150, ErrorMessage = "The Adress cannot exceed 150 characters.")]
     public required string Address { get; set; }
 
-    public int ProfilePhotoId { get; set; }
+    public int? ProfilePhotoId { get; set; }
 
     public List<int> BookIds { get; set; } = new List<int>();
 }

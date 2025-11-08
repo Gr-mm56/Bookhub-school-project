@@ -20,7 +20,7 @@ public class PublisherServiceTests
         var createDto = CreatePublisherDto();
 
         // Act
-        var created = await publisherService.CreatePublisherAsync(createDto);
+        var created = await publisherService.CreateAsync(createDto);
 
         // Assert
         Assert.NotNull(created);
@@ -28,10 +28,10 @@ public class PublisherServiceTests
         Assert.Equal(createDto.ProfilePhotoId, created.ProfilePhoto?.Id);
         Assert.Equal(createDto.Name, created.Name);
         Assert.Equal(createDto.Address, created.Address);
-        Assert.Equal(createDto.BookIds.Count, created.Books.Count);
+        Assert.Equal(createDto.BookIds, created.Books.Select(b => b.Id).ToList());
 
         // Verify persistence by fetching from service
-        var fetched = await publisherService.GetPublisherByIdAsync(created.Id);
+        var fetched = await publisherService.GetByIdAsync(created.Id);
 
         Assert.NotNull(fetched);
         Assert.Equal(created.Id, fetched.Id);
@@ -55,11 +55,10 @@ public class PublisherServiceTests
             BookIds = new List<int>()
         };
 
+        var created = await publisherService.CreateAsync(createDto);
+
         // Act & Assert
-        await Assert.ThrowsAsync<ArgumentException>(async () =>
-        {
-            await publisherService.CreatePublisherAsync(createDto);
-        });
+        Assert.Null(created.ProfilePhoto);
     }
 
     [Fact]
@@ -71,10 +70,10 @@ public class PublisherServiceTests
 
         var createDto = CreatePublisherDto();
 
-        var created = await publisherService.CreatePublisherAsync(createDto);
+        var created = await publisherService.CreateAsync(createDto);
 
         // Act
-        var fetched = await publisherService.GetPublisherByIdAsync(created.Id);
+        var fetched = await publisherService.GetByIdAsync(created.Id);
 
         // Assert
         Assert.NotNull(fetched);
@@ -92,7 +91,7 @@ public class PublisherServiceTests
         var publisherService = provider.GetRequiredService<IPublisherService>();
 
         // Act
-        var fetched = await publisherService.GetPublisherByIdAsync(9999);
+        var fetched = await publisherService.GetByIdAsync(9999);
 
         // Assert
         Assert.Null(fetched);
@@ -114,11 +113,11 @@ public class PublisherServiceTests
                 ProfilePhotoId = 1 + i,
                 BookIds = new List<int>()
             };
-            await publisherService.CreatePublisherAsync(createDto);
+            await publisherService.CreateAsync(createDto);
         }
 
         // Act
-        var pagedResult = await publisherService.GetPublishersAsync(limit: 3, offset: 0);
+        var pagedResult = await publisherService.GetAllAsync(limit: 3, offset: 0);
 
         // Assert
         Assert.NotNull(pagedResult);
@@ -135,7 +134,7 @@ public class PublisherServiceTests
 
         var createDto = CreatePublisherDto();
 
-        var created = await publisherService.CreatePublisherAsync(createDto);
+        var created = await publisherService.CreateAsync(createDto);
 
         var updateDto = new PublisherRequestDto
         {
@@ -144,7 +143,7 @@ public class PublisherServiceTests
         };
 
         // Act
-        var updated = await publisherService.UpdatePublisherAsync(created.Id, updateDto);
+        var updated = await publisherService.UpdateAsync(created.Id, updateDto);
 
         // Assert
         Assert.NotNull(updated);
@@ -154,15 +153,14 @@ public class PublisherServiceTests
     }
 
     [Fact]
-    public async Task PutPublisher_NonExistingImageId_ReturnsNull()
+    public async Task PutPublisher_NonExistingImageId_ThrowsException()
     {
         // Arrange
         var provider = _serviceProviderBuilder.Create();
         var publisherService = provider.GetRequiredService<IPublisherService>();
 
         var createDto = CreatePublisherDto();
-
-        await publisherService.CreatePublisherAsync(createDto);
+        var created = await publisherService.CreateAsync(createDto);
 
         var updateDto = new PublisherRequestDto
         {
@@ -171,11 +169,11 @@ public class PublisherServiceTests
             ProfilePhotoId = 15 // Non-existing Image ID
         };
 
-        // Act
-        var updated = await publisherService.UpdatePublisherAsync(1, updateDto);
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<ArgumentException>(async () =>
+            await publisherService.UpdateAsync(created.Id, updateDto));
 
-        // Assert
-        Assert.Null(updated);
+        Assert.Contains("Invalid Image ID", exception.Message);
     }
 
     [Fact]
@@ -187,15 +185,15 @@ public class PublisherServiceTests
 
         var createDto = CreatePublisherDto();
 
-        var created = await publisherService.CreatePublisherAsync(createDto);
+        var created = await publisherService.CreateAsync(createDto);
 
         // Act
-        var deleted = await publisherService.DeletePublisherAsync(created.Id);
+        var deleted = await publisherService.DeleteAsync(created.Id);
 
         // Assert
         Assert.True(deleted);
 
-        var fetched = await publisherService.GetPublisherByIdAsync(created.Id);
+        var fetched = await publisherService.GetByIdAsync(created.Id);
         Assert.Null(fetched);
     }
 
@@ -206,7 +204,7 @@ public class PublisherServiceTests
         var publisherService = provider.GetRequiredService<IPublisherService>();
 
         // Act
-        var deleted = await publisherService.DeletePublisherAsync(9999); // Non-existing publisher ID
+        var deleted = await publisherService.DeleteAsync(9999); // Non-existing publisher ID
 
         // Assert
         Assert.False(deleted);
