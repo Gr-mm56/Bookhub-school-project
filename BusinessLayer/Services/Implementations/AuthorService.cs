@@ -31,6 +31,8 @@ public class AuthorService : BaseService<BookHubDbContext>, IAuthorService
         var author = await Context.Authors
             .AsNoTracking()
             .Include(a => a.ProfilePhoto)
+            .Include(a => a.Books)
+                .ThenInclude(b => b.Image)
             .FirstOrDefaultAsync(a => a.Id == id);
 
         return author != null ? AuthorMapper.ToDetailDto(author) : null;
@@ -43,6 +45,12 @@ public class AuthorService : BaseService<BookHubDbContext>, IAuthorService
 
         var author = AuthorMapper.CreateEntity(requestDto);
 
+        // Handle optional ProfilePhotoId
+        if (requestDto.ProfilePhotoId <= 0)
+        {
+            author.ProfilePhotoId = null;
+        }
+
         // Load related entities and associate them with the author
         await AssociateRelatedEntitiesAsync(author, requestDto);
 
@@ -52,6 +60,8 @@ public class AuthorService : BaseService<BookHubDbContext>, IAuthorService
         // Reload with all related data
         var createdAuthor = await Context.Authors
             .Include(a => a.Books)
+            .Include(a => a.Books)
+                .ThenInclude(b => b.Image)
             .FirstAsync(a => a.Id == author.Id);
 
         return AuthorMapper.ToDetailDto(createdAuthor);
@@ -60,6 +70,7 @@ public class AuthorService : BaseService<BookHubDbContext>, IAuthorService
     public async Task<AuthorDto?> UpdateAsync(int id, AuthorRequestDto requestDto)
     {
         var author = await Context.Authors
+            .Include(a => a.ProfilePhoto)
             .Include(b => b.Books)
             .FirstOrDefaultAsync(a => a.Id == id);
 
@@ -74,15 +85,24 @@ public class AuthorService : BaseService<BookHubDbContext>, IAuthorService
         // Update basic properties
         AuthorMapper.UpdateEntity(author, requestDto);
 
-        // Clear existing relationships and add new ones
-        author.Books.Clear();
+        // Handle optional ProfilePhotoId
+        if (requestDto.ProfilePhotoId <= 0)
+        {
+            author.ProfilePhotoId = null;
+        }
 
-        // Load and associate new related entities
-        await AssociateRelatedEntitiesAsync(author, requestDto);
+        await ExtendBooksCollectionAsync(author, requestDto);
 
         await SaveAsync();
 
-        return AuthorMapper.ToDetailDto(author);
+        // Reload with updated data
+        var updatedAuthor = await Context.Authors
+            .Include(a => a.ProfilePhoto)
+            .Include(a => a.Books)
+                .ThenInclude(b => b.Image)
+            .FirstAsync(a => a.Id == id);
+
+        return AuthorMapper.ToDetailDto(updatedAuthor);
     }
 
     private async Task ValidateRelatedEntitiesExistAsync(AuthorRequestDto requestDto)
@@ -133,6 +153,28 @@ public class AuthorService : BaseService<BookHubDbContext>, IAuthorService
         }
     }
 
+    private async Task ExtendBooksCollectionAsync(Author author, AuthorRequestDto requestDto)
+    {
+        if (requestDto.BookIds.Any())
+        {
+            var currentBookIds = author.Books.Select(b => b.Id).ToList();
+
+            var newBookIds = requestDto.BookIds.Except(currentBookIds).ToList();
+
+            if (newBookIds.Any())
+            {
+                var newBooks = await Context.Books
+                    .Where(b => newBookIds.Contains(b.Id))
+                    .ToListAsync();
+
+                foreach (var book in newBooks)
+                {
+                    author.Books.Add(book);
+                }
+            }
+        }
+    }
+
     public async Task<bool> DeleteAsync(int id)
     {
         var author = await Context.Authors
@@ -147,6 +189,11 @@ public class AuthorService : BaseService<BookHubDbContext>, IAuthorService
         if (author == null)
         {
             return false;
+        }
+
+        if (author.Books.Any())
+        {
+            throw new InvalidOperationException("Cannot delete author who has associated books. Remove the author from all books first.");
         }
 
         Context.Authors.Remove(author);
