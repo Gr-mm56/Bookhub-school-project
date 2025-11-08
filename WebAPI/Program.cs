@@ -3,7 +3,9 @@ using BusinessLayer.Services.Interfaces;
 using DataAccessLayer.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using MongoDB.Driver;
 using Middleware;
+using Middleware.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -57,6 +59,16 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
+
+builder.Services.AddSingleton<IMongoClient>(sp =>
+{
+    var connectionString = builder.Configuration.GetConnectionString("MongoDB")
+                           ?? "mongodb://localhost:27017";
+    return new MongoClient(connectionString);
+});
+
+builder.Services.AddSingleton<ILogService, MongoLogService>();
+
 
 var app = builder.Build();
 
