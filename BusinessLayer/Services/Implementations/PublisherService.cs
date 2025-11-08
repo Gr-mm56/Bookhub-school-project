@@ -47,18 +47,15 @@ public class PublisherService : BaseService<BookHubDbContext>, IPublisherService
 
     public async Task<PublisherBooksDto> CreateAsync(PublisherRequestDto requestDto)
     {
-        // Validate that all provided IDs exist
         await ValidateRelatedEntitiesExistAsync(requestDto);
 
         var publisher = PublisherMapper.CreateEntity(requestDto);
 
-        // Handle optional ProfilePhotoId
         if (requestDto.ProfilePhotoId <= 0)
         {
             publisher.ProfilePhotoId = null;
         }
 
-        // Load related entities and associate them with the publisher
         await ExtendBooksCollectionAsync(publisher, requestDto);
 
         await Context.Publishers.AddAsync(publisher);
@@ -86,19 +83,15 @@ public class PublisherService : BaseService<BookHubDbContext>, IPublisherService
             return null;
         }
 
-        // Validate that all provided IDs exist
         await ValidateRelatedEntitiesExistAsync(requestDto);
 
-        // Update basic properties
-        PublisherMapper.UpdateEntity(publisher, requestDto);
-
-        // Handle optional ProfilePhotoId
         if (requestDto.ProfilePhotoId <= 0)
         {
             publisher.ProfilePhotoId = null;
         }
 
         await ExtendBooksCollectionAsync(publisher, requestDto);
+        PublisherMapper.UpdateEntity(publisher, requestDto);
 
         await SaveAsync();
 

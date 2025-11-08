@@ -52,16 +52,14 @@ public class AuthorService : BaseService<BookHubDbContext>, IAuthorService
 
         var author = AuthorMapper.CreateEntity(requestDto);
 
-        // Handle optional ProfilePhotoId
         if (requestDto.ProfilePhotoId <= 0)
         {
             author.ProfilePhotoId = null;
         }
 
-        // Load related entities and associate them with the author
-        await AssociateRelatedEntitiesAsync(author, requestDto);
-
         await Context.Authors.AddAsync(author);
+        await ExtendBooksCollectionAsync(author, requestDto);
+
         await SaveAsync();
 
         // Reload with all related data
@@ -86,19 +84,15 @@ public class AuthorService : BaseService<BookHubDbContext>, IAuthorService
             return null;
         }
 
-        // Validate that all provided IDs exist
         await ValidateRelatedEntitiesExistAsync(requestDto);
 
-        // Update basic properties
-        AuthorMapper.UpdateEntity(author, requestDto);
-
-        // Handle optional ProfilePhotoId
         if (requestDto.ProfilePhotoId <= 0)
         {
             author.ProfilePhotoId = null;
         }
 
         await ExtendBooksCollectionAsync(author, requestDto);
+        AuthorMapper.UpdateEntity(author, requestDto);
 
         await SaveAsync();
 
@@ -145,18 +139,6 @@ public class AuthorService : BaseService<BookHubDbContext>, IAuthorService
         if (errors.Any())
         {
             throw new ArgumentException($"Validation failed: {string.Join("; ", errors)}");
-        }
-    }
-
-    private async Task AssociateRelatedEntitiesAsync(Author author, AuthorRequestDto requestDto)
-    {
-        // Load and associate Books
-        if (requestDto.BookIds.Any())
-        {
-            var books = await Context.Books
-                .Where(a => requestDto.BookIds.Contains(a.Id))
-                .ToListAsync();
-            author.Books = books;
         }
     }
 
