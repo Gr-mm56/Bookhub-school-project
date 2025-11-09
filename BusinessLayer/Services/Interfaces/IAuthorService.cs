@@ -3,7 +3,7 @@ using BusinessLayer.Models.Author.Responses;
 
 namespace BusinessLayer.Services.Interfaces;
 
-public interface IAuthorService : ICrudService<AuthorDto, AuthorBooksDto, AuthorRequestDto, AuthorRequestDto>
+public interface IAuthorService : ICrudService<AuthorBooksDto, AuthorBooksDto, AuthorRequestDto, AuthorRequestDto>
 {
 
 }

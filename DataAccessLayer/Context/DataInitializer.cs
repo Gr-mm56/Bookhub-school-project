@@ -1,10 +1,12 @@
 ﻿using DataAccessLayer.Entities;
 using Microsoft.EntityFrameworkCore;
+using Bogus;
 
 namespace DataAccessLayer.Context;
 
 public static class DataInitializer
 {
+    private const int BogusSeed = 696969;
     public static void Seed(this ModelBuilder modelBuilder)
     {
         var images = PrepareImageModels();
@@ -37,7 +39,7 @@ public static class DataInitializer
         var wishlistItems = PrepareWishlistItemModels();
         modelBuilder.Entity<WishlistItem>().HasData(AddDates(wishlistItems));
 
-        var bookAuthors = PrepareBookAuthorRelationships();
+        var bookAuthors = PrepareBookAuthorRelationships(books, authors);
         modelBuilder.Entity<RelBookAuthor>().HasData(bookAuthors);
         
         var bookGenres = PrepareBookGenreRelationships();
@@ -45,278 +47,137 @@ public static class DataInitializer
 
 
     }
-
+    private static readonly List<string> GenreNames =
+    [
+        "Science Fiction", "Fantasy", "Mystery", "Thriller", "Romance",
+        "Historical Fiction", "Horror", "Biography", "Self-Help", "Poetry",
+        "Young Adult", "Children's", "Adventure", "Action", "Literary Fiction"
+    ];
     private static List<Genre> PrepareGenreModels()
     {
-        return
-        [
-            new Genre { Id = 1, Name = "Science Fiction" },
-            new Genre { Id = 2, Name = "Fantasy" },
-            new Genre { Id = 3, Name = "Mystery" },
-            new Genre { Id = 4, Name = "Thriller" },
-            new Genre { Id = 5, Name = "Romance" },
-            new Genre { Id = 6, Name = "Historical Fiction" },
-            new Genre { Id = 7, Name = "Horror" },
-            new Genre { Id = 8, Name = "Biography" },
-            new Genre { Id = 9, Name = "Self-Help" },
-            new Genre { Id = 10, Name = "Poetry" },
-            new Genre { Id = 11, Name = "Young Adult" },
-            new Genre { Id = 12, Name = "Children's" },
-            new Genre { Id = 13, Name = "Adventure" },
-            new Genre { Id = 14, Name = "Action" },
-            new Genre { Id = 15, Name = "Literary Fiction" }
-        ];
+        var randomizer = new Randomizer(BogusSeed);
+        var shuffledNames = randomizer.Shuffle(GenreNames).ToList();
+        return shuffledNames.Select((name, index) => new Genre
+        {
+            Id = index + 1,
+            Name = name
+        }).ToList();
     }
 
     private static List<Book> PrepareBookModels()
     {
-        return
-        [
-            new Book
-            {
-                Id = 1,
-                Title = "The Fellowship of the Ring",
-                ISBN = "978-0618260243",
-                Price = 12.99,
-                Description =
-                    "The first volume in J.R.R. Tolkien's epic adventure, starting the journey to destroy the One Ring.",
-                ImageId = 6,
-                PublisherId = 1
-            },
-
-            new Book
-            {
-                Id = 2,
-                Title = "The Two Towers",
-                ISBN = "978-0618260281",
-                Price = 14.50,
-                Description =
-                    "The second volume of the trilogy, where the fellowship is scattered and the war for Middle-earth escalates.",
-                ImageId = 7,
-                PublisherId = 1
-            },
-
-            new Book
-            {
-                Id = 3,
-                Title = "The Return of the King",
-                ISBN = "978-0618260304",
-                Price = 15.99,
-                Description =
-                    "The final volume, chronicling the final destruction of the Ring and the ultimate fate of Middle-earth.",
-                ImageId = 8,
-                PublisherId = 2
-            }
-        ];
+        var index = 1;
+        return new Faker<Book>().UseSeed(BogusSeed).RuleFor(b => b.Id, _ => index++)
+            .RuleFor(b => b.Title, f => f.Lorem.Sentence(2, 5))
+            .RuleFor(b => b.ISBN, f => f.Random.ReplaceNumbers("666-1-#######-##-#"))
+            .RuleFor(b => b.Price, f => Math.Round(f.Random.Double(5, 50), 2))
+            .RuleFor(b => b.Description, f => f.Lorem.Paragraphs(1, 2))
+            .RuleFor(b => b.ImageId, f => f.Random.Number(1, 4))
+            .RuleFor(b => b.PublisherId, f => f.Random.Number(1, 2))
+            .Generate(25);
     }
     
     
 
     private static List<User> PrepareUserModels()
     {
-        return
-        [
-            new User
-            {
-                Id = 1,
-                Name = "John",
-                Surname = "Doe",
-                Country = "USA",
-                City = "New York",
-                Street = "5th Avenue 123",
-                ProfilePhotoId = 1
-            },
-            new User
-            {
-                Id = 2,
-                Name = "Jane",
-                Surname = "Smith",
-                Country = "UK",
-                City = "London",
-                Street = "Baker Street 221B",
-                ProfilePhotoId = 2
-            },
-            new User
-            {
-                Id = 3,
-                Name = "Taro",
-                Surname = "Yamada",
-                Country = "Japan",
-                City = "Tokyo",
-                Street = "Shibuya 1-2-3",
-                ProfilePhotoId = 3
-            },
-            new User
-            {
-                Id = 4,
-                Name = "Anna",
-                Surname = "Kowalska",
-                Country = "Poland",
-                City = "Warsaw",
-                Street = "Marszałkowska 45",
-                ProfilePhotoId = 4
-            },
-            new User
-            {
-                Id = 5,
-                Name = "Peter",
-                Surname = "Novák",
-                Country = "Slovakia",
-                City = "Bratislava",
-                Street = "Hviezdoslavovo námestie 7",
-                ProfilePhotoId = 5
-            }
-        ];
+        var index = 1;
+        return new Faker<User>().UseSeed(BogusSeed).RuleFor(u => u.Id, _ => index++)
+            .RuleFor(u => u.Name, f => f.Name.FirstName())
+            .RuleFor(u => u.Surname, f => f.Name.LastName())
+            .RuleFor(u => u.Country, f => f.Address.Country())
+            .RuleFor(u => u.City, f => f.Address.City())
+            .RuleFor(u => u.Street, f => f.Address.StreetName())
+            .Generate(7);
     }
 
     private static List<Rating> PrepareRatingModels()
     {
-        return
-        [
-            new Rating
-            {
-                Id = 1,
-                Stars = 5,
-                BookId = 1,
-                UserId = 1
-            },
+        const int maxBooks = 25;
+        const int maxUsers = 7;
+        var targetCount = Math.Min(8, maxBooks * maxUsers);
 
-            new Rating
-            {
-                Id = 2,
-                Stars = 4,
-                BookId = 2,
-                UserId = 2
-            }
-        ];
+        var allPairs = (from bookId in Enumerable.Range(1, maxBooks)
+            from userId in Enumerable.Range(1, maxUsers)
+            select (BookId: bookId, UserId: userId)).ToList();
+
+        var randomizer = new Randomizer(BogusSeed);
+        var shuffledPairs = randomizer.Shuffle(allPairs).Take(targetCount).ToList();
+
+        var id = 1;
+        var pairIndex = 0;
+
+        return new Faker<Rating>().UseSeed(BogusSeed)
+            .RuleFor(r => r.Id, _ => id++)
+            .RuleFor(r => r.BookId, _ => shuffledPairs[pairIndex].BookId)
+            .RuleFor(r => r.UserId, _ => {
+                var u = shuffledPairs[pairIndex].UserId;
+                pairIndex++;
+                return u;
+            })
+            .RuleFor(r => r.Stars, f => f.Random.Number(1, 5))
+            .Generate(targetCount);
     }
 
     private static List<Cart> PrepareCartModels()
     {
-        var seedDate = new DateTime(2025, 09, 15);
+        const int userCount = 7;
+        var idCounter = 1;
+        var userCounter = 1;
 
-        return
-        [
-            new Cart
-            {
-                Id = 1,
-                UserId = 1,
-                TotalValue = 49.99,
-                OrderId = null,
-                OrderDate = null
-            },
-            new Cart
-            {
-                Id = 2,
-                UserId = 2,
-                TotalValue = 0,
-                OrderId = null,
-                OrderDate = null
-            },
-            new Cart
-            {
-                Id = 3,
-                UserId = 3,
-                TotalValue = 120.50,
-                OrderId = 1001,
-                OrderDate = seedDate
-            },
-            new Cart
-            {
-                Id = 4,
-                UserId = 4,
-                TotalValue = 15.75,
-                OrderId = 1002,
-                OrderDate = seedDate
-            },
-            new Cart
-            {
-                Id = 5,
-                UserId = 5,
-                TotalValue = 200.00,
-                OrderId = null,
-                OrderDate = null
-            }
-        ];
+        return new Faker<Cart>().UseSeed(BogusSeed)
+            .RuleFor(c => c.Id, _ => idCounter++)
+            .RuleFor(c => c.UserId, _ => userCounter++)
+            .RuleFor(c => c.TotalValue, f => Math.Round(f.Random.Double(0, 300), 2))
+            .RuleFor(c => c.OrderId, f => f.Random.Bool(0.5f) ? f.Random.Int(1000, 2000) : null)
+            .RuleFor(c => c.OrderDate, (f, c) => c.OrderId.HasValue ? f.Date.Between(new DateTime(2024, 1, 1), new DateTime(2025, 9, 15)) : null)
+             .Generate(userCount);
     }
 
     private static List<PurchaseItem> PreparePurchaseItemModels()
     {
-        return
-        [
-            new PurchaseItem
-            {
-                Id = 1,
-                BookId = 1,
-                CartId = 1,
-                Count = 2
-            },
-            new PurchaseItem
-            {
-                Id = 2,
-                BookId = 3,
-                CartId = 1,
-                Count = 1
-            },
-            new PurchaseItem
-            {
-                Id = 3,
-                BookId = 2,
-                CartId = 3,
-                Count = 1
-            },
-            new PurchaseItem
-            {
-                Id = 4,
-                BookId = 5,
-                CartId = 4,
-                Count = 3
-            },
-            new PurchaseItem
-            {
-                Id = 5,
-                BookId = 4,
-                CartId = 5,
-                Count = 1
-            }
-        ];
+        const int maxBooks = 25;
+        const int maxCarts = 7;
+
+        var allPairs = (from b in Enumerable.Range(1, maxBooks)
+            from c in Enumerable.Range(1, maxCarts)
+            select (BookId: b, CartId: c)).ToList();
+
+        var randomizer = new Randomizer(BogusSeed);
+        var targetCount = Math.Min(10, allPairs.Count);
+        var shuffled = randomizer.Shuffle(allPairs).Take(targetCount).ToList();
+
+        var id = 1;
+        var pairIndex = 0;
+
+        return new Faker<PurchaseItem>().UseSeed(BogusSeed)
+            .RuleFor(p => p.Id, _ => id++)
+            .RuleFor(p => p.BookId, _ => shuffled[pairIndex].BookId)
+            .RuleFor(p => p.CartId, _ => { var v = shuffled[pairIndex].CartId; pairIndex++; return v; })
+            .RuleFor(p => p.Count, f => f.Random.Int(1, 5))
+            .Generate(targetCount);
     }
 
     private static List<WishlistItem> PrepareWishlistItemModels()
     {
-        return
-        [
-            new WishlistItem
-            {
-                Id = 1,
-                UserId = 1,
-                BookId = 2
-            },
-            new WishlistItem
-            {
-                Id = 2,
-                UserId = 1,
-                BookId = 5
-            },
-            new WishlistItem
-            {
-                Id = 3,
-                UserId = 2,
-                BookId = 1
-            },
-            new WishlistItem
-            {
-                Id = 4,
-                UserId = 3,
-                BookId = 3
-            },
-            new WishlistItem
-            {
-                Id = 5,
-                UserId = 4,
-                BookId = 4
-            }
-        ];
+        const int maxUsers = 7;
+        const int maxBooks = 25;
+        var allPairs = (from u in Enumerable.Range(1, maxUsers)
+            from b in Enumerable.Range(1, maxBooks)
+            select (UserId: u, BookId: b)).ToList();
+
+        var randomizer = new Randomizer(BogusSeed);
+        var targetCount = Math.Min(5, allPairs.Count);
+        var shuffled = randomizer.Shuffle(allPairs).Take(targetCount).ToList();
+
+        var id = 1;
+        var pairIndex = 0;
+
+        return new Faker<WishlistItem>().UseSeed(BogusSeed)
+            .RuleFor(w => w.Id, _ => id++)
+            .RuleFor(w => w.UserId, _ => shuffled[pairIndex].UserId)
+            .RuleFor(w => w.BookId, _ => { var v = shuffled[pairIndex].BookId; pairIndex++; return v; })
+            .Generate(targetCount);
     }
 
     private static List<T> AddDates<T>(List<T> data) where T : BaseEntity
@@ -332,7 +193,7 @@ public static class DataInitializer
 
         return data;
     }
-
+    // the urls should not be seeded by Bogus, so the images actually show
     private static List<Image> PrepareImageModels()
     {
         return
@@ -354,72 +215,62 @@ public static class DataInitializer
 
     private static List<Author> PrepareAuthorModels()
     {
-        return
-        [
-            new Author
-            {
-                Id = 1,
-                Name = "J.R.R.",
-                Surname = "Tolkien",
-                ProfilePhotoId = 9
-            },
-            new Author
-            {
-                Id = 2,
-                Name = "J.K.",
-                Surname = "Rowling",
-                ProfilePhotoId = 10
-            }
-        ];
+        var index = 1;
+        return new Faker<Author>().UseSeed(BogusSeed)
+            .RuleFor(a => a.Id, _ => index++)
+            .RuleFor(a => a.Name, f => f.Name.FirstName())
+            .RuleFor(a => a.Surname, f => f.Name.LastName())
+            .RuleFor(a => a.ProfilePhotoId, f => f.Random.Number(1, 7))
+            .Generate(5);
     }
 
     private static List<Publisher> PreparePublisherModels()
     {
-        return
-        [
-            new Publisher
-            {
-                Id = 1,
-                Name = "HarperCollins",
-                Address = "195 Broadway, New York, NY 10007, USA",
-                ProfilePhotoId = 11
-            },
-            new Publisher
-            {
-                Id = 2,
-                Name = "Penguin Random House",
-                Address = "1745 Broadway, New York, NY 10019, USA",
-                ProfilePhotoId = 12
-            }
-        ];
+        var index = 1;
+        return new Faker<Publisher>().UseSeed(BogusSeed)
+            .RuleFor(p => p.Id, _ => index++)
+            .RuleFor(p => p.Name, f => f.Company.CompanyName())
+            .RuleFor(p => p.Address, f => f.Address.FullAddress())
+            .RuleFor(p => p.ProfilePhotoId, f => f.Random.Number(1, 4))
+            .Generate(3);
     }
 
     private static List<RelBookGenre> PrepareBookGenreRelationships()
     {
-        return
-        [
-            new RelBookGenre { BookId = 1, GenreId = 3 },
-            new RelBookGenre { BookId = 1, GenreId = 2 },
-            new RelBookGenre { BookId = 2, GenreId = 2 },
-            new RelBookGenre { BookId = 3, GenreId = 2 }
+        const int bookCount = 25;
+        const int genreCount = 15;
 
-        ];
+        var randomizer = new Randomizer(BogusSeed);
+        var result = new List<RelBookGenre>();
+
+        for (var bookId = 1; bookId <= bookCount; bookId++)
+        {
+            var genresToPick = randomizer.Number(1, 3);
+
+            var allGenreIds = Enumerable.Range(1, genreCount).ToList();
+            var shuffledGenreIds = randomizer.Shuffle(allGenreIds).Take(genresToPick);
+
+            result.AddRange(shuffledGenreIds.Select(g => new RelBookGenre { BookId = bookId, GenreId = g }));
+        }
+
+        return result;
     }
-    private static List<RelBookAuthor> PrepareBookAuthorRelationships()
+    private static List<RelBookAuthor> PrepareBookAuthorRelationships(List<Book> books, List<Author> authors)
     {
-        return
-        [
-            // Tolkien's books
-            new RelBookAuthor { BookId = 1, AuthorId = 1 },
-            new RelBookAuthor { BookId = 2, AuthorId = 1 },
-            new RelBookAuthor { BookId = 3, AuthorId = 1 },
-        
-            // Add fictional collaborations to demonstrate many-to-many
-            // Book 1 has both Tolkien and Rowling as co-authors (fictional example)
-            new RelBookAuthor { BookId = 1, AuthorId = 2 },
-        
-            // Book 3 also has a secondary author (fictional example)
-            new RelBookAuthor { BookId = 3, AuthorId = 2 }
-        ];
+        var randomizer = new Randomizer(BogusSeed);
+        var authorIds = authors.Select(a => a.Id).ToList();
+        var result = new List<RelBookAuthor>();
+
+        foreach (var book in books)
+        {
+            var maxAuthorsForBook = Math.Min(2, authorIds.Count);
+            var authorsToPick = randomizer.Number(1, maxAuthorsForBook);
+
+            var picked = randomizer.Shuffle(authorIds).Take(authorsToPick).ToList();
+
+            result.AddRange(picked.Select(aId => new RelBookAuthor { BookId = book.Id, AuthorId = aId }));
+        }
+
+        return result;
     }
 }
