@@ -52,7 +52,7 @@ cd WebAPI
 ```bash
 dotnet run
 ```
-7. Open your web browser and go to `https://localhost:5000/swagger` to access the Swagger UI and explore the API endpoints.
+7. Open your web browser and go to `http://localhost:5000/swagger` to access the Swagger UI and explore the API endpoints.
 >**Note:** Authentication is required to use the API. See the [Authentication](#Authentication) section below for details.  
 
 ### Database Setup
@@ -66,9 +66,32 @@ The project uses Entity Framework Core for database management. To initialize th
    ```
 4. After setting up the databasem the seeder will populate it with initial data automatically.
 
+#### Logging Database Setup
+The project uses MongoDB database to store request logs.
 
+**1. Download MongoDB if it isn't already:**
+```powershell
+    choco install mongodb
+    # or
+    winget install MongoDB.Server
+```
+**2. Start MongoDB service:**
+```powershell
+    net start MongoDB
+```
+**3. Install MongoDB Compass (GUI):**
+- Download: https://www.mongodb.com/try/download/compass
+- Install and open the application
 
-## Projet Structure
+**4. Connect to database:**
+1. In MongoDB Compass, click **"New Connection"**
+2. Enter connection string: `mongodb://localhost:27017`
+3. Click **"Connect"**
+4. Run the application and after making a request you'll need to click "Refresh Databases" button
+4. Then you'll see `BookHubLogs` database
+5. Open `BookHubLogs` → `request_logs` to view logged requests
+
+## Project Structure
 This solution consists of these projets (so far)
 
 ### DataAccessLayer
