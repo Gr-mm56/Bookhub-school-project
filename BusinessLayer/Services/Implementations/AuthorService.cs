@@ -16,14 +16,21 @@ public class AuthorService : BaseService<BookHubDbContext>, IAuthorService
 
     }
 
-    public async Task<PagedResultDto<AuthorDto>> GetAllAsync(int limit = 20, int offset = 0)
+    public async Task<PagedResultDto<AuthorBooksDto>> GetAllAsync(int limit = 20, int offset = 0)
     {
         var query = Context.Authors
             .AsNoTracking()
             .Include(a => a.ProfilePhoto)
+            .Include(a => a.Books)
+                .ThenInclude(b => b.Image)
             .OrderBy(a => a.Surname);
 
-        return await PageAsync(query, limit, offset, AuthorMapper.ToDtoList);
+        return await PageAsync<Author, AuthorBooksDto>(
+            query, 
+            limit, 
+            offset, 
+            authors => AuthorMapper.ToDetailDtoList(authors)
+        );
     }
 
     public async Task<AuthorBooksDto?> GetByIdAsync(int id)
@@ -31,35 +38,44 @@ public class AuthorService : BaseService<BookHubDbContext>, IAuthorService
         var author = await Context.Authors
             .AsNoTracking()
             .Include(a => a.ProfilePhoto)
+            .Include(a => a.Books)
+                .ThenInclude(b => b.Image)
             .FirstOrDefaultAsync(a => a.Id == id);
 
         return author != null ? AuthorMapper.ToDetailDto(author) : null;
     }
 
-    public async Task<AuthorDto> CreateAsync(AuthorRequestDto requestDto)
+    public async Task<AuthorBooksDto> CreateAsync(AuthorRequestDto requestDto)
     {
         // Validate that all provided IDs exist
         await ValidateRelatedEntitiesExistAsync(requestDto);
 
         var author = AuthorMapper.CreateEntity(requestDto);
 
-        // Load related entities and associate them with the author
-        await AssociateRelatedEntitiesAsync(author, requestDto);
+        if (requestDto.ProfilePhotoId <= 0)
+        {
+            author.ProfilePhotoId = null;
+        }
 
         await Context.Authors.AddAsync(author);
+        await ExtendBooksCollectionAsync(author, requestDto);
+
         await SaveAsync();
 
         // Reload with all related data
         var createdAuthor = await Context.Authors
             .Include(a => a.Books)
+            .Include(a => a.Books)
+                .ThenInclude(b => b.Image)
             .FirstAsync(a => a.Id == author.Id);
 
         return AuthorMapper.ToDetailDto(createdAuthor);
     }
 
-    public async Task<AuthorDto?> UpdateAsync(int id, AuthorRequestDto requestDto)
+    public async Task<AuthorBooksDto?> UpdateAsync(int id, AuthorRequestDto requestDto)
     {
         var author = await Context.Authors
+            .Include(a => a.ProfilePhoto)
             .Include(b => b.Books)
             .FirstOrDefaultAsync(a => a.Id == id);
 
@@ -68,21 +84,26 @@ public class AuthorService : BaseService<BookHubDbContext>, IAuthorService
             return null;
         }
 
-        // Validate that all provided IDs exist
         await ValidateRelatedEntitiesExistAsync(requestDto);
 
-        // Update basic properties
+        if (requestDto.ProfilePhotoId <= 0)
+        {
+            author.ProfilePhotoId = null;
+        }
+
+        await ExtendBooksCollectionAsync(author, requestDto);
         AuthorMapper.UpdateEntity(author, requestDto);
-
-        // Clear existing relationships and add new ones
-        author.Books.Clear();
-
-        // Load and associate new related entities
-        await AssociateRelatedEntitiesAsync(author, requestDto);
 
         await SaveAsync();
 
-        return AuthorMapper.ToDetailDto(author);
+        // Reload with updated data
+        var updatedAuthor = await Context.Authors
+            .Include(a => a.ProfilePhoto)
+            .Include(a => a.Books)
+                .ThenInclude(b => b.Image)
+            .FirstAsync(a => a.Id == id);
+
+        return AuthorMapper.ToDetailDto(updatedAuthor);
     }
 
     private async Task ValidateRelatedEntitiesExistAsync(AuthorRequestDto requestDto)
@@ -121,15 +142,25 @@ public class AuthorService : BaseService<BookHubDbContext>, IAuthorService
         }
     }
 
-    private async Task AssociateRelatedEntitiesAsync(Author author, AuthorRequestDto requestDto)
+    private async Task ExtendBooksCollectionAsync(Author author, AuthorRequestDto requestDto)
     {
-        // Load and associate Books
         if (requestDto.BookIds.Any())
         {
-            var books = await Context.Books
-                .Where(a => requestDto.BookIds.Contains(a.Id))
-                .ToListAsync();
-            author.Books = books;
+            var currentBookIds = author.Books.Select(b => b.Id).ToList();
+
+            var newBookIds = requestDto.BookIds.Except(currentBookIds).ToList();
+
+            if (newBookIds.Any())
+            {
+                var newBooks = await Context.Books
+                    .Where(b => newBookIds.Contains(b.Id))
+                    .ToListAsync();
+
+                foreach (var book in newBooks)
+                {
+                    author.Books.Add(book);
+                }
+            }
         }
     }
 
@@ -147,6 +178,11 @@ public class AuthorService : BaseService<BookHubDbContext>, IAuthorService
         if (author == null)
         {
             return false;
+        }
+
+        if (author.Books.Any())
+        {
+            throw new InvalidOperationException("Cannot delete author who has associated books. Remove the author from all books first.");
         }
 
         Context.Authors.Remove(author);

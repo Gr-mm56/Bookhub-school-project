@@ -4,7 +4,7 @@ using BusinessLayer.Services.Interfaces;
 
 namespace WebAPI.Controllers;
 
-public class PublisherController : BaseController<PublisherDto, PublisherBooksDto, PublisherRequestDto, PublisherRequestDto, IPublisherService>
+public class PublisherController : BaseController<PublisherBooksDto, PublisherBooksDto, PublisherRequestDto, PublisherRequestDto, IPublisherService>
 {
     public PublisherController(IPublisherService publisherService) : base(publisherService)
     {
