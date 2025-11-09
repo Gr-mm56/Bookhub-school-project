@@ -70,10 +70,6 @@ public abstract class BaseController<TEntityDto, TEntityDetailDto, TCreateDto, T
         {
             return BadRequest(new { message = ex.Message });
         }
-        catch (Exception)
-        {
-            return BadRequest(new { message = "An unexpected error occurred" });
-        }
     }
 
     [HttpPut("{id:int}")]
@@ -100,10 +96,6 @@ public abstract class BaseController<TEntityDto, TEntityDetailDto, TCreateDto, T
         {
             return BadRequest(new { message = ex.Message });
         }
-        catch (Exception)
-        {
-            return BadRequest(new { message = "An unexpected error occurred" });
-        }
     }
 
     [HttpDelete]
@@ -126,10 +118,6 @@ public abstract class BaseController<TEntityDto, TEntityDetailDto, TCreateDto, T
         catch (InvalidOperationException ex)
         {
             return BadRequest(new { message = ex.Message });
-        }
-        catch (Exception)
-        {
-            return BadRequest(new { message = "An unexpected error occurred" });
         }
     }
 }
