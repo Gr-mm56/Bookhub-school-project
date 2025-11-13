@@ -59,17 +59,21 @@ public abstract class BaseController<TEntityDto, TEntityDetailDto, TCreateDto, T
 
         try
         {
-            await Service.CreateAsync(dto);
-            return Created();
+            var result = await Service.CreateAsync(dto);
+            return CreatedAtAction(nameof(GetById), new { id = ((dynamic)result).Id }, result);
         }
-        catch (Exception)
+        catch (ArgumentException ex)
         {
-            return BadRequest();
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
         }
     }
 
     [HttpPut("{id:int}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public virtual async Task<IActionResult> Update(int id, [FromBody] TUpdateDto dto)
@@ -84,9 +88,13 @@ public abstract class BaseController<TEntityDto, TEntityDetailDto, TCreateDto, T
             var updated = await Service.UpdateAsync(id, dto);
             return updated == null ? NotFound() : Ok(updated);
         }
-        catch (Exception)
+        catch (ArgumentException ex)
         {
-            return BadRequest();
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
         }
     }
 
@@ -99,10 +107,17 @@ public abstract class BaseController<TEntityDto, TEntityDetailDto, TCreateDto, T
     {
         if (id <= 0)
         {
-            return BadRequest();
+            return BadRequest(new { message = "Invalid ID provided" });
         }
 
-        var deleted = await Service.DeleteAsync(id);
-        return deleted ? NoContent() : NotFound();
+        try
+        {
+            var deleted = await Service.DeleteAsync(id);
+            return deleted ? NoContent() : NotFound();
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 }
