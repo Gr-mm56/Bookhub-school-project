@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestUtilities", "TestUtilit
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessLayer.Tests", "BusinessLayer.Tests\BusinessLayer.Tests.csproj", "{9BCDC574-0A7B-4DA7-A56E-5F09D5E4E5AA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebMVC", "WebMVC\WebMVC.csproj", "{C24648D4-B345-4DE4-B554-EC531A38AD0C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{9BCDC574-0A7B-4DA7-A56E-5F09D5E4E5AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9BCDC574-0A7B-4DA7-A56E-5F09D5E4E5AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9BCDC574-0A7B-4DA7-A56E-5F09D5E4E5AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C24648D4-B345-4DE4-B554-EC531A38AD0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C24648D4-B345-4DE4-B554-EC531A38AD0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C24648D4-B345-4DE4-B554-EC531A38AD0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C24648D4-B345-4DE4-B554-EC531A38AD0C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

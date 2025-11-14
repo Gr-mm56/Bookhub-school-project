@@ -1,14 +1,16 @@
 ﻿using DataAccessLayer.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace DataAccessLayer.Context;
 
-public class BookHubDbContext: DbContext
+public class BookHubDbContext: IdentityDbContext<LocalIdentityUser>
 {
     public DbSet<Book> Books { get; set; }
     public DbSet<Rating> Ratings { get; set; }
     public DbSet<Genre> Genres { get; set; }
-    public DbSet<User> Users { get; set; }
+    public new DbSet<User> Users { get; set; }
+    public DbSet<LocalIdentityUser> LocalIdentityUsers { get; set; }
     public DbSet<Cart> Carts { get; set; }
     public DbSet<PurchaseItem> PurchaseItems { get; set; }
     public DbSet<WishlistItem> WishlistItems { get; set; }
@@ -23,6 +25,9 @@ public class BookHubDbContext: DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // Let IdentityDbContext configure identity-related entities first
+        base.OnModelCreating(modelBuilder);
+
         // Book M:N Genre
         modelBuilder.Entity<Book>()
             .HasMany(b => b.Genres)
@@ -123,6 +128,5 @@ public class BookHubDbContext: DbContext
             .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Seed();
-        base.OnModelCreating(modelBuilder);
     }
 }

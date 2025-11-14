@@ -1,0 +1,58 @@
+﻿@model RegisterViewModel
+
+<h2>Register</h2>
+
+<form asp-action="Register" method="post">
+    <div>
+        <label asp-for="Name"></label>
+        <input asp-for="Name"/>
+        <span asp-validation-for="Name"></span>
+    </div>
+    <div>
+        <label asp-for="Surname"></label>
+        <input asp-for="Surname"/>
+        <span asp-validation-for="Surname"></span>
+    </div>
+    <div>
+        <label asp-for="Username"></label>
+        <input asp-for="Username"/>
+        <span asp-validation-for="Username"></span>
+    </div>
+    <div>
+        <label asp-for="Email"></label>
+        <input asp-for="Email"/>
+        <span asp-validation-for="Email"></span>
+    </div>
+    <div>
+        <label asp-for="Country"></label>
+        <input asp-for="Country"/>
+        <span asp-validation-for="Country"></span>
+    </div>
+    <div>
+        <label asp-for="City"></label>
+        <input asp-for="City"/>
+        <span asp-validation-for="City"></span>
+    </div>
+    <div>
+        <label asp-for="Street"></label>
+        <input asp-for="Street"/>
+        <span asp-validation-for="Street"></span>
+    </div>
+    <div>
+        <label asp-for="Password"></label>
+        <input asp-for="Password" type="password"/>
+        <span asp-validation-for="Password"></span>
+    </div>
+    <div>
+        <label asp-for="ConfirmPassword"></label>
+        <input asp-for="ConfirmPassword" type="password"/>
+        <span asp-validation-for="ConfirmPassword"></span>
+    </div>
+    <div>
+        <label asp-for="IsAdmin"></label>
+        <input asp-for="IsAdmin" type="checkbox"/>
+        <span asp-validation-for="IsAdmin"></span>
+    </div>
+    <button type="submit">Register</button>
+    @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+</form>
