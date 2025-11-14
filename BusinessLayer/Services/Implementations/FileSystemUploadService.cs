@@ -21,7 +21,9 @@ public class FileSystemUploadService : IUploadService
     public async Task<string> SaveImageAsync(Stream content, string originalFileName, string? contentType = null)
     {
         if (content is not { CanRead: true })
+        {
             throw new ArgumentException("Content stream is null or unreadable.", nameof(content));
+        }
 
         var ext = Path.GetExtension(originalFileName);
         var fileName = $"{Guid.NewGuid()}{ext}";

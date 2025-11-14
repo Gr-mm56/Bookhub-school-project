@@ -5,11 +5,11 @@ namespace WebAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ImagesController : ControllerBase
+public class FileController : ControllerBase
 {
     private readonly IUploadService _upload;
 
-    public ImagesController(IUploadService upload)
+    public FileController(IUploadService upload)
     {
         _upload = upload;
     }
