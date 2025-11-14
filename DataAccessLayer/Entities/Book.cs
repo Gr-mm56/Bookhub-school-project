@@ -30,11 +30,11 @@ public class Book : BaseEntity
 
     [ForeignKey(nameof(PublisherId))]
     public virtual Publisher? Publisher { get; set; }
-    public int PublisherId { get; set; }
+    public int? PublisherId { get; set; }
 
 
     [ForeignKey(nameof(ImageId))]
     public virtual Image? Image { get; set; }
 
-    public int ImageId { get; set; }
+    public int? ImageId { get; set; }
 }

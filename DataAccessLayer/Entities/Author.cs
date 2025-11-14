@@ -14,11 +14,9 @@ public class Author : BaseEntity
     public required string Surname { get; set; }
 
     [ForeignKey(nameof(ProfilePhotoId))]
-    [JsonIgnore]
     public virtual Image? ProfilePhoto { get; set; }
 
     public int? ProfilePhotoId { get; set; }
 
-    [JsonIgnore]
     public virtual ICollection<Book> Books { get; set; }
 }

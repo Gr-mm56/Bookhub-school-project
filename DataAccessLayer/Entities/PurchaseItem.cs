@@ -9,13 +9,11 @@ public class PurchaseItem : BaseEntity
     public required int BookId { get; set; }
 
     [ForeignKey(nameof(BookId))]
-    [JsonIgnore]
     public virtual Book Book { get; set; }
 
     public int CartId { get; set; }
 
     [ForeignKey(nameof(CartId))]
-    [JsonIgnore]
     public virtual Cart Cart { get; set; }
 
     [Required]

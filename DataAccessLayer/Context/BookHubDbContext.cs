@@ -122,6 +122,18 @@ public class BookHubDbContext: DbContext
             .WithMany(c => c.PurchaseItems)
             .OnDelete(DeleteBehavior.Cascade);
 
+        // Book -> PurchaseItem - On Delete Cascade
+        modelBuilder.Entity<PurchaseItem>()
+            .HasOne(p => p.Book)
+            .WithMany()
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Book -> PurchaseItem - On Delete Cascade
+        modelBuilder.Entity<WishlistItem>()
+            .HasOne(p => p.Book)
+            .WithMany()
+            .OnDelete(DeleteBehavior.Cascade);
+
         modelBuilder.Seed();
         base.OnModelCreating(modelBuilder);
     }
