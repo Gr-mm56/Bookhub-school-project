@@ -32,9 +32,27 @@ public class FileController : ControllerBase
         {
             return BadRequest(aex.Message);
         }
-        catch (Exception ex)
+        catch (NotSupportedException nex)
         {
-            return StatusCode(500, "Internal server error: " + ex.Message);
+            return StatusCode(StatusCodes.Status415UnsupportedMediaType, nex.Message);
+        }
+        catch (PathTooLongException)
+        {
+            return BadRequest("File path is too long.");
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, "Insufficient permissions to save the file.");
+        }
+        catch (IOException)
+        {
+            return StatusCode(StatusCodes.Status503ServiceUnavailable,
+                "I/O error while saving the file. Please try again later.");
+        }
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                "An unexpected error occurred while processing the upload.");
         }
     }
 }
