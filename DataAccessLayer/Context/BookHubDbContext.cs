@@ -17,6 +17,7 @@ public class BookHubDbContext: IdentityDbContext<LocalIdentityUser>
     public DbSet<Author> Authors { get; set; }
     public DbSet<Publisher> Publishers { get; set; }
     public DbSet<Image> Images { get; set; }
+    public DbSet<AuditLog> AuditLogs { get; set; }
 
     public BookHubDbContext(DbContextOptions<BookHubDbContext> options) : base(options)
     {
