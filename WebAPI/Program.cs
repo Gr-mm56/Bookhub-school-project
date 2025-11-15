@@ -6,6 +6,7 @@ using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using Middleware;
 using Middleware.Services;
+using WebAPI.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +26,9 @@ builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<IAuthorService, AuthorService>();
 builder.Services.AddScoped<IPublisherService, PublisherService>();
 builder.Services.AddScoped<IImageService, ImageService>();
+
+// register upload service as the BusinessLayer FileSystemUploadService using a factory
+builder.Services.AddFileSystemUploadService(builder.Configuration, builder.Environment);
 
 builder.Services.AddControllers();
 
@@ -60,7 +64,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-builder.Services.AddSingleton<IMongoClient>(sp =>
+builder.Services.AddSingleton<IMongoClient>(_ =>
 {
     var connectionString = builder.Configuration.GetConnectionString("MongoDB")
                            ?? "mongodb://localhost:27017";
@@ -71,6 +75,8 @@ builder.Services.AddSingleton<ILogService, MongoLogService>();
 
 
 var app = builder.Build();
+
+app.ConfigureStaticFileServing(app.Configuration, app.Environment);
 
 builder.Services.AddLogging();
 
