@@ -13,7 +13,6 @@ public class Cart : BaseEntity
     public required int UserId { get; set; }
 
     [ForeignKey(nameof(UserId))]
-    [JsonIgnore]
     public virtual User User { get; set; }
 
     [Required]
@@ -24,6 +23,5 @@ public class Cart : BaseEntity
 
     public DateTime? OrderDate { get; set; }
 
-    [JsonIgnore]
     public virtual ICollection<PurchaseItem>? PurchaseItems { get; set; }
 }

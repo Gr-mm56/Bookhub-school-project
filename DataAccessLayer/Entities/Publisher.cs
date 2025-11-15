@@ -13,11 +13,9 @@ public class Publisher : BaseEntity
     [MaxLength(150, ErrorMessage = "The Adress cannot exceed 150 characters.")]
     public required string Address { get; set; }
 
-    [JsonIgnore]
     public virtual ICollection<Book> Books { get; set; }
 
     [ForeignKey(nameof(ProfilePhotoId))]
-    [JsonIgnore]
     public virtual Image? ProfilePhoto { get; set; }
 
     public int? ProfilePhotoId { get; set; }

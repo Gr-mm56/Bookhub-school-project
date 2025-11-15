@@ -23,17 +23,13 @@ public class User : BaseEntity
     [MaxLength(64, ErrorMessage = "The Street cannot exceed 64 characters.")]
     public string Street { get; set; }
 
-    [JsonIgnore]
     public virtual ICollection<Cart>? Carts { get; set; }
 
-    [JsonIgnore]
     public virtual ICollection<WishlistItem>? WishlistItems { get; set; }
 
-    [JsonIgnore]
     public virtual ICollection<Rating>? Ratings { get; set; }
 
     [ForeignKey(nameof(ProfilePhotoId))]
-    [JsonIgnore]
     public virtual Image? ProfilePhoto { get; set; }
 
     public int? ProfilePhotoId { get; set; }
