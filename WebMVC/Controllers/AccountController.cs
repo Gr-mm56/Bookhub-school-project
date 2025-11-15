@@ -16,6 +16,7 @@ public class AccountController : Controller
         _userManager = userManager;
         _signInManager = signInManager;
     }
+
     [HttpGet]
     public IActionResult Register()
     {
@@ -30,6 +31,7 @@ public class AccountController : Controller
         {
             return View(model);
         }
+
         var user = new LocalIdentityUser
         {
             UserName = model.Username,
@@ -48,7 +50,7 @@ public class AccountController : Controller
         if (result.Succeeded)
         {
             await _userManager.AddToRoleAsync(user, RoleInitializer.UserRole);
-            
+
             if (model.IsAdmin)
             {
                 await _userManager.AddToRoleAsync(user, RoleInitializer.AdminRole);
@@ -65,11 +67,13 @@ public class AccountController : Controller
 
         return View(model);
     }
+
     [HttpGet]
     public IActionResult Login()
     {
         return View();
     }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginViewModel model)
@@ -90,12 +94,14 @@ public class AccountController : Controller
         ModelState.AddModelError(string.Empty, "Invalid login attempt.");
         return View(model);
     }
+
     [HttpPost]
     public async Task<IActionResult> Logout()
     {
         await _signInManager.SignOutAsync();
         return RedirectToAction(nameof(HomeController.Index), nameof(HomeController).Replace("Controller", ""));
     }
+
     public IActionResult LoginSuccess()
     {
         return View();
