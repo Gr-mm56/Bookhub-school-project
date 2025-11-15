@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccessLayer.Migrations
 {
     [DbContext(typeof(BookHubDbContext))]
-    [Migration("20251115205208_FinalTest")]
-    partial class FinalTest
+    [Migration("20251115214205_MilestoneMigration")]
+    partial class MilestoneMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -83,8 +83,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProfilePhotoId")
-                        .IsUnique();
+                    b.HasIndex("ProfilePhotoId");
 
                     b.ToTable("Authors");
 
@@ -718,6 +717,9 @@ namespace DataAccessLayer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("AuthorId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
@@ -732,6 +734,8 @@ namespace DataAccessLayer.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
 
                     b.HasIndex("PublisherId");
 
@@ -2006,8 +2010,8 @@ namespace DataAccessLayer.Migrations
             modelBuilder.Entity("DataAccessLayer.Entities.Author", b =>
                 {
                     b.HasOne("DataAccessLayer.Entities.Image", "ProfilePhoto")
-                        .WithOne("Author")
-                        .HasForeignKey("DataAccessLayer.Entities.Author", "ProfilePhotoId")
+                        .WithMany()
+                        .HasForeignKey("ProfilePhotoId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("ProfilePhoto");
@@ -2043,10 +2047,15 @@ namespace DataAccessLayer.Migrations
 
             modelBuilder.Entity("DataAccessLayer.Entities.Image", b =>
                 {
+                    b.HasOne("DataAccessLayer.Entities.Author", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorId");
+
                     b.HasOne("DataAccessLayer.Entities.Publisher", "Publisher")
                         .WithMany()
-                        .HasForeignKey("PublisherId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("PublisherId");
+
+                    b.Navigation("Author");
 
                     b.Navigation("Publisher");
                 });
@@ -2240,8 +2249,6 @@ namespace DataAccessLayer.Migrations
 
             modelBuilder.Entity("DataAccessLayer.Entities.Image", b =>
                 {
-                    b.Navigation("Author");
-
                     b.Navigation("User");
                 });
 
