@@ -17,6 +17,7 @@ public class BookHubDbContext: IdentityDbContext<LocalIdentityUser>
     public DbSet<Author> Authors { get; set; }
     public DbSet<Publisher> Publishers { get; set; }
     public DbSet<Image> Images { get; set; }
+    public DbSet<AuditLog> AuditLogs { get; set; }
 
     public BookHubDbContext(DbContextOptions<BookHubDbContext> options) : base(options)
     {
@@ -53,26 +54,6 @@ public class BookHubDbContext: IdentityDbContext<LocalIdentityUser>
         modelBuilder.Entity<Cart>().HasMany(u => u.PurchaseItems);
         modelBuilder.Entity<Publisher>().HasMany(b => b.Books);
 
-        // Book 1 Image
-        modelBuilder.Entity<Book>()
-            .HasOne(b => b.Image)
-            .WithMany();
-
-        // User 0..1 Image
-        modelBuilder.Entity<User>()
-            .HasOne(u => u.ProfilePhoto)
-            .WithMany();
-
-        // Author 0..1 Image
-        modelBuilder.Entity<Author>()
-            .HasOne(a => a.ProfilePhoto)
-            .WithMany();
-
-        // Publisher 0..1 Image
-        modelBuilder.Entity<Publisher>()
-            .HasOne(p => p.ProfilePhoto)
-            .WithMany();
-
         foreach (var relationship in modelBuilder.Model.GetEntityTypes()
                  .SelectMany(e => e.GetForeignKeys())
                  .Where(fk =>
@@ -84,6 +65,16 @@ public class BookHubDbContext: IdentityDbContext<LocalIdentityUser>
         {
             relationship.DeleteBehavior = DeleteBehavior.Restrict;
         }
+
+        // Book 1 Image
+        modelBuilder.Entity<Book>()
+            .HasOne(b => b.Image)
+            .WithMany();
+
+        // Publisher 0..1 Image
+        modelBuilder.Entity<Publisher>()
+            .HasOne(p => p.ProfilePhoto)
+            .WithMany();
 
         // Book -> Rating - On Delete Cascade
         modelBuilder.Entity<Rating>()
@@ -118,7 +109,7 @@ public class BookHubDbContext: IdentityDbContext<LocalIdentityUser>
         // Author -> Image - On Delete Cascade
         modelBuilder.Entity<Author>()
             .HasOne(a => a.ProfilePhoto)
-            .WithOne(i => i.Author)
+            .WithMany()
             .OnDelete(DeleteBehavior.Cascade);
 
         // Cart -> PurchaseItem - On Delete Cascade

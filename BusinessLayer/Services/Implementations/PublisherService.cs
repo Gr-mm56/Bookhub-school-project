@@ -85,13 +85,14 @@ public class PublisherService : BaseService<BookHubDbContext>, IPublisherService
 
         await ValidateRelatedEntitiesExistAsync(requestDto);
 
+        PublisherMapper.UpdateEntity(publisher, requestDto);
+
         if (requestDto.ProfilePhotoId <= 0)
         {
             publisher.ProfilePhotoId = null;
         }
 
         await ExtendBooksCollectionAsync(publisher, requestDto);
-        PublisherMapper.UpdateEntity(publisher, requestDto);
 
         await SaveAsync();
 
