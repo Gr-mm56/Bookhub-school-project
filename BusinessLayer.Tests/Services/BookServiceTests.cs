@@ -677,7 +677,7 @@ public class BookServiceTests
 
         // Assert
         Assert.NotNull(result);
-        Assert.True(result.Items.Any(b => b.Description != null && b.Description.Contains("Machine Learning")));
+        Assert.Contains(result.Items, b => b.Description != null && b.Description.Contains("Machine Learning"));
     }
 
     [Fact]
