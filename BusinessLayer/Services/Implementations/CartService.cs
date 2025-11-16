@@ -27,9 +27,10 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
     public async Task<CartDetailDto?> GetByIdAsync(int id)
     {
         var cart = await Context.Carts
-            .Include(c => c.User)
             .AsNoTracking()
-            .FirstOrDefaultAsync(u => u.Id == id);
+            .Include(c => c.User)
+            .Include(c => c.PurchaseItems)
+            .FirstOrDefaultAsync(c => c.Id == id);
 
         return cart != null ? CartMapper.ToDetailDto(cart) : null;
     }

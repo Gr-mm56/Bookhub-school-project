@@ -19,6 +19,8 @@ public class WishlistItemService : BaseService<BookHubDbContext>, IWishlistItemS
     {
         var query = Context.WishlistItems
             .AsNoTracking()
+            .Include(w => w.Book)
+            .Include(w => w.User)
             .OrderBy(u => u.Id);
 
         return await PageAsync(query, limit, offset, WishlistItemMapper.ToDetailDtoList);
@@ -28,7 +30,9 @@ public class WishlistItemService : BaseService<BookHubDbContext>, IWishlistItemS
     {
         var wishlistItem = await Context.WishlistItems
             .AsNoTracking()
-            .FirstOrDefaultAsync(u => u.Id == id);
+            .Include(w => w.Book)
+            .Include(w => w.User)
+            .FirstOrDefaultAsync(w => w.Id == id);
 
         return wishlistItem != null ? WishlistItemMapper.ToDetailDto(wishlistItem) : null;
     }
