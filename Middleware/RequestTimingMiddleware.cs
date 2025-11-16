@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
-using Middleware.Models;
-using Middleware.Services;
+using BusinessLayer.Models.LogEntry;
+using BusinessLayer.Services.Interfaces;
 
 namespace Middleware;
 

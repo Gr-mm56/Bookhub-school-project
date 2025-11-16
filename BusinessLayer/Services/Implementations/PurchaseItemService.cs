@@ -28,7 +28,9 @@ public class PurchaseItemService : BaseService<BookHubDbContext>, IPurchaseItemS
     {
         var purchaseItem = await Context.PurchaseItems
             .AsNoTracking()
-            .FirstOrDefaultAsync(u => u.Id == id);
+            .Include(p => p.Book)
+            .Include(p => p.Cart)
+            .FirstOrDefaultAsync(p => p.Id == id);
 
         return purchaseItem != null ? PurchaseItemMapper.ToDetailDto(purchaseItem) : null;
     }

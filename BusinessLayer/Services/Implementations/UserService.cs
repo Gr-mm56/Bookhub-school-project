@@ -28,6 +28,10 @@ public class UserService : BaseService<BookHubDbContext>, IUserService
     {
         var user = await Context.Users
             .AsNoTracking()
+            .Include(u => u.Carts)
+            .Include(u => u.ProfilePhoto)
+            .Include(u => u.Ratings)
+            .Include(u => u.WishlistItems)
             .FirstOrDefaultAsync(u => u.Id == id);
 
         return user != null ? UserMapper.ToDetailDto(user) : null;
