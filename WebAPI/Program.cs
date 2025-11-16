@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using Middleware;
-using Middleware.Services;
 using WebAPI.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);

@@ -1,12 +1,8 @@
-﻿using Middleware.Models;
+﻿using BusinessLayer.Models.LogEntry;
+using BusinessLayer.Services.Interfaces;
 using MongoDB.Driver;
 
-namespace Middleware.Services;
-
-public interface ILogService
-{
-    Task LogRequestAsync(LogEntry logEntry);
-}
+namespace BusinessLayer.Services.Implementations;
 
 public class MongoLogService : ILogService
 {

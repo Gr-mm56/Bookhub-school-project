@@ -1,7 +1,7 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Middleware.Models;
+namespace BusinessLayer.Models.LogEntry;
 
 public class LogEntry
 {
