@@ -14,20 +14,14 @@ Team composition:
 | Tomáš Valent      | member |
 | Matej Alexej Helc | member |
 
-# NOTE FOR MILESTONE 1:
-The first milestone focuses on DAL layer. However, in order to a REST web API and follow best practices,
-DTOs and mapping between entities and DTOs were implemented as well. This is part of BL layer, which is not
-(to our knowledge) required for this milestone, but we decided to implement it anyway to follow best practices.
-
-We did not use Repository and Unit of Work patterns, as Entity Framework already implements these patterns, and was consulted with tutor.
-
 ## Used Technologies
 - ASP.NET Core
 - C# 9.0
-- Entity Framwork Core
-- NUnit?
+- Entity Framework Core
+- XUnit
 - SQLite
-- some auth framework
+- Identity Framework for auth
+- MongoDB for storing logs
 
 ## How to run
 
@@ -44,16 +38,31 @@ cd pv179_bookhub
 dotnet build
 ```
 4. To set up the database, follow the instructions in the "Database Setup" section below.
-5. navigate to the WebAPI project directory:
+
+### Running WebAPI
+1. navigate to the WebAPI project directory:
 ```bash
 cd WebAPI
 ```
-6. Run the application:
+2. Run the application:
 ```bash
 dotnet run
 ```
-7. Open your web browser and go to `http://localhost:5000/swagger` to access the Swagger UI and explore the API endpoints.
+3. Open your web browser and go to `http://localhost:5000/swagger` to access the Swagger UI and explore the API endpoints.
 >**Note:** Authentication is required to use the API. See the [Authentication](#Authentication) section below for details.  
+
+
+### Running WebMVC
+1. To run the WebMVC project, navigate to its directory:
+```bash
+cd WebMVC
+```
+
+2. Run the WebMVC application:
+```bash
+dotnet run
+```
+3. Open your web browser and go to `http://localhost:5170` to access the web interface.
 
 ### Database Setup
 
@@ -64,7 +73,11 @@ The project uses Entity Framework Core for database management. To initialize th
    ```bash
    dotnet ef database update --project DataAccessLayer --startup-project WebAPI
    ```
-4. After setting up the databasem the seeder will populate it with initial data automatically.
+4. After setting up the database the seeder will populate it with initial data automatically.
+5. WebAPI and WebMVC use different databases. To initialize WebMVC database, repeat step 3 with 
+   ```bash
+   dotnet ef database update --project DataAccessLayer--startup-project WebMVC
+   ```
 
 #### Logging Database Setup
 The project uses MongoDB database to store request logs.
@@ -115,14 +128,20 @@ Business layer contains:
 You can authenticate yourself by clicking the 'Authorize' button with a lock icon in the top right corner. For now, there is a static token, "YourHardcodedToken", which may be replaced in the future.
 
 #### Logging
-Added two middleware components — RequestLoggingMiddleware for logging every incoming request and RequestTimingMiddleware for measuring request processing time, enabling easy monitoring of API activity and performance.
+- RequestLoggingMiddleware for logging every incoming request
+- RequestTimingMiddleware for measuring request processing time, enabling monitoring of API activity and performance.
 
 #### XML responses
 The API supports XML responses in addition to JSON. To receive XML responses, set the `Accept` header in your request to `application/xml`.
 
 
+### WebMVC
+- available at http://localhost:5170
+- provides a web interface for users to interact with the application
+- uses Razor pages for rendering views
+- `/account/register` - user registration
+- `/account/login` - user login
 
-todo: frontend
 
 ## Testing
 Unit tests are implemented using XUnit framework.
