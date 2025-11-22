@@ -110,4 +110,3 @@ public class GenreController : AdminController
         return RedirectToAction(nameof(Index));
     }
 }
-
