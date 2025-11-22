@@ -3,6 +3,11 @@
 @{
     ViewBag.Title = "Delete Genre";
     Layout = "_Layout";
+    
+    var isUsedAsPrimary = Model.PrimaryBooks != null && Model.PrimaryBooks.Any();
+    var isUsedInAnyBook = Model.Books != null && Model.Books.Any();
+    var deleteDisabled = isUsedAsPrimary || isUsedInAnyBook;
+
 }
 
 <div class="container mt-4">
@@ -31,21 +36,45 @@
                         <dt class="col-sm-4">Updated At:</dt>
                         <dd class="col-sm-8">@Model.UpdatedAt.ToString("yyyy-MM-dd HH:mm")</dd>
 
+                        @if (Model.PrimaryBooks != null && Model.PrimaryBooks.Any())
+                        {
+                            <dt class="col-sm-4">Primary Books:</dt>
+                            <dd class="col-sm-8">
+                                <ul class="list-unstyled mb-0">
+                                    @foreach (var book in Model.PrimaryBooks)
+                                    {
+                                        <li><span class="badge bg-warning">ID: @book.Id</span> @book.Title</li>
+                                    }
+                                </ul>
+                            </dd>
+                        }
+
                         @if (Model.Books != null && Model.Books.Any())
                         {
                             <dt class="col-sm-4">Associated Books:</dt>
                             <dd class="col-sm-8">
-                                <span class="badge bg-info">@Model.Books.Count() book(s)</span>
+                                <ul class="list-unstyled mb-0">
+                                    @foreach (var book in Model.Books)
+                                    {
+                                        <li><span class="badge bg-info">ID: @book.Id</span> @book.Title</li>
+                                    }
+                                </ul>
                             </dd>
                         }
                     </dl>
-
+                    @if (deleteDisabled)
+                    {
+                        <div class="alert alert-danger">
+                            <i class="bi bi-x-circle"></i>
+                            This genre cannot be deleted while it is assigned to books. Remove the genre from the listed books or change their primary genre first.
+                        </div>
+                    }
                     <form asp-action="Delete" asp-route-id="@Model.Id" method="post">
                         <div class="d-flex justify-content-between">
                             <a asp-action="Index" class="btn btn-secondary">
                                 <i class="bi bi-arrow-left"></i> Cancel
                             </a>
-                            <button type="submit" class="btn btn-danger">
+                            <button type="submit" class="btn btn-danger" @(deleteDisabled ? "disabled=\"disabled\" aria-disabled=\"true\"" : String.Empty)>
                                 <i class="bi bi-trash"></i> Confirm Delete
                             </button>
                         </div>
