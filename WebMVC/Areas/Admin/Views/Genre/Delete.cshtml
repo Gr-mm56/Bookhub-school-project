@@ -1,11 +1,11 @@
-﻿@model BusinessLayer.Models.Genre.Responses.GenreDetailDto
+﻿@model WebMVC.Areas.Admin.Models.Genre.GenreDeleteViewModel
 
 @{
     ViewBag.Title = "Delete Genre";
     Layout = "_Layout";
     
     var isUsedAsPrimary = Model.PrimaryBooks != null && Model.PrimaryBooks.Any();
-    var isUsedInAnyBook = Model.Books != null && Model.Books.Any();
+    var isUsedInAnyBook = Model.AssociatedBooks != null && Model.AssociatedBooks.Any();
     var deleteDisabled = isUsedAsPrimary || isUsedInAnyBook;
 
 }
@@ -49,12 +49,12 @@
                             </dd>
                         }
 
-                        @if (Model.Books != null && Model.Books.Any())
+                        @if (Model.AssociatedBooks != null && Model.AssociatedBooks.Any())
                         {
                             <dt class="col-sm-4">Associated Books:</dt>
                             <dd class="col-sm-8">
                                 <ul class="list-unstyled mb-0">
-                                    @foreach (var book in Model.Books)
+                                    @foreach (var book in Model.AssociatedBooks)
                                     {
                                         <li><span class="badge bg-info">ID: @book.Id</span> @book.Title</li>
                                     }

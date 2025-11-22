@@ -1,53 +1,51 @@
 ﻿using BusinessLayer.Models.Genre.Requests;
 using BusinessLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using WebMVC.Areas.Admin.Mappers;
+using WebMVC.Areas.Admin.Models.Genre;
 
 namespace WebMVC.Areas.Admin.Controllers;
 
 public class GenreController : AdminController
 {
     private readonly IGenreService _genreService;
-    private readonly IBookService _bookService;
 
-    public GenreController(IGenreService genreService, IBookService bookService)
+    public GenreController(IGenreService genreService)
     {
         _genreService = genreService;
-        _bookService = bookService;
     }
 
-    // GET: Admin/Genre
     public async Task<IActionResult> Index()
     {
         var genres = await _genreService.GetAllAsync(0, 0);
-        var model = new Models.GenresViewModel
-        {
-            Genres = genres.Items.OrderBy(x => x.Id).ToList()
-        };
-        return View(model);
+        var viewModel = GenreViewModelMapper.ToListViewModel(genres.Items.ToList());
+        return View(viewModel);
     }
 
-    // GET: Admin/Genre/Create
     public IActionResult Create()
     {
         return View();
     }
 
-    // POST: Admin/Genre/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(GenreRequestDto genreDto)
+    public async Task<IActionResult> Create(GenreCreateEditViewModel viewModel)
     {
         if (!ModelState.IsValid)
         {
-            return View(genreDto);
+            return View(viewModel);
         }
+
+        var genreDto = new GenreRequestDto
+        {
+            Name = viewModel.Name
+        };
 
         await _genreService.CreateAsync(genreDto);
         TempData["SuccessMessage"] = "Genre created successfully!";
         return RedirectToAction(nameof(Index));
     }
 
-    // GET: Admin/Genre/Edit/5
     public async Task<IActionResult> Edit(int id)
     {
         var genre = await _genreService.GetByIdAsync(id);
@@ -56,25 +54,25 @@ public class GenreController : AdminController
             return NotFound();
         }
 
-        var genreDto = new GenreRequestDto
-        {
-            Name = genre.Name
-        };
-
+        var viewModel = GenreViewModelMapper.ToCreateEditViewModel(genre);
         ViewBag.GenreId = id;
-        return View(genreDto);
+        return View(viewModel);
     }
 
-    // POST: Admin/Genre/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, GenreRequestDto genreDto)
+    public async Task<IActionResult> Edit(int id, GenreCreateEditViewModel viewModel)
     {
         if (!ModelState.IsValid)
         {
             ViewBag.GenreId = id;
-            return View(genreDto);
+            return View(viewModel);
         }
+
+        var genreDto = new GenreRequestDto
+        {
+            Name = viewModel.Name
+        };
 
         var result = await _genreService.UpdateAsync(id, genreDto);
         if (result == null)
@@ -86,7 +84,6 @@ public class GenreController : AdminController
         return RedirectToAction(nameof(Index));
     }
 
-    // GET: Admin/Genre/Delete/5
     public async Task<IActionResult> Delete(int id)
     {
         var genre = await _genreService.GetByIdAsync(id);
@@ -95,10 +92,10 @@ public class GenreController : AdminController
             return NotFound();
         }
 
-        return View(genre);
+        var viewModel = GenreViewModelMapper.ToDeleteViewModel(genre);
+        return View(viewModel);
     }
 
-    // POST: Admin/Genre/Delete/5
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
@@ -113,3 +110,4 @@ public class GenreController : AdminController
         return RedirectToAction(nameof(Index));
     }
 }
+
