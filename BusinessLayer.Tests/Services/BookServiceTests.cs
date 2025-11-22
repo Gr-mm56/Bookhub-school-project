@@ -36,7 +36,6 @@ public class BookServiceTests
         Assert.NotNull(created);
         Assert.True(created.Id > 0, "Created book should have a positive Id");
         Assert.Equal(createDto.Title, created.Title);
-        Assert.Equal(createDto.Description, created.Description);
         Assert.Equal(createDto.Price, created.Price);
         Assert.NotNull(created.Image);
         Assert.Equal(createDto.ImageId, created.Image.Id);
@@ -334,7 +333,6 @@ public class BookServiceTests
         Assert.NotNull(updated);
         Assert.Equal(created.Id, updated.Id);
         Assert.Equal(updateDto.Title, updated.Title);
-        Assert.Equal(updateDto.Description, updated.Description);
         Assert.Equal(updateDto.Price, updated.Price);
     }
 
@@ -580,7 +578,6 @@ public class BookServiceTests
         Assert.NotNull(created);
         Assert.True(created.Id > 0, "Created book should have a positive Id");
         Assert.Equal(createDto.Title, created.Title);
-        Assert.Equal(createDto.Description, created.Description);
         Assert.Equal(createDto.Price, created.Price);
         Assert.NotNull(created.Image);
         Assert.Equal(createDto.ImageId, created.Image.Id);
@@ -622,7 +619,6 @@ public class BookServiceTests
         Assert.NotNull(created);
         Assert.True(created.Id > 0, "Created book should have a positive Id");
         Assert.Equal(createDto.Title, created.Title);
-        Assert.Equal(createDto.Description, created.Description);
         Assert.Equal(createDto.Price, created.Price);
 
         // Verify persistence by fetching from service

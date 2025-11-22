@@ -22,9 +22,9 @@ public class BookRequestDto
     [Required]
     public required int PrimaryGenreId { get; set; }
 
-    public int ImageId { get; set; }
+    public int? ImageId { get; set; }
 
-    public int PublisherId { get; set; }
+    public int? PublisherId { get; set; }
 
     public List<int> GenreIds { get; set; } = [];
 

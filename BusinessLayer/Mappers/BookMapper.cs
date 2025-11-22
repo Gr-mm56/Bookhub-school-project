@@ -14,7 +14,6 @@ public static class BookMapper
         {
             Id = book.Id,
             Title = book.Title,
-            Description = book.Description,
             Price = book.Price,
             CreatedAt = book.CreatedAt,
             UpdatedAt = book.UpdatedAt,

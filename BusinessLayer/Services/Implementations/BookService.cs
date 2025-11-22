@@ -94,7 +94,15 @@ public class BookService : BaseService<BookHubDbContext>, IBookService
             throw new ArgumentException("You must provide at least one genre and author");
         }
         await ValidateRelatedEntitiesExistAsync(requestDto);
+        if (requestDto.PublisherId == 0)
+        {
+            requestDto.PublisherId = null;
+        }
 
+        if (requestDto.ImageId == 0)
+        {
+            requestDto.ImageId = null;
+        }
         var book = BookMapper.CreateEntity(requestDto);
 
         await AssociateRelatedEntitiesAsync(book, requestDto);
@@ -125,6 +133,11 @@ public class BookService : BaseService<BookHubDbContext>, IBookService
         {
             return null;
         }
+/*
+        if (requestDto.PublisherId == 0)
+        {
+            requestDto.PublisherId = null;
+        }*/
 
         await ValidateRelatedEntitiesExistAsync(requestDto);
 
@@ -185,10 +198,10 @@ public class BookService : BaseService<BookHubDbContext>, IBookService
                 errors.Add($"Invalid Publisher ID: {requestDto.PublisherId}");
             }
         }
-        else
+      /*  else if (requestDto.PublisherId < 0)
         {
-            errors.Add($"Publisher ID must be provided and greater than 0");
-        }
+            errors.Add($"Publisher ID must be provided and greater than or equal to 0");
+        }*/
         if (requestDto.PrimaryGenreId > 0)
         {
             var primaryGenreExists = await Context.Genres
@@ -212,11 +225,11 @@ public class BookService : BaseService<BookHubDbContext>, IBookService
                 errors.Add($"Invalid Image ID: {requestDto.ImageId}");
             }
         }
-        else
+      /*  else if (requestDto.ImageId < 0)
         {
-            errors.Add($"Image ID must be provided and greater than 0");
+            errors.Add($"Image ID must be provided and greater than or equal to 0");
 
-        }
+        }*/
 
         if (errors.Count != 0)
         {
