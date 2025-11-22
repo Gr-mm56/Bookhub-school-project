@@ -30,6 +30,7 @@ public class BookService : BaseService<BookHubDbContext>, IBookService
         var book = await Context.Books
             .AsNoTracking()
             .Include(b => b.Image)
+            .Include(b => b.PrimaryGenre)
             .Include(b => b.Authors)
             .Include(b => b.Genres)
             .Include(b => b.Publisher)
@@ -46,6 +47,7 @@ public class BookService : BaseService<BookHubDbContext>, IBookService
             .Include(b => b.Authors)
             .Include(b => b.Genres)
             .Include(b => b.Publisher)
+            .Include(b => b.PrimaryGenre)
             .AsQueryable();
 
         if (!string.IsNullOrEmpty(searchDto.Title))
@@ -65,7 +67,10 @@ public class BookService : BaseService<BookHubDbContext>, IBookService
 
         if (!string.IsNullOrEmpty(searchDto.Genre))
         {
-            query = query.Where(b => b.Genres.Any(g => g.Name.Contains(searchDto.Genre.Trim())));
+            var genreTerm = searchDto.Genre.Trim();
+            // match either the PrimaryGenre name or any of the book's Genres
+            query = query.Where(b => (b.PrimaryGenre != null && b.PrimaryGenre.Name.Contains(genreTerm))
+                                     || b.Genres.Any(g => g.Name.Contains(genreTerm)));
         }
 
         if (!string.IsNullOrEmpty(searchDto.Publisher))
@@ -180,6 +185,24 @@ public class BookService : BaseService<BookHubDbContext>, IBookService
                 errors.Add($"Invalid Publisher ID: {requestDto.PublisherId}");
             }
         }
+        else
+        {
+            errors.Add($"Publisher ID must be provided and greater than 0");
+        }
+        if (requestDto.PrimaryGenreId > 0)
+        {
+            var primaryGenreExists = await Context.Genres
+                .AnyAsync(g => g.Id == requestDto.PrimaryGenreId);
+
+            if (!primaryGenreExists)
+            {
+                errors.Add($"Invalid Primary Genre ID: {requestDto.PrimaryGenreId}");
+            }
+        }
+        else
+        {
+            errors.Add($"Primary Genre ID must be provided and greater than 0");
+        }
 
         if (requestDto.ImageId > 0)
         {
@@ -188,6 +211,11 @@ public class BookService : BaseService<BookHubDbContext>, IBookService
             {
                 errors.Add($"Invalid Image ID: {requestDto.ImageId}");
             }
+        }
+        else
+        {
+            errors.Add($"Image ID must be provided and greater than 0");
+
         }
 
         if (errors.Count != 0)

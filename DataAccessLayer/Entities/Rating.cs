@@ -10,12 +10,12 @@ public class Rating : BaseEntity
     public required int Stars { get; set; }
 
     [ForeignKey(nameof(UserId))]
-    public virtual User User { get; set; }
+    public virtual User? User { get; set; }
 
     public int UserId { get; set; }
 
     [ForeignKey(nameof(BookId))]
-    public virtual Book Book { get; set; }
+    public virtual Book? Book { get; set; }
 
     public int BookId { get; set; }
 }

@@ -24,6 +24,7 @@ public class BookServiceTests
             Price = 25.99,
             ImageId = 1,
             PublisherId = 1,
+            PrimaryGenreId = 2,
             GenreIds = [1],
             AuthorIds = [1]
         };
@@ -63,6 +64,7 @@ public class BookServiceTests
             Price = 25.99,
             ImageId = 1,
             PublisherId = 1,
+            PrimaryGenreId = 2,
             GenreIds = [],
             AuthorIds = [1]
         };
@@ -88,6 +90,7 @@ public class BookServiceTests
             Price = 25.99,
             ImageId = 1,
             PublisherId = 1,
+            PrimaryGenreId = 2,
             GenreIds = [],
             AuthorIds = [1]
         };
@@ -113,6 +116,7 @@ public class BookServiceTests
             Price = 25.99,
             ImageId = 1,
             PublisherId = 1,
+            PrimaryGenreId = 2,
             GenreIds = [1],
             AuthorIds = [9999]
         };
@@ -138,6 +142,7 @@ public class BookServiceTests
             Price = 25.99,
             ImageId = 1,
             PublisherId = 1,
+            PrimaryGenreId = 2,
             GenreIds = [9999],
             AuthorIds = [1]
         };
@@ -163,6 +168,7 @@ public class BookServiceTests
             Price = 25.99,
             ImageId = 1,
             PublisherId = 9999,
+            PrimaryGenreId = 2,
             GenreIds = [1],
             AuthorIds = [1]
         };
@@ -188,6 +194,7 @@ public class BookServiceTests
             Price = 25.99,
             ImageId = 9999,
             PublisherId = 1,
+            PrimaryGenreId = 2,
             GenreIds = [1],
             AuthorIds = [1]
         };
@@ -214,6 +221,7 @@ public class BookServiceTests
             Price = 29.99,
             ImageId = 1,
             PublisherId = 1,
+            PrimaryGenreId = 2,
             GenreIds = [1],
             AuthorIds = [1]
         };
@@ -268,6 +276,7 @@ public class BookServiceTests
                 Price = 10.00 + i,
                 ImageId = 1,
                 PublisherId = 1,
+                PrimaryGenreId = 2,
                 GenreIds = [1],
                 AuthorIds = [1]
             };
@@ -298,6 +307,7 @@ public class BookServiceTests
             Price = 20.00,
             ImageId = 1,
             PublisherId = 1,
+            PrimaryGenreId = 2,
             GenreIds = [1],
             AuthorIds = [1]
         };
@@ -312,6 +322,7 @@ public class BookServiceTests
             Price = 30.00,
             ImageId = 1,
             PublisherId = 1,
+            PrimaryGenreId = 2,
             GenreIds = [1],
             AuthorIds = [1]
         };
@@ -341,6 +352,7 @@ public class BookServiceTests
             Price = 30.00,
             ImageId = 1,
             PublisherId = 1,
+            PrimaryGenreId = 2,
             GenreIds = [1],
             AuthorIds = [1]
         };
@@ -366,6 +378,7 @@ public class BookServiceTests
             Price = 20.00,
             ImageId = 1,
             PublisherId = 1,
+            PrimaryGenreId = 2,
             GenreIds = [1],
             AuthorIds = [1]
         };
@@ -379,6 +392,7 @@ public class BookServiceTests
             Price = 30.00,
             ImageId = 9999,
             PublisherId = 1,
+            PrimaryGenreId = 2,
             GenreIds = [1],
             AuthorIds = [1]
         };
@@ -404,6 +418,7 @@ public class BookServiceTests
             Price = 15.00,
             ImageId = 1,
             PublisherId = 1,
+            PrimaryGenreId = 2,
             GenreIds = [1],
             AuthorIds = [1]
         };
@@ -449,6 +464,7 @@ public class BookServiceTests
             Price = 45.00,
             ImageId = 1,
             PublisherId = 1,
+            PrimaryGenreId = 2,
             GenreIds = [1],
             AuthorIds = [1]
         };
@@ -460,6 +476,7 @@ public class BookServiceTests
             Price = 25.00,
             ImageId = 1,
             PublisherId = 1,
+            PrimaryGenreId = 2,
             GenreIds = [1],
             AuthorIds = [1]
         };
@@ -496,6 +513,7 @@ public class BookServiceTests
             Price = testPrice,
             ImageId = 1,
             PublisherId = 1,
+            PrimaryGenreId = 2,
             GenreIds = [1],
             AuthorIds = [1]
         };
@@ -512,7 +530,7 @@ public class BookServiceTests
 
         // Assert
         Assert.NotNull(searchResult);
-        Assert.Contains(searchResult.Items, item => item.Id == created.Id && item.Price == testPrice);
+        Assert.Contains(searchResult.Items, item => item.Id == created.Id && Math.Abs(item.Price - testPrice) < 0.0001);
     }
 
     [Fact]
@@ -550,6 +568,7 @@ public class BookServiceTests
             Price = 25.99,
             ImageId = 1,
             PublisherId = 0,
+            PrimaryGenreId = 2,
             GenreIds = [1],
             AuthorIds = [1]
         };
@@ -591,6 +610,7 @@ public class BookServiceTests
             Price = 25.99,
             ImageId = 0,
             PublisherId = 1,
+            PrimaryGenreId = 2,
             GenreIds = [1],
             AuthorIds = [1]
         };
@@ -629,6 +649,7 @@ public class BookServiceTests
             Price = 25.99,
             ImageId = 9999,
             PublisherId = 9999,
+            PrimaryGenreId = 2,
             GenreIds = [9999],
             AuthorIds = [9999]
         };
@@ -661,6 +682,7 @@ public class BookServiceTests
             Price = 45.99,
             ImageId = 1,
             PublisherId = 1,
+            PrimaryGenreId = 2,
             GenreIds = [1],
             AuthorIds = [1]
         };
@@ -736,6 +758,7 @@ public class BookServiceTests
             Price = 20.00,
             ImageId = 1,
             PublisherId = 1,
+            PrimaryGenreId = 2,
             GenreIds = [1],
             AuthorIds = [1]
         };
@@ -749,6 +772,7 @@ public class BookServiceTests
             Price = 30.00,
             ImageId = 1,
             PublisherId = 1,
+            PrimaryGenreId = 2,
             GenreIds = [1, 2],
             AuthorIds = [1, 2]
         };

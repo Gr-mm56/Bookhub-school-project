@@ -74,6 +74,7 @@ public static class DataInitializer
             .RuleFor(b => b.Description, f => f.Lorem.Paragraphs(1, 2))
             .RuleFor(b => b.ImageId, f => f.Random.Number(1, 4))
             .RuleFor(b => b.PublisherId, f => f.Random.Number(1, 2))
+            .RuleFor(b => b.PrimaryGenreId, f => f.Random.Number(1, 10))
             .Generate(25);
     }
 

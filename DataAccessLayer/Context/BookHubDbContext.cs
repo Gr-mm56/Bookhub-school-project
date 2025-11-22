@@ -65,7 +65,12 @@ public class BookHubDbContext: IdentityDbContext<LocalIdentityUser>
         {
             relationship.DeleteBehavior = DeleteBehavior.Restrict;
         }
-
+        // Book 1 PrimaryGenre
+        modelBuilder.Entity<Book>()
+            .HasOne(b => b.PrimaryGenre)
+            .WithMany(g => g.PrimaryBooks)
+            .HasForeignKey(b => b.PrimaryGenreId);
+        
         // Book 1 Image
         modelBuilder.Entity<Book>()
             .HasOne(b => b.Image)
