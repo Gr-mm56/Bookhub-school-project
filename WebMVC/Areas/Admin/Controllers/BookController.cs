@@ -76,6 +76,56 @@ public class BookController : AdminController
         return RedirectToAction(nameof(Index));
     }
 
+    // GET: Admin/Book/Edit/5
+    public async Task<IActionResult> Edit(int id)
+    {
+        var book = await _bookService.GetByIdAsync(id);
+        if (book == null)
+        {
+            return NotFound();
+        }
+
+        var bookViewModel = new BookCreateEditViewModel
+        {
+            Title = book.Title,
+            ISBN = book.ISBN,
+            Description = book.Description,
+            Price = book.Price,
+            PrimaryGenreId = book.PrimaryGenreId,
+            ImageId = book.Image?.Id ?? null,
+            PublisherId = book.Publisher?.Id ?? null,
+            GenreIds = book.Genres.Select(g => g.Id).ToList(),
+            AuthorIds = book.Authors.Select(a => a.Id).ToList()
+        };
+
+        var viewModel = await LoadBookOptionsAsync(bookViewModel);
+        ViewBag.BookId = id;
+        return View(viewModel);
+    }
+
+    // POST: Admin/Book/Edit/5
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(int id, BookCreateEditViewModelWithOptions model)
+    {
+        if (!ModelState.IsValid)
+        {
+            ViewBag.BookId = id;
+            return View(model);
+        }
+
+        var bookRequestDto = BookViewModelMapper.ToRequestDto(model.Book);
+        var result = await _bookService.UpdateAsync(id, bookRequestDto);
+        
+        if (result == null)
+        {
+            return NotFound();
+        }
+
+        TempData["SuccessMessage"] = "Book updated successfully!";
+        return RedirectToAction(nameof(Index));
+    }
+
     private async Task<BookCreateEditViewModelWithOptions> LoadBookOptionsAsync(BookCreateEditViewModel bookViewModel)
     {
         var genres = await _genreService.GetAllAsync(0, 0);
@@ -91,5 +141,3 @@ public class BookController : AdminController
             authors.Items.ToList());
     }
 }
-
-
