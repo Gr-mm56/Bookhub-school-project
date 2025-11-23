@@ -126,6 +126,32 @@ public class BookController : AdminController
         return RedirectToAction(nameof(Index));
     }
 
+    public async Task<IActionResult> Delete(int id)
+    {
+        var book = await _bookService.GetByIdAsync(id);
+        if (book == null)
+        {
+            return NotFound();
+        }
+
+        var viewModel = BookViewModelMapper.ToDeleteViewModel(book);
+        return View(viewModel);
+    }
+
+    [HttpPost, ActionName("Delete")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(int id)
+    {
+        var result = await _bookService.DeleteAsync(id);
+        if (!result)
+        {
+            return NotFound();
+        }
+
+        TempData["SuccessMessage"] = "Book deleted successfully!";
+        return RedirectToAction(nameof(Index));
+    }
+
     private async Task<BookCreateEditViewModelWithOptions> LoadBookOptionsAsync(BookCreateEditViewModel bookViewModel)
     {
         var genres = await _genreService.GetAllAsync(0, 0);

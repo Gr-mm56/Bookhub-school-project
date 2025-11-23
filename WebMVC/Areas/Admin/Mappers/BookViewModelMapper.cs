@@ -89,4 +89,19 @@ public static class BookViewModelMapper
                 .ToList()
         };
     }
+
+    public static BookDeleteViewModel ToDeleteViewModel(BookDetailDto bookDetailDto)
+    {
+        ArgumentNullException.ThrowIfNull(bookDetailDto);
+
+        return new BookDeleteViewModel
+        {
+            Id = bookDetailDto.Id,
+            Title = bookDetailDto.Title,
+            ISBN = bookDetailDto.ISBN,
+            Price = bookDetailDto.Price,
+            CreatedAt = bookDetailDto.CreatedAt,
+            UpdatedAt = bookDetailDto.UpdatedAt
+        };
+    }
 }
