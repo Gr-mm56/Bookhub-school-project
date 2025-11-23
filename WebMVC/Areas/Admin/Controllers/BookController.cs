@@ -28,7 +28,6 @@ public class BookController : AdminController
         _authorService = authorService;
     }
 
-    // GET: Admin/Book
     public async Task<IActionResult> Index(int page = 1)
     {
         if (page < 1)
@@ -47,7 +46,6 @@ public class BookController : AdminController
         return View(viewModel);
     }
 
-    // GET: Admin/Book/Create
     public async Task<IActionResult> Create()
     {
         var bookViewModel = new BookCreateEditViewModel
@@ -62,14 +60,12 @@ public class BookController : AdminController
         return View(viewModel);
     }
 
-    // POST: Admin/Book/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(BookCreateEditViewModelWithOptions model)
     {
         if (!ModelState.IsValid)
         {
-            // Reload options for the form if validation fails
             return View(model);
         }
 

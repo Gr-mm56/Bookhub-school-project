@@ -132,7 +132,8 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    
+    <!-- This is why you use JavaScript frameworks for web UI... -->
+    <!-- ...so you do not have to write this client-side logic in this disgusting way-->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('createBookForm');
@@ -149,33 +150,27 @@
                 
                 let isValid = true;
 
-                // Check title
                 if (!titleInput.value.trim()) {
                     isValid = false;
                 }
 
-                // Check ISBN
                 if (!isbnInput.value.trim()) {
                     isValid = false;
                 }
 
-                // Check price
                 const price = parseFloat(priceInput.value);
                 if (!priceInput.value || isNaN(price) || price <= 0) {
                     isValid = false;
                 }
 
-                // Check Primary Genre
                 if (primaryGenreSelect.value === '') {
                     isValid = false;
                 }
 
-                // Check Genres multiselect
                 if (genreMultiselect.selectedOptions.length === 0) {
                     isValid = false;
                 }
 
-                // Check Authors multiselect
                 if (authorMultiselect.selectedOptions.length === 0) {
                     isValid = false;
                 }
@@ -183,17 +178,14 @@
                 submitBtn.disabled = !isValid;
             }
 
-            // Update on form changes
             form.addEventListener('change', updateSubmitButtonState);
             form.addEventListener('input', updateSubmitButtonState);
             form.addEventListener('keyup', updateSubmitButtonState);
 
-            // Before form submission, ensure multiselect values are properly set
-            form.addEventListener('submit', function(e) {
+            form.addEventListener('submit', function() {
                 const genreMultiselect = form.querySelector('select[name="Book.GenreIds"]');
                 const authorMultiselect = form.querySelector('select[name="Book.AuthorIds"]');
                 
-                // Ensure all selected options in multiselects are marked as selected
                 Array.from(genreMultiselect.options).forEach(option => {
                     if (Array.from(genreMultiselect.selectedOptions).includes(option)) {
                         option.selected = true;
@@ -207,7 +199,6 @@
                 });
             });
 
-            // Initial state
             updateSubmitButtonState();
         });
     </script>
