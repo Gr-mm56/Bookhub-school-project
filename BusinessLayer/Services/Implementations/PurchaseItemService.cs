@@ -56,7 +56,7 @@ public class PurchaseItemService : BaseService<BookHubDbContext>, IPurchaseItemS
 
     public async Task<bool> DeleteAsync(int id)
     {
-        PurchaseItem? purchaseItem = await Context.PurchaseItems.FirstOrDefaultAsync(g => g.Id == id);
+        PurchaseItem? purchaseItem = await Context.PurchaseItems.FirstOrDefaultAsync(p => p.Id == id);
         if (purchaseItem == null)
         {
             return false;
@@ -76,7 +76,7 @@ public class PurchaseItemService : BaseService<BookHubDbContext>, IPurchaseItemS
             throw new ArgumentException($"Invalid Count: {purchaseItemUpdateDto.Count} - Cannot be negative");
         }
 
-        PurchaseItem? purchaseItem = await Context.PurchaseItems.FirstOrDefaultAsync(u => u.Id == id);
+        PurchaseItem? purchaseItem = await Context.PurchaseItems.FirstOrDefaultAsync(p => p.Id == id);
         if (purchaseItem == null)
         {
             return null;
@@ -93,7 +93,7 @@ public class PurchaseItemService : BaseService<BookHubDbContext>, IPurchaseItemS
         var errors = new List<string>();
 
         // Validate Cart exists
-        var cartExists = await Context.Carts.AnyAsync(u => u.Id == purchaseItemDto.CartId);
+        var cartExists = await Context.Carts.AnyAsync(c => c.Id == purchaseItemDto.CartId);
         if (!cartExists)
         {
             errors.Add($"Invalid User ID: {purchaseItemDto.CartId}");

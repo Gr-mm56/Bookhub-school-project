@@ -10,25 +10,29 @@ public class OrderController : AdminController
     private readonly ICartService _cartService;
     private readonly IUserService _userService;
     private readonly IPurchaseItemService _purchaseItemService;
+    private readonly IBookService _bookService;
     private const int PageSize = 10;
 
     public OrderController(
         ICartService cartService,
         IUserService userService,
-        IPurchaseItemService purchaseItemService
+        IPurchaseItemService purchaseItemService,
+        IBookService bookService
     ) {
         _cartService = cartService;
         _userService = userService;
         _purchaseItemService = purchaseItemService;
+        _bookService = bookService;
     }
 
     public async Task<IActionResult> Index(int page = 1)
     {
-        if (page < 1)
-            page = 1;
+        page = page < 1 ? 1 : page;
 
         var offset = (page - 1) * PageSize;
-        var pagedResult = await _cartService.GetAllAsync(PageSize, offset);
+
+        // Get all CartDtos with OrderId filled
+        var pagedResult = await _cartService.GetAllOrdersAsync(PageSize, offset);
 
         var viewModel = OrderViewModelMapper.ToListViewModel(pagedResult.Items.ToList());
 
@@ -44,13 +48,14 @@ public class OrderController : AdminController
     {
         var orderViewModel = new OrderCreateEditViewModel
         {
-            Title = "",
-            ISBN = "",
-            Price = 0,
-            PrimaryGenreId = 0
+            TotalValue = 0,
+            OrderId = 0,
+            OrderDate = DateTime.Now,
+            PurchaseItemIds = new List<int>(),
         };
 
         var viewModel = await LoadOrderOptionsAsync(orderViewModel);
+
         return View(viewModel);
     }
 
@@ -63,10 +68,11 @@ public class OrderController : AdminController
             return View(model);
         }
 
-        var orderRequestDto = OrderViewModelMapper.ToRequestDto(model.Order);
+        var orderRequestDto = OrderViewModelMapper.ToCreateDto(model.Order);
         await _cartService.CreateAsync(orderRequestDto);
 
         TempData["SuccessMessage"] = "Order created successfully!";
+
         return RedirectToAction(nameof(Index));
     }
 
@@ -81,19 +87,16 @@ public class OrderController : AdminController
 
         var orderViewModel = new OrderCreateEditViewModel
         {
-            Title = order.Title,
-            ISBN = order.ISBN,
-            Description = order.Description,
-            Price = order.Price,
-            PrimaryGenreId = order.PrimaryGenreId,
-            ImageId = order.Image?.Id ?? null,
-            PublisherId = order.Publisher?.Id ?? null,
-            GenreIds = order.Genres.Select(g => g.Id).ToList(),
-            AuthorIds = order.Authors.Select(a => a.Id).ToList()
+            UserId = order.UserId,
+            TotalValue = order.TotalValue,
+            OrderId = order.OrderId,
+            OrderDate = order.OrderDate,
+            PurchaseItemIds = order.PurchaseItems?.Select(p => p.Id).ToList() ?? [],
         };
 
         var viewModel = await LoadOrderOptionsAsync(orderViewModel);
         ViewBag.OrderId = id;
+
         return View(viewModel);
     }
 
@@ -105,10 +108,11 @@ public class OrderController : AdminController
         if (!ModelState.IsValid)
         {
             ViewBag.OrderId = id;
+
             return View(model);
         }
 
-        var orderRequestDto = OrderViewModelMapper.ToRequestDto(model.Order);
+        var orderRequestDto = OrderViewModelMapper.ToUpdateDto(model.Order);
         var result = await _cartService.UpdateAsync(id, orderRequestDto);
 
         if (result == null)
@@ -117,6 +121,7 @@ public class OrderController : AdminController
         }
 
         TempData["SuccessMessage"] = "Order updated successfully!";
+
         return RedirectToAction(nameof(Index));
     }
 
@@ -129,6 +134,7 @@ public class OrderController : AdminController
         }
 
         var viewModel = OrderViewModelMapper.ToDeleteViewModel(order);
+
         return View(viewModel);
     }
 
@@ -143,21 +149,21 @@ public class OrderController : AdminController
         }
 
         TempData["SuccessMessage"] = "Order deleted successfully!";
+
         return RedirectToAction(nameof(Index));
     }
 
     private async Task<OrderCreateEditViewModelWithOptions> LoadOrderOptionsAsync(OrderCreateEditViewModel orderViewModel)
     {
-        var genres = await _genreService.GetAllAsync(0, 0);
-        var images = await _imageService.GetAllAsync(0, 0);
-        var publishers = await _publisherService.GetAllAsync(0, 0);
-        var authors = await _authorService.GetAllAsync(0, 0);
+        var user = await _userService.GetByIdAsync(orderViewModel.UserId);
+        var purchaseItems = await _purchaseItemService.GetAllAsync(0, 0); // TODO new function in service
+        var books = await _bookService.GetAllAsync(0, 0);
 
         return OrderViewModelMapper.ToCreateEditViewModelWithOptions(
             orderViewModel,
-            genres.Items.ToList(),
-            images.Items.ToList(),
-            publishers.Items.ToList(),
-            authors.Items.ToList());
+            user,
+            purchaseItems.Items.ToList(),
+            books.Items.ToList()
+        );
     }
 }

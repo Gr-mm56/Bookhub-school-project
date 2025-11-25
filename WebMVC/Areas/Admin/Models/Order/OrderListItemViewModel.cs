@@ -7,5 +7,5 @@ public class OrderListItemViewModel
     public int? OrderId { get; set; }
     public DateTime? OrderDate { get; set; }
     public DateTime CreatedAt { get; set; }
-    public int PurchaseItemsCount { get; set; }
+    public DateTime UpdatedAt { get; set; }
 }

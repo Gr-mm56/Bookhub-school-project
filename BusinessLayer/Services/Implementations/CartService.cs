@@ -19,7 +19,22 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
     {
         var query = Context.Carts
             .AsNoTracking()
-            .OrderBy(u => u.Id);
+            .OrderBy(c => c.Id);
+
+        return await PageAsync(query, limit, offset, CartMapper.ToDtoList);
+    }
+
+    /**
+     * Get Carts that had orderId filled, those are actual orders
+     */
+    public async Task<PagedResultDto<CartDto>> GetAllOrdersAsync(int limit = 20, int offset = 0)
+    {
+        var query = Context.Carts
+            .AsNoTracking()
+            .Include(c => c.User)
+            .Include(c => c.PurchaseItems)
+            .Where(c => c.OrderId != null)
+            .OrderBy(c => c.OrderDate);
 
         return await PageAsync(query, limit, offset, CartMapper.ToDtoList);
     }
@@ -53,7 +68,7 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
 
     public async Task<bool> DeleteAsync(int id)
     {
-        Cart? cart = await Context.Carts.FirstOrDefaultAsync(g => g.Id == id);
+        Cart? cart = await Context.Carts.FirstOrDefaultAsync(c => c.Id == id);
         if (cart == null)
         {
             return false;
@@ -70,7 +85,7 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
         // Validate other values
         await ValidateValues(cartUpdateDto.OrderId, cartUpdateDto.TotalValue);
 
-        Cart? cart = await Context.Carts.FirstOrDefaultAsync(u => u.Id == id);
+        Cart? cart = await Context.Carts.FirstOrDefaultAsync(c => c.Id == id);
         if (cart == null)
         {
             return null;

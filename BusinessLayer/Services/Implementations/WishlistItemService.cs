@@ -21,7 +21,7 @@ public class WishlistItemService : BaseService<BookHubDbContext>, IWishlistItemS
             .AsNoTracking()
             .Include(w => w.Book)
             .Include(w => w.User)
-            .OrderBy(u => u.Id);
+            .OrderBy(w => w.Id);
 
         return await PageAsync(query, limit, offset, WishlistItemMapper.ToDetailDtoList);
     }
