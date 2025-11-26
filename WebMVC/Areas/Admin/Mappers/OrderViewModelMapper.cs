@@ -42,7 +42,6 @@ public static class OrderViewModelMapper
 
         return new CartCreateDto
         {
-            UserId = viewModel.UserId,
             TotalValue = viewModel.TotalValue,
             OrderId = viewModel.OrderId,
             OrderDate = viewModel.OrderDate,
@@ -51,19 +50,29 @@ public static class OrderViewModelMapper
 
     public static OrderCreateEditViewModelWithOptions ToCreateEditViewModelWithOptions(
         OrderCreateEditViewModel orderViewModel,
-        UserDetailDto user,
+        ICollection<UserDto> users,
         ICollection<PurchaseItemDetailDto> purchaseItems,
         ICollection<BookDto> books
     ) {
         ArgumentNullException.ThrowIfNull(orderViewModel);
-        ArgumentNullException.ThrowIfNull(user);
+        ArgumentNullException.ThrowIfNull(users);
         ArgumentNullException.ThrowIfNull(purchaseItems);
         ArgumentNullException.ThrowIfNull(books);
 
         return new OrderCreateEditViewModelWithOptions
         {
             Order = orderViewModel,
-            User = user, // TODO USER to USEROPTION
+            Users = users
+                .Select(u => new UserOption
+                {
+                    Id = u.Id,
+                    Name = u.Name + " " + u.Surname,
+                    Country = u.Country,
+                    City = u.City,
+                    Street = u.Street,
+                })
+                .OrderBy(u => u.Id)
+                .ToList(),
             PurchaseItems = purchaseItems
                 .Select(pi => new PurchaseItemOption
                 {
@@ -73,7 +82,7 @@ public static class OrderViewModelMapper
                     BookPrice = pi.Book.Price,
                     Count = pi.Count
                 })
-                .OrderBy(x => x.BookTitle)
+                .OrderBy(pi => pi.BookTitle)
                 .ToList()
         };
     }

@@ -4,8 +4,7 @@ namespace WebMVC.Areas.Admin.Models.Order;
 
 public class OrderCreateEditViewModel
 {
-    [Required(ErrorMessage = "User is required")]
-    public required int UserId { get; set; }
+    public int? UserId { get; set; }
 
     [Required(ErrorMessage = "Total value is required")]
     [Range(0, double.MaxValue, ErrorMessage = "Total value must be non-negative")]

@@ -19,9 +19,20 @@ public class PurchaseItemService : BaseService<BookHubDbContext>, IPurchaseItemS
     {
         var query = Context.PurchaseItems
             .AsNoTracking()
-            .OrderBy(u => u.Id);
+            .OrderBy(p => p.Id);
 
         return await PageAsync(query, limit, offset, PurchaseItemMapper.ToDtoList);
+    }
+
+    public async Task<PagedResultDto<PurchaseItemDetailDto>> GetAllDetailsAsync(int limit = 20, int offset = 0)
+    {
+        var query = Context.PurchaseItems
+            .AsNoTracking()
+            .Include(p => p.Book)
+            .Include(p => p.Cart)
+            .OrderBy(p => p.Id);
+
+        return await PageWithDetailsAsync(query, limit, offset, PurchaseItemMapper.ToDetailDtoList);
     }
 
     public async Task<PurchaseItemDetailDto?> GetByIdAsync(int id)

@@ -155,13 +155,13 @@ public class OrderController : AdminController
 
     private async Task<OrderCreateEditViewModelWithOptions> LoadOrderOptionsAsync(OrderCreateEditViewModel orderViewModel)
     {
-        var user = await _userService.GetByIdAsync(orderViewModel.UserId);
-        var purchaseItems = await _purchaseItemService.GetAllAsync(0, 0); // TODO new function in service
+        var users = await _userService.GetAllAsync(0, 0);
+        var purchaseItems = await _purchaseItemService.GetAllDetailsAsync(0);
         var books = await _bookService.GetAllAsync(0, 0);
 
         return OrderViewModelMapper.ToCreateEditViewModelWithOptions(
             orderViewModel,
-            user,
+            users.Items.ToList(),
             purchaseItems.Items.ToList(),
             books.Items.ToList()
         );
