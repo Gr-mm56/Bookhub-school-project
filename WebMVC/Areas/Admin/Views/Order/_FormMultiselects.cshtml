@@ -1,0 +1,14 @@
+﻿@model WebMVC.Areas.Admin.Models.Order.OrderCreateEditViewModelWithOptions
+
+<!-- Purchase Items Multiselect -->
+<div class="mb-3">
+    <label asp-for="Order.PurchaseItemIds" class="form-label">Purchase Items *</label>
+    <select asp-for="Order.PurchaseItemIds" class="form-select" multiple="multiple" style="height: 150px;">
+        @foreach (var purchaseItem in Model.PurchaseItems)
+        {
+            <option value="@purchaseItem.Id">@purchaseItem.BookTitle @purchaseItem.BookPrice</option>
+        }
+    </select>
+    <small class="text-muted d-block mt-1">Hold Ctrl (Cmd on Mac) to select multiple purchase items</small>
+    <span asp-validation-for="Order.PurchaseItemIds" class="text-danger small d-block mt-1"></span>
+</div>

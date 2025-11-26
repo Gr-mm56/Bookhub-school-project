@@ -1,0 +1,52 @@
+﻿@{
+    var formId = ViewBag.FormId ?? "orderForm";
+    var submitBtnId = ViewBag.SubmitBtnId ?? "submitBtn";
+}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('@formId');
+        const submitBtn = document.getElementById('@submitBtnId');
+
+        // Update submit button based on form validity
+        function updateSubmitButtonState() {
+            const orderIdInput = form.querySelector('input[name="Order.orderId"]');
+            const userIdInput = form.querySelector('input[name="Order.UserId"]');
+            const totalValueInput = form.querySelector('input[name="Order.totalValue"]');
+            const purchaseItemsMultiselect = form.querySelector('select[name="Order.purchaseItems"]');
+
+            let isValid = true;
+
+            const totalValue = parseFloat(totalValueInput.value);
+            if (!priceInput.value || isNaN(totalValue) || totalValue < 0) {
+                isValid = false;
+            }
+
+            if (parseFloat(orderIdInput.value) <= 0 || parseFloat(userIdInput.value) <= 0) {
+                isValid = false;
+            }
+
+            if (purchaseItemsMultiselect.selectedOptions.length === 0) {
+                isValid = false;
+            }
+
+            submitBtn.disabled = !isValid;
+        }
+
+        form.addEventListener('change', updateSubmitButtonState);
+        form.addEventListener('input', updateSubmitButtonState);
+        form.addEventListener('keyup', updateSubmitButtonState);
+
+        form.addEventListener('submit', function() {
+            const purchaseItemsMultiselect = form.querySelector('select[name="Order.PurchaseItemIds"]');
+
+            Array.from(purchaseItemsMultiselect.options).forEach(option => {
+                if (Array.from(purchaseItemsMultiselect.selectedOptions).includes(option)) {
+                    option.selected = true;
+                }
+            });
+        });
+
+        updateSubmitButtonState();
+    });
+</script>
