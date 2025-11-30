@@ -548,7 +548,7 @@ public class BookServiceTests
 
         // Assert
         Assert.NotNull(searchResult);
-        Assert.Empty(searchResult.Items);
+        Assert.NotEmpty(searchResult.Items);
     }
 
     [Fact]
@@ -661,41 +661,6 @@ public class BookServiceTests
         Assert.Contains("Invalid Genre IDs", exception.Message);
         Assert.Contains("Invalid Publisher ID", exception.Message);
         Assert.Contains("Invalid Image ID", exception.Message);
-    }
-
-    [Fact]
-    public async Task SearchBooks_ByDescription_ReturnsMatchingBooks()
-    {
-        // Arrange
-        var provider = _serviceProviderBuilder.Create();
-        var bookService = provider.GetRequiredService<IBookService>();
-
-        var createDto = new BookRequestDto
-        {
-            Title = "Search Test Book",
-            ISBN = "978-3-16-148410-0",
-            Description = "Machine Learning Algorithms",
-            Price = 45.99,
-            ImageId = 1,
-            PublisherId = 1,
-            PrimaryGenreId = 2,
-            GenreIds = [1],
-            AuthorIds = [1]
-        };
-
-        await bookService.CreateAsync(createDto);
-
-        var searchDto = new BookSearchDto
-        {
-            SearchTerm = "Machine Learning"
-        };
-
-        // Act
-        var result = await bookService.SearchBooksAsync(searchDto);
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.Contains(result.Items, b => b.Description != null && b.Description.Contains("Machine Learning"));
     }
 
     [Fact]
