@@ -54,7 +54,26 @@ public static class BookViewModelMapper
             AuthorIds = viewModel.AuthorIds
         };
     }
-    // todo: publisher and Author overfetch! No need to fetch everything
+
+    public static BookCreateEditViewModel ToDtoToCreateEditViewModel(BookDetailDto bookDetailDto)
+    {
+        ArgumentNullException.ThrowIfNull(bookDetailDto);
+
+        return new BookCreateEditViewModel
+        {
+            Title = bookDetailDto.Title,
+            ISBN = bookDetailDto.ISBN,
+            Description = bookDetailDto.Description,
+            Price = bookDetailDto.Price,
+            PrimaryGenreId = bookDetailDto.PrimaryGenre?.Id ?? 0,
+            ImageId = bookDetailDto.Image?.Id,
+            PublisherId = bookDetailDto.Publisher?.Id,
+            GenreIds = bookDetailDto.Genres.Select(g => g.Id).ToList(),
+            AuthorIds = bookDetailDto.Authors.Select(a => a.Id).ToList()
+        };
+    }
+    
+    // ...existing code...
     public static BookCreateEditViewModelWithOptions ToCreateEditViewModelWithOptions(
         BookCreateEditViewModel bookViewModel,
         ICollection<GenreDto> genres,

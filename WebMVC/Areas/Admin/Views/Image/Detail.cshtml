@@ -1,0 +1,118 @@
+﻿@model WebMVC.Areas.Admin.Models.Image.ImageListItemViewModel
+@{
+    ViewBag.Title = "Image Details";
+    Layout = "_Layout";
+}
+
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="display-6 mb-0">Image Details</h1>
+                <a asp-area="Admin" asp-controller="Image" asp-action="Index" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to List
+                </a>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Image Preview -->
+                        <div class="col-md-6 mb-4">
+                            <div class="text-center">
+                                <img src="~/@Model.FileUrl" alt="Image @Model.Id" class="img-fluid rounded border" style="max-height: 400px; object-fit: contain;" />
+                            </div>
+                        </div>
+
+                        <!-- Image Information -->
+                        <div class="col-md-6">
+                            <h5 class="mb-4">Image Information</h5>
+                            
+                            <dl class="row">
+                                <dt class="col-sm-4">Image ID:</dt>
+                                <dd class="col-sm-8">
+                                    <span class="badge bg-secondary">@Model.Id</span>
+                                </dd>
+
+                                <dt class="col-sm-4">File URL:</dt>
+                                <dd class="col-sm-8">
+                                    <code>@Model.FileUrl</code>
+                                </dd>
+
+                                <dt class="col-sm-4">Created:</dt>
+                                <dd class="col-sm-8">
+                                    <small class="text-muted">@Model.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")</small>
+                                </dd>
+
+                                <dt class="col-sm-4">File Size:</dt>
+                                <dd class="col-sm-8">
+                                    <small class="text-muted">
+                                        @{
+                                            var filePath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", Model.FileUrl.Replace("/", System.IO.Path.DirectorySeparatorChar.ToString()));
+                                            if (System.IO.File.Exists(filePath))
+                                            {
+                                                var fileInfo = new FileInfo(filePath);
+                                                var sizeKb = fileInfo.Length / 1024.0;
+                                                <text>@sizeKb.ToString("F2") KB</text>
+                                            }
+                                            else
+                                            {
+                                                <text>-</text>
+                                            }
+                                        }
+                                    </small>
+                                </dd>
+                            </dl>
+
+                            <hr />
+
+                            <div class="d-grid gap-2">
+                                <a href="~/@Model.FileUrl" class="btn btn-primary" download>
+                                    <i class="bi bi-download"></i> Download Image
+                                </a>
+                                <a asp-area="Admin" asp-controller="Image" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
+                                    <i class="bi bi-trash"></i> Delete Image
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Copy Path Section -->
+            <div class="card mt-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Usage</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Use this path to reference the image:</p>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="pathInput" value="@Model.FileUrl" readonly />
+                        <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard()">
+                            <i class="bi bi-clipboard"></i> Copy
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function copyToClipboard() {
+            const pathInput = document.getElementById('pathInput');
+            pathInput.select();
+            document.execCommand('copy');
+            
+            // Show feedback
+            const button = event.target.closest('button');
+            const originalHtml = button.innerHTML;
+            button.innerHTML = '<i class="bi bi-check-circle"></i> Copied!';
+            setTimeout(() => {
+                button.innerHTML = originalHtml;
+            }, 2000);
+        }
+    </script>
+}
+

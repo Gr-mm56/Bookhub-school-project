@@ -31,8 +31,9 @@ public class BookController : AdminController
     public async Task<IActionResult> Index(int page = 1)
     {
         if (page < 1)
+        {
             page = 1;
-
+        }
         var offset = (page - 1) * PageSize;
         var pagedResult = await _bookService.GetAllAsync(PageSize, offset);
 
@@ -85,19 +86,7 @@ public class BookController : AdminController
             return NotFound();
         }
 
-        var bookViewModel = new BookCreateEditViewModel
-        {
-            Title = book.Title,
-            ISBN = book.ISBN,
-            Description = book.Description,
-            Price = book.Price,
-            PrimaryGenreId = book.PrimaryGenreId,
-            ImageId = book.Image?.Id ?? null,
-            PublisherId = book.Publisher?.Id ?? null,
-            GenreIds = book.Genres.Select(g => g.Id).ToList(),
-            AuthorIds = book.Authors.Select(a => a.Id).ToList()
-        };
-
+        var bookViewModel = BookViewModelMapper.ToDtoToCreateEditViewModel(book);
         var viewModel = await LoadBookOptionsAsync(bookViewModel);
         ViewBag.BookId = id;
         return View(viewModel);

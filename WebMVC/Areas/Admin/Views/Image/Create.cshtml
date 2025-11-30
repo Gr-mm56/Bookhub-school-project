@@ -1,0 +1,138 @@
+﻿@model WebMVC.Areas.Admin.Models.Image.ImageCreateEditViewModel
+@{
+    ViewBag.Title = "Upload Image";
+    Layout = "_Layout";
+}
+
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <h1 class="display-6 mb-4">Upload Image</h1>
+
+            <div class="card">
+                <div class="card-body">
+                    <form asp-area="Admin" asp-controller="Image" asp-action="Create" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div class="alert alert-danger">
+                                <p><strong>Please fix the following errors:</strong></p>
+                                <ul class="mb-0">
+                                    @foreach (var modelState in ViewData.ModelState.Values)
+                                    {
+                                        @foreach (var error in modelState.Errors)
+                                        {
+                                            <li>@error.ErrorMessage</li>
+                                        }
+                                    }
+                                </ul>
+                            </div>
+                        }
+
+                        <div class="mb-3">
+                            <label asp-for="File" class="form-label">Select Image File</label>
+                            
+                            <div id="dropZone" class="border-2 border-dashed rounded-3 p-5 text-center bg-light cursor-pointer @(ViewData.ModelState.ContainsKey("File") && !(ViewData.ModelState["File"].ValidationState == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Valid) ? "border-danger" : "border-primary")" style="transition: all 0.3s ease;">
+                                <i class="bi bi-cloud-upload display-4 text-primary mb-3" style="display: block;"></i>
+                                <h5>Drag and drop your image here</h5>
+                                <p class="text-muted mb-0">or</p>
+                                <input type="file" asp-for="File" accept="image/*" class="d-none" id="fileInput" />
+                                <label for="fileInput" class="btn btn-primary mt-2">
+                                    <i class="bi bi-folder-open"></i> Choose File
+                                </label>
+                            </div>
+                            
+                            <small class="text-muted d-block mt-2">
+                                <i class="bi bi-info-circle"></i> 
+                                Supported formats: JPG, PNG, GIF, WebP (Max 5 MB)
+                            </small>
+                            <span asp-validation-for="File" class="invalid-feedback d-block"></span>
+                            <div id="fileName" class="mt-2 text-success"></div>
+                        </div>
+
+                        <div class="form-group mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-cloud-upload"></i> Upload Image
+                            </button>
+                            <a asp-area="Admin" asp-controller="Image" asp-action="Index" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Back
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Upload Requirements</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li><i class="bi bi-check-circle text-success"></i> <strong>Supported Formats:</strong> JPG, JPEG, PNG, GIF, WebP</li>
+                        <li><i class="bi bi-check-circle text-success"></i> <strong>Maximum Size:</strong> 5 MB</li>
+                        <li><i class="bi bi-check-circle text-success"></i> <strong>Storage:</strong> Images are saved to <code>assets/uploads/</code></li>
+                        <li><i class="bi bi-check-circle text-success"></i> <strong>Filename:</strong> Automatically renamed with unique identifier for security</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const fileName = document.getElementById('fileName');
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+            document.body.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight(e) {
+            dropZone.classList.add('border-success', 'bg-success-light');
+            dropZone.style.backgroundColor = '#e7f5ea';
+        }
+
+        function unhighlight(e) {
+            dropZone.classList.remove('border-success', 'bg-success-light');
+            dropZone.style.backgroundColor = '';
+        }
+
+        dropZone.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            fileInput.files = files;
+            updateFileName();
+        }
+
+        fileInput.addEventListener('change', updateFileName);
+
+        function updateFileName() {
+            if (fileInput.files.length > 0) {
+                fileName.textContent = '✓ Selected: ' + fileInput.files[0].name;
+            } else {
+                fileName.textContent = '';
+            }
+        }
+
+        dropZone.addEventListener('click', () => fileInput.click());
+    </script>
+}
+

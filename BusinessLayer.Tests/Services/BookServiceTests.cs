@@ -484,7 +484,7 @@ public class BookServiceTests
 
         var searchDto = new BookSearchDto
         {
-            Title = "Programming"
+            SearchTerm = "Programming"
         };
 
         // Act
@@ -532,7 +532,7 @@ public class BookServiceTests
     }
 
     [Fact]
-    public async Task SearchBooks_NoMatches_ReturnsEmptyResult()
+    public async Task SearchBooks_ByPublisher_ReturnsMatchingBooks()
     {
         // Arrange
         var provider = _serviceProviderBuilder.Create();
@@ -540,7 +540,7 @@ public class BookServiceTests
 
         var searchDto = new BookSearchDto
         {
-            Title = "NonExistentBookTitle12345",
+            SearchTerm = "HarperCollins"
         };
 
         // Act
@@ -687,7 +687,7 @@ public class BookServiceTests
 
         var searchDto = new BookSearchDto
         {
-            Description = "Machine Learning"
+            SearchTerm = "Machine Learning"
         };
 
         // Act
@@ -706,7 +706,7 @@ public class BookServiceTests
 
         var searchDto = new BookSearchDto
         {
-            Genre = "Science"
+            SearchTerm = "Science"
         };
 
         // Act
@@ -714,30 +714,6 @@ public class BookServiceTests
 
         // Assert
         Assert.NotNull(result);
-    }
-
-    [Fact]
-    public async Task SearchBooks_ByPublisher_ExposesBug()
-    {
-        // Arrange
-        var provider = _serviceProviderBuilder.Create();
-        var bookService = provider.GetRequiredService<IBookService>();
-
-        var searchDto = new BookSearchDto
-        {
-            Publisher = "HarperCollins"
-        };
-
-        // Act
-        var result = await bookService.SearchBooksAsync(searchDto);
-
-        Assert.NotNull(result);
-        Assert.All(result.Items, item =>
-        {
-            Assert.NotNull(item.Publisher);
-            // This would fail because publisher name filtering is broken
-            // Assert.Contains("HarperCollins", item.Publisher.Name);
-        });
     }
 
     [Fact]

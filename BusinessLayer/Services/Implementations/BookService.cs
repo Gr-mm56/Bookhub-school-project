@@ -50,32 +50,20 @@ public class BookService : BaseService<BookHubDbContext>, IBookService
             .Include(b => b.PrimaryGenre)
             .AsQueryable();
 
-        if (!string.IsNullOrEmpty(searchDto.Title))
+        if (!string.IsNullOrEmpty(searchDto.SearchTerm))
         {
-            query = query.Where(b => b.Title.Contains(searchDto.Title.Trim()));
-        }
-
-        if (!string.IsNullOrEmpty(searchDto.Description))
-        {
-            query = query.Where(b => b.Description != null && b.Description.Contains(searchDto.Description.Trim()));
-        }
-
-        if (!string.IsNullOrEmpty(searchDto.Author))
-        {
-            query = query.Where(b => b.Authors.Any(a => a.Name.Contains(searchDto.Author.Trim())));
-        }
-
-        if (!string.IsNullOrEmpty(searchDto.Genre))
-        {
-            var genreTerm = searchDto.Genre.Trim();
-            // match either the PrimaryGenre name or any of the book's Genres
-            query = query.Where(b => (b.PrimaryGenre != null && b.PrimaryGenre.Name.Contains(genreTerm))
-                                     || b.Genres.Any(g => g.Name.Contains(genreTerm)));
-        }
-
-        if (!string.IsNullOrEmpty(searchDto.Publisher))
-        {
-            query = query.Where(b => b.Publisher != null);
+            var searchTerm = searchDto.SearchTerm.Trim().ToLower();
+            
+            query = query.Where(b => 
+                b.Title.ToLower().Contains(searchTerm) ||
+                // Search in author names (first or last name)
+                b.Authors.Any(a => (a.Name.ToLower() + " " + a.Surname.ToLower()).Contains(searchTerm) ||
+                                    a.Name.ToLower().Contains(searchTerm) ||
+                                    a.Surname.ToLower().Contains(searchTerm)) ||
+                (b.Publisher != null && b.Publisher.Name.ToLower().Contains(searchTerm)) ||
+                (b.PrimaryGenre != null && b.PrimaryGenre.Name.ToLower().Contains(searchTerm)) ||
+                b.Genres.Any(g => g.Name.ToLower().Contains(searchTerm))
+            );
         }
 
         if (searchDto.Price.HasValue)
