@@ -142,7 +142,10 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
         // Validate other values
         await ValidateValues(null, orderUpdateDto.TotalValue);
 
-        Cart? cart = await Context.Carts.FirstOrDefaultAsync(c => c.Id == id);
+        Cart? cart = await Context.Carts
+            .Include(c => c.PurchaseItems)
+            .FirstOrDefaultAsync(c => c.Id == id);
+
         if (cart == null)
         {
             return null;
@@ -150,6 +153,19 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
 
         CartMapper.UpdateOrderEntity(cart, orderUpdateDto);
         await SaveAsync();
+
+        // Remove purchase items that was removed in admin multiselect
+
+        var selectedBookIds = orderUpdateDto.BookIds.Distinct().ToList();
+        var itemsToRemove = cart.PurchaseItems?
+            .Where(pi => !selectedBookIds.Contains(pi.BookId))
+            .ToList();
+
+        if (itemsToRemove != null && itemsToRemove.Any())
+        {
+            Context.PurchaseItems.RemoveRange(itemsToRemove);
+            await SaveAsync();
+        }
 
         // Add purchased items from admin
         foreach (var bookId in orderUpdateDto.BookIds)

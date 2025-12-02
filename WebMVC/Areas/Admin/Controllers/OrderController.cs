@@ -89,7 +89,7 @@ public class OrderController : AdminController
             UserId = order.UserId,
             TotalValue = order.TotalValue,
             OrderDate = order.OrderDate,
-            // PurchaseItemIds = order.PurchaseItems?.Select(p => p.Id).ToList() ?? [],
+            BookIds = order.PurchaseItems?.Select(p => p.BookId).ToList() ?? new List<int>()
         };
 
         var viewModel = await LoadOrderOptionsAsync(orderViewModel);
@@ -160,7 +160,10 @@ public class OrderController : AdminController
         return OrderViewModelMapper.ToCreateEditViewModelWithOptions(
             orderViewModel,
             users.Items.ToList(),
-            purchaseItems.Items.ToList(),
+            purchaseItems.Items
+                .GroupBy(pi => pi.BookId)
+                .Select(g => g.First())
+                .ToList(),
             books.Items.ToList()
         );
     }

@@ -5,6 +5,7 @@ public class OrderCreateEditViewModelWithOptions
     public required OrderCreateEditViewModel Order { get; set; }
 
     public List<UserOption> Users { get; set; } = [];
+
     public List<PurchaseItemOption> PurchaseItems { get; set; } = [];
 }
 
