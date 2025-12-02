@@ -31,20 +31,23 @@ public static class OrderViewModelMapper
         {
             Id = orderDto.Id,
             TotalValue = orderDto.TotalValue,
+            OrderId = orderDto.OrderId,
+            OrderDate = orderDto.OrderDate,
             CreatedAt = orderDto.CreatedAt,
             UpdatedAt = orderDto.UpdatedAt,
         };
     }
 
-    public static CartCreateDto ToCreateDto(OrderCreateEditViewModel viewModel)
+    public static OrderCreateDto ToCreateDto(OrderCreateEditViewModel viewModel)
     {
         ArgumentNullException.ThrowIfNull(viewModel);
 
-        return new CartCreateDto
+        return new OrderCreateDto
         {
+            UserId = viewModel.UserId,
             TotalValue = viewModel.TotalValue,
-            OrderId = viewModel.OrderId,
             OrderDate = viewModel.OrderDate,
+            BookIds = viewModel.BookIds
         };
     }
 
@@ -67,9 +70,6 @@ public static class OrderViewModelMapper
                 {
                     Id = u.Id,
                     Name = u.Name + " " + u.Surname,
-                    Country = u.Country,
-                    City = u.City,
-                    Street = u.Street,
                 })
                 .OrderBy(u => u.Id)
                 .ToList(),
@@ -87,15 +87,16 @@ public static class OrderViewModelMapper
         };
     }
 
-    public static CartUpdateDto ToUpdateDto(OrderCreateEditViewModel viewModel)
+    public static OrderUpdateDto ToUpdateDto(OrderCreateEditViewModel viewModel)
     {
         ArgumentNullException.ThrowIfNull(viewModel);
 
-        return new CartUpdateDto
+        return new OrderUpdateDto
         {
             TotalValue = viewModel.TotalValue,
-            OrderId = viewModel.OrderId,
             OrderDate = viewModel.OrderDate,
+            UserId = viewModel.UserId,
+            BookIds = viewModel.BookIds,
         };
     }
 

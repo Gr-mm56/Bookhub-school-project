@@ -19,9 +19,6 @@
                     </div>
 
                     <dl class="row">
-                        <dt class="col-sm-4">ID:</dt>
-                        <dd class="col-sm-8">@Model.Id</dd>
-
                         <dt class="col-sm-4">Order ID:</dt>
                         <dd class="col-sm-8">@Model.OrderId</dd>
 
@@ -43,10 +40,10 @@
                     <form asp-action="Delete" asp-route-id="@Model.Id" method="post">
                         <div class="d-flex justify-content-between">
                             <a asp-action="Index" class="btn btn-secondary">
-                                <i class="bi bi-arrow-left">Cancel</i>
+                                <i class="bi bi-arrow-left"></i> Cancel
                             </a>
                             <button type="submit" class="btn btn-danger">
-                                <i class="bi bi-trash">Confirm Delete</i>
+                                <i class="bi bi-trash"></i> Confirm Delete
                             </button>
                         </div>
                     </form>

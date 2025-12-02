@@ -54,10 +54,10 @@ public abstract class BaseService<TContext>(TContext context)
     }
 
     protected async Task<PagedResultDto<TOut>> PageWithDetailsAsync<TEntityDetailDto, TOut>(
-        IQueryable<TEntityDetailDto > query,
+        IQueryable<TEntityDetailDto> query,
         int limit,
         int offset,
-        Func<IEnumerable<TEntityDetailDto >, IEnumerable<TOut>> mapper,
+        Func<IEnumerable<TEntityDetailDto>, IEnumerable<TOut>> mapper,
         CancellationToken ct = default
     ) where TEntityDetailDto  : class
     {

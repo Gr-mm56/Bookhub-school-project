@@ -8,21 +8,19 @@
         const form = document.getElementById('@formId');
         const submitBtn = document.getElementById('@submitBtnId');
 
-        // Update submit button based on form validity
         function updateSubmitButtonState() {
-            const orderIdInput = form.querySelector('input[name="Order.orderId"]');
-            const userIdInput = form.querySelector('input[name="Order.UserId"]');
-            const totalValueInput = form.querySelector('input[name="Order.totalValue"]');
-            const purchaseItemsMultiselect = form.querySelector('select[name="Order.purchaseItems"]');
+            const userIdInput = form.querySelector('select[name="Order.UserId"]');
+            const totalValueInput = form.querySelector('input[name="Order.TotalValue"]');
+            const purchaseItemsMultiselect = form.querySelector('select[name="Order.PurchaseItemIds"]');
 
             let isValid = true;
 
             const totalValue = parseFloat(totalValueInput.value);
-            if (!priceInput.value || isNaN(totalValue) || totalValue < 0) {
+            if (!totalValueInput.value || isNaN(totalValue) || totalValue < 0) {
                 isValid = false;
             }
 
-            if (parseFloat(orderIdInput.value) <= 0 || parseFloat(userIdInput.value) <= 0) {
+            if (!userIdInput.value || parseInt(userIdInput.value) <= 0) {
                 isValid = false;
             }
 

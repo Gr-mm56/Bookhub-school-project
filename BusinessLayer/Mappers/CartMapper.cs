@@ -67,6 +67,32 @@ public static class CartMapper
         cart.UpdatedAt = DateTime.Now;
     }
 
+    public static Cart CreateOrderDtoToEntity(OrderCreateDto createDto)
+    {
+        ArgumentNullException.ThrowIfNull(createDto);
+
+        return new Cart
+        {
+            UserId = createDto.UserId,
+            TotalValue = createDto.TotalValue,
+            OrderId = createDto.OrderId,
+            OrderDate = createDto.OrderDate,
+            CreatedAt = DateTime.Now,
+            UpdatedAt = DateTime.Now,
+        };
+    }
+
+    public static void UpdateOrderEntity(Cart order, OrderUpdateDto updateDto)
+    {
+        ArgumentNullException.ThrowIfNull(order);
+        ArgumentNullException.ThrowIfNull(updateDto);
+
+        order.TotalValue = updateDto.TotalValue;
+        order.UserId = updateDto.UserId;
+        order.OrderDate = updateDto.OrderDate;
+        order.UpdatedAt = DateTime.Now;
+    }
+
     public static IEnumerable<CartDto> ToDtoList(IEnumerable<Cart> carts)
     {
         return carts.Select(ToDto);

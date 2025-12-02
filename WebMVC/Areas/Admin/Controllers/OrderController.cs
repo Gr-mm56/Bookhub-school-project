@@ -49,9 +49,8 @@ public class OrderController : AdminController
         var orderViewModel = new OrderCreateEditViewModel
         {
             TotalValue = 0,
-            OrderId = 0,
             OrderDate = DateTime.Now,
-            PurchaseItemIds = new List<int>(),
+            BookIds = new List<int>(),
         };
 
         var viewModel = await LoadOrderOptionsAsync(orderViewModel);
@@ -69,7 +68,7 @@ public class OrderController : AdminController
         }
 
         var orderRequestDto = OrderViewModelMapper.ToCreateDto(model.Order);
-        await _cartService.CreateAsync(orderRequestDto);
+        await _cartService.CreateOrderAsync(orderRequestDto);
 
         TempData["SuccessMessage"] = "Order created successfully!";
 
@@ -89,9 +88,8 @@ public class OrderController : AdminController
         {
             UserId = order.UserId,
             TotalValue = order.TotalValue,
-            OrderId = order.OrderId,
             OrderDate = order.OrderDate,
-            PurchaseItemIds = order.PurchaseItems?.Select(p => p.Id).ToList() ?? [],
+            // PurchaseItemIds = order.PurchaseItems?.Select(p => p.Id).ToList() ?? [],
         };
 
         var viewModel = await LoadOrderOptionsAsync(orderViewModel);
@@ -113,7 +111,7 @@ public class OrderController : AdminController
         }
 
         var orderRequestDto = OrderViewModelMapper.ToUpdateDto(model.Order);
-        var result = await _cartService.UpdateAsync(id, orderRequestDto);
+        var result = await _cartService.UpdateOrderAsync(id, orderRequestDto);
 
         if (result == null)
         {
