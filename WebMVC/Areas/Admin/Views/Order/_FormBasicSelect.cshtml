@@ -1,0 +1,14 @@
+﻿@using DataAccessLayer.Enums
+@model WebMVC.Areas.Admin.Models.Order.OrderCreateEditViewModelWithOptions
+
+<!-- Payment Status Select -->
+<div class="mb-3">
+    <label asp-for="Order.PaymentStatus" class="form-label">Payment Status *</label>
+    <select asp-for="Order.PaymentStatus" class="form-select">
+        @foreach (var status in Enum.GetValues(typeof(PaymentStatusEnum)).Cast<PaymentStatusEnum>())
+        {
+            <option value="@status">@status</option>
+        }
+    </select>
+    <span asp-validation-for="Order.PaymentStatus" class="text-danger small d-block mt-1"></span>
+</div>

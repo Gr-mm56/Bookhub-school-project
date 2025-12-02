@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using DataAccessLayer.Enums;
 
 namespace BusinessLayer.Models.Cart.Requests;
 
@@ -15,4 +16,7 @@ public class OrderCreateDto
     public DateTime? OrderDate { get; set; }
 
     public List<int> BookIds = [];
+
+    [EnumDataType(typeof(PaymentStatusEnum))]
+    public PaymentStatusEnum PaymentStatus { get; set; }
 }

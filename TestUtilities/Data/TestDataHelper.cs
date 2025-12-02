@@ -1,4 +1,5 @@
 ﻿using DataAccessLayer.Entities;
+using DataAccessLayer.Enums;
 
 namespace TestUtilities.Data;
 
@@ -144,7 +145,7 @@ public class TestDataHelper
                 BookId = 2,
                 UserId = 2
             }
-        ]; 
+        ];
     }
 
     public static List<Cart> GetCarts()
@@ -159,7 +160,8 @@ public class TestDataHelper
                 UserId = 1,
                 TotalValue = 49.99,
                 OrderId = null,
-                OrderDate = null
+                OrderDate = null,
+                PaymentStatus = PaymentStatusEnum.Pending,
             },
             new Cart
             {
@@ -167,7 +169,8 @@ public class TestDataHelper
                 UserId = 2,
                 TotalValue = 0,
                 OrderId = null,
-                OrderDate = null
+                OrderDate = null,
+                PaymentStatus = PaymentStatusEnum.Pending,
             },
             new Cart
             {
@@ -175,7 +178,8 @@ public class TestDataHelper
                 UserId = 3,
                 TotalValue = 120.50,
                 OrderId = 1001,
-                OrderDate = seedDate
+                OrderDate = seedDate,
+                PaymentStatus = PaymentStatusEnum.Completed,
             },
             new Cart
             {
@@ -183,7 +187,8 @@ public class TestDataHelper
                 UserId = 4,
                 TotalValue = 15.75,
                 OrderId = 1002,
-                OrderDate = seedDate
+                OrderDate = seedDate,
+                PaymentStatus = PaymentStatusEnum.Pending,
             },
             new Cart
             {
@@ -191,7 +196,8 @@ public class TestDataHelper
                 UserId = 5,
                 TotalValue = 200.00,
                 OrderId = null,
-                OrderDate = null
+                OrderDate = null,
+                PaymentStatus = PaymentStatusEnum.Pending,
             }
         ];
     }
@@ -272,7 +278,7 @@ public class TestDataHelper
                 UserId = 4,
                 BookId = 4
             }
-        ]; 
+        ];
     }
     public static List<T> AddDates<T>(List<T> data) where T : BaseEntity
     {

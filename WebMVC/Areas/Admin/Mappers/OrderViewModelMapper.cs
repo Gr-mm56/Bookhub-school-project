@@ -33,6 +33,7 @@ public static class OrderViewModelMapper
             TotalValue = orderDto.TotalValue,
             OrderId = orderDto.OrderId,
             OrderDate = orderDto.OrderDate,
+            PaymentStatus = orderDto.PaymentStatus,
             CreatedAt = orderDto.CreatedAt,
             UpdatedAt = orderDto.UpdatedAt,
         };
@@ -47,6 +48,7 @@ public static class OrderViewModelMapper
             UserId = viewModel.UserId,
             TotalValue = viewModel.TotalValue,
             OrderDate = viewModel.OrderDate,
+            PaymentStatus = viewModel.PaymentStatus,
             BookIds = viewModel.BookIds
         };
     }
@@ -95,6 +97,7 @@ public static class OrderViewModelMapper
         {
             TotalValue = viewModel.TotalValue,
             OrderDate = viewModel.OrderDate,
+            PaymentStatus = viewModel.PaymentStatus,
             UserId = viewModel.UserId,
             BookIds = viewModel.BookIds,
         };
@@ -110,6 +113,7 @@ public static class OrderViewModelMapper
             TotalValue = orderDetailDto.TotalValue,
             OrderId = orderDetailDto.OrderId,
             OrderDate = orderDetailDto.OrderDate,
+            PaymentStatus = orderDetailDto.PaymentStatus,
             CreatedAt = orderDetailDto.CreatedAt,
             UpdatedAt = orderDetailDto.UpdatedAt,
             PurchaseItemsCount = orderDetailDto.PurchaseItems?.Count ?? 0

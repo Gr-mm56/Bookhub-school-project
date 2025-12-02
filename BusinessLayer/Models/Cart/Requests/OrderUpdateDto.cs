@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using DataAccessLayer.Enums;
 
 namespace BusinessLayer.Models.Cart.Requests;
 
@@ -14,4 +15,7 @@ public class OrderUpdateDto
     public required int UserId;
 
     public List<int> BookIds = [];
+
+    [EnumDataType(typeof(PaymentStatusEnum))]
+    public PaymentStatusEnum PaymentStatus { get; set; }
 }

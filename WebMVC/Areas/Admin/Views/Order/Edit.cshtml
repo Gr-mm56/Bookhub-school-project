@@ -25,6 +25,10 @@
                             @await Html.PartialAsync("_FormUser", Model)
                         </div>
 
+                        <div class="row">
+                            @await Html.PartialAsync("_FormBasicSelect", Model)
+                        </div>
+
                         @await Html.PartialAsync("_FormMultiselects", Model)
 
                         <div class="d-flex justify-content-between mt-4">

@@ -25,11 +25,14 @@
                         <dt class="col-sm-4">Order Submitted at:</dt>
                         <dd class="col-sm-8">@Model.OrderDate</dd>
 
+                        <dt class="col-sm-4">Order Payment Status:</dt>
+                        <dd class="col-sm-8">@Model.PaymentStatus</dd>
+
                         <dt class="col-sm-4">Created At:</dt>
-                        <dd class="col-sm-8">@Model.CreatedAt.ToString("HH:mm dd-MM-yyyy")</dd>
+                        <dd class="col-sm-8">@Model.CreatedAt</dd>
 
                         <dt class="col-sm-4">Updated At:</dt>
-                        <dd class="col-sm-8">@Model.UpdatedAt.ToString("HH:mm dd-MM-yyyy")</dd>
+                        <dd class="col-sm-8">@Model.UpdatedAt</dd>
                     </dl>
 
                     <div class="alert alert-info">

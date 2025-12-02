@@ -2,6 +2,7 @@
 using TestUtilities.MockedObjects;
 using Microsoft.Extensions.DependencyInjection;
 using BusinessLayer.Models.Cart.Requests;
+using DataAccessLayer.Enums;
 
 namespace BusinessLayer.Tests.Services;
 
@@ -21,7 +22,8 @@ public class CartServiceTests
             UserId = 1, // existing user from TestDataHelper
             TotalValue = 25.50,
             OrderId = null,
-            OrderDate = null
+            OrderDate = null,
+            PaymentStatus = PaymentStatusEnum.Pending
         };
 
         // Act
@@ -32,6 +34,7 @@ public class CartServiceTests
         Assert.True(created.Id > 0, "Created cart should have a positive Id");
         Assert.Equal(createDto.UserId, created.UserId);
         Assert.Equal(createDto.TotalValue, created.TotalValue);
+        Assert.Equal(createDto.PaymentStatus, created.PaymentStatus);
 
         // Verify persistence by fetching from service
         var fetched = await cartService.GetByIdAsync(created.Id);
@@ -52,7 +55,8 @@ public class CartServiceTests
             UserId = 9999, // non-existing user
             TotalValue = 30.00,
             OrderId = 54,
-            OrderDate = null
+            OrderDate = null,
+            PaymentStatus = PaymentStatusEnum.Completed
         };
 
         // Act & Assert
@@ -73,7 +77,8 @@ public class CartServiceTests
             UserId = 1,
             TotalValue = -10.00,
             OrderId = null,
-            OrderDate = null
+            OrderDate = null,
+            PaymentStatus = PaymentStatusEnum.Pending
         };
 
         // Act & Assert
@@ -94,7 +99,8 @@ public class CartServiceTests
             UserId = 1,
             TotalValue = 20.00,
             OrderId = null,
-            OrderDate = null
+            OrderDate = null,
+            PaymentStatus = PaymentStatusEnum.Pending
         };
 
         var created = await cartService.CreateAsync(createDto);
@@ -135,7 +141,8 @@ public class CartServiceTests
                 UserId = 1,
                 TotalValue = 10.00 + i,
                 OrderId = null,
-                OrderDate = null
+                OrderDate = null,
+                PaymentStatus = PaymentStatusEnum.Pending
             };
             await cartService.CreateAsync(createDto);
         }
@@ -161,7 +168,8 @@ public class CartServiceTests
             UserId = 1,
             TotalValue = 20.00,
             OrderId = 1,
-            OrderDate = null
+            OrderDate = null,
+            PaymentStatus = PaymentStatusEnum.Pending
         };
 
         var created = await cartService.CreateAsync(createDto);
@@ -170,7 +178,8 @@ public class CartServiceTests
         {
             TotalValue = 30.00,
             OrderId = 123,
-            OrderDate = DateTime.UtcNow
+            OrderDate = DateTime.UtcNow,
+            PaymentStatus = PaymentStatusEnum.Pending
         };
 
         // Act
@@ -195,7 +204,8 @@ public class CartServiceTests
             UserId = 1,
             TotalValue = 20.00,
             OrderId = null,
-            OrderDate = null
+            OrderDate = null,
+            PaymentStatus = PaymentStatusEnum.Pending
         };
 
         await cartService.CreateAsync(createDto);
@@ -225,7 +235,8 @@ public class CartServiceTests
             UserId = 1,
             TotalValue = 20.00,
             OrderId = null,
-            OrderDate = null
+            OrderDate = null,
+            PaymentStatus = PaymentStatusEnum.Pending
         };
 
         var created = await cartService.CreateAsync(createDto);
@@ -255,7 +266,8 @@ public class CartServiceTests
             UserId = 1,
             TotalValue = 20.00,
             OrderId = null,
-            OrderDate = null
+            OrderDate = null,
+            PaymentStatus = PaymentStatusEnum.Pending
         };
 
         var created = await cartService.CreateAsync(createDto);

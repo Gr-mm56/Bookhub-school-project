@@ -18,6 +18,7 @@ public static class CartMapper
             TotalValue = cart.TotalValue,
             OrderId = cart.OrderId,
             OrderDate = cart.OrderDate,
+            PaymentStatus = cart.PaymentStatus,
             CreatedAt = cart.CreatedAt,
             UpdatedAt = cart.UpdatedAt,
         };
@@ -36,6 +37,7 @@ public static class CartMapper
             OrderId = cart.OrderId,
             OrderDate = cart.OrderDate,
             PurchaseItems = cart.PurchaseItems?.Select(PurchaseItemMapper.ToDto).ToList() ?? new List<PurchaseItemDto>(),
+            PaymentStatus = cart.PaymentStatus,
             CreatedAt = cart.CreatedAt,
             UpdatedAt = cart.UpdatedAt,
         };
@@ -51,6 +53,7 @@ public static class CartMapper
             TotalValue = createDto.TotalValue,
             OrderId = createDto.OrderId,
             OrderDate = createDto.OrderDate,
+            PaymentStatus = createDto.PaymentStatus,
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
         };
@@ -64,6 +67,7 @@ public static class CartMapper
         cart.TotalValue = updateDto.TotalValue;
         cart.OrderId = updateDto.OrderId;
         cart.OrderDate = updateDto.OrderDate;
+        cart.PaymentStatus = updateDto.PaymentStatus;
         cart.UpdatedAt = DateTime.Now;
     }
 
@@ -77,6 +81,7 @@ public static class CartMapper
             TotalValue = createDto.TotalValue,
             OrderId = createDto.OrderId,
             OrderDate = createDto.OrderDate,
+            PaymentStatus = createDto.PaymentStatus,
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
         };
@@ -90,6 +95,7 @@ public static class CartMapper
         order.TotalValue = updateDto.TotalValue;
         order.UserId = updateDto.UserId;
         order.OrderDate = updateDto.OrderDate;
+        order.PaymentStatus = updateDto.PaymentStatus;
         order.UpdatedAt = DateTime.Now;
     }
 
