@@ -41,7 +41,7 @@ public static class DataInitializer
 
         var bookAuthors = PrepareBookAuthorRelationships(books, authors);
         modelBuilder.Entity<RelBookAuthor>().HasData(bookAuthors);
-        
+
         var bookGenres = PrepareBookGenreRelationships();
         modelBuilder.Entity<RelBookGenre>().HasData(bookGenres);
 
@@ -76,8 +76,8 @@ public static class DataInitializer
             .RuleFor(b => b.PublisherId, f => f.Random.Number(1, 2))
             .Generate(25);
     }
-    
-    
+
+
 
     private static List<User> PrepareUserModels()
     {
@@ -129,6 +129,7 @@ public static class DataInitializer
             .RuleFor(c => c.Id, _ => idCounter++)
             .RuleFor(c => c.UserId, _ => userCounter++)
             .RuleFor(c => c.TotalValue, f => Math.Round(f.Random.Double(0, 300), 2))
+            .RuleFor(c => c.PaymentStatus, f => f.Random.Bool(0.5f) ? 1 : 0)
             .RuleFor(c => c.OrderId, f => f.Random.Bool(0.5f) ? f.Random.Int(1000, 2000) : null)
             .RuleFor(c => c.OrderDate, (f, c) => c.OrderId.HasValue ? f.Date.Between(new DateTime(2024, 1, 1), new DateTime(2025, 9, 15)) : null)
              .Generate(userCount);

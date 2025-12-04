@@ -1,0 +1,56 @@
+﻿@model WebMVC.Areas.Admin.Models.Order.OrderCreateEditViewModelWithOptions
+
+@{
+    ViewBag.Title = "Edit Order";
+    Layout = "_Layout";
+    var orderId = ViewBag.OrderId;
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Edit Order</h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit" asp-route-id="@orderId" method="post" id="editOrderForm" novalidate>
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="row">
+                            @await Html.PartialAsync("_FormBasicFields", Model)
+                        </div>
+
+                        <div class="row">
+                            @await Html.PartialAsync("_FormUser", Model)
+                        </div>
+
+                        <div class="row">
+                            @await Html.PartialAsync("_FormBasicSelect", Model)
+                        </div>
+
+                        @await Html.PartialAsync("_FormMultiselects", Model)
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Back to List
+                            </a>
+                            <button type="submit" class="btn btn-primary" id="submitBtn">
+                                <i class="bi bi-save"></i> Update Order
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        ViewBag.FormId = "editOrderForm";
+        ViewBag.SubmitBtnId = "submitBtn";
+    }
+    @await Html.PartialAsync("_FormValidationScript")
+}

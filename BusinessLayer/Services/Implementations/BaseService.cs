@@ -35,8 +35,31 @@ public abstract class BaseService<TContext>(TContext context)
         int limit,
         int offset,
         Func<IEnumerable<TEntity>, IEnumerable<TOut>> mapper,
-        CancellationToken ct = default)
-        where TEntity : class
+        CancellationToken ct = default
+    ) where TEntity : class
+    {
+        var (normalizedLimit, normalizedOffset) = NormalizePaging(limit, offset);
+        var total = await query.CountAsync(ct);
+
+        var entities = await ApplyPaging(query, normalizedLimit, normalizedOffset)
+            .ToListAsync(ct);
+
+        return new PagedResultDto<TOut>
+        {
+            Total = total,
+            Limit = normalizedLimit,
+            Offset = normalizedOffset,
+            Items = mapper(entities)
+        };
+    }
+
+    protected async Task<PagedResultDto<TOut>> PageWithDetailsAsync<TEntityDetailDto, TOut>(
+        IQueryable<TEntityDetailDto> query,
+        int limit,
+        int offset,
+        Func<IEnumerable<TEntityDetailDto>, IEnumerable<TOut>> mapper,
+        CancellationToken ct = default
+    ) where TEntityDetailDto  : class
     {
         var (normalizedLimit, normalizedOffset) = NormalizePaging(limit, offset);
         var total = await query.CountAsync(ct);

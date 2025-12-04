@@ -2,15 +2,18 @@
 
 namespace BusinessLayer.Models.Cart.Requests;
 
-public class CartUpdateDto
+public class OrderUpdateDto
 {
     [Required]
     [Range(0, double.MaxValue, ErrorMessage = "TotalValue must be non-negative.")]
     public required double TotalValue { get; set; }
 
-    public int? OrderId { get; set; }
-
     public DateTime? OrderDate { get; set; }
+
+    [Required]
+    public required int UserId;
+
+    public List<int> BookIds = [];
 
     [Required]
     public int PaymentStatus { get; set; }

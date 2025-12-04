@@ -55,7 +55,7 @@ public class UserService : BaseService<BookHubDbContext>, IUserService
 
     public async Task<bool> DeleteAsync(int id)
     {
-        User? user = await Context.Users.FirstOrDefaultAsync(g => g.Id == id);
+        User? user = await Context.Users.FirstOrDefaultAsync(u => u.Id == id);
         if (user == null)
         {
             return false;
@@ -88,7 +88,7 @@ public class UserService : BaseService<BookHubDbContext>, IUserService
     private async Task ValidateImage(int imageId)
     {
         // Validate that Image exists
-        var imageExists = await Context.Users.AnyAsync(u => u.Id == imageId);
+        var imageExists = await Context.Users.AnyAsync(i => i.Id == imageId);
         if (!imageExists)
         {
             throw new ArgumentException($"Invalid User ID: {imageId}");

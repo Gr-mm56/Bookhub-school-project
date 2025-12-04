@@ -1,0 +1,128 @@
+﻿﻿@{
+    ViewBag.Title = "Admin Dashboard";
+    Layout = "_Layout";
+}
+
+<div class="container mt-5">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h1 class="display-4">Admin Dashboard</h1>
+            <p class="lead text-muted">Manage your BookHub application</p>
+            <hr />
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Genres Management -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm border-primary">
+                <div class="card-body text-center">
+                    <i class="bi bi-tags fs-1 text-primary mb-3" style="display: block;"></i>
+                    <h5 class="card-title">Genres</h5>
+                    <p class="card-text text-muted">Manage book genres and categories</p>
+                </div>
+                <div class="card-footer bg-white border-top">
+                    <a asp-area="Admin" asp-controller="Genre" asp-action="Index" class="btn btn-primary w-100">
+                        <i class="bi bi-arrow-right"></i> Manage Genres
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Books Management -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm border-info">
+                <div class="card-body text-center">
+                    <i class="bi bi-book fs-1 text-info mb-3" style="display: block;"></i>
+                    <h5 class="card-title">Books</h5>
+                    <p class="card-text text-muted">Manage book inventory and details</p>
+                </div>
+                <div class="card-footer bg-white border-top">
+                    <a asp-area="Admin" asp-controller="Book" asp-action="Index" class="btn btn-info w-100">
+                        <i class="bi bi-arrow-right"></i> Manage Books
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Authors Management -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm border-success">
+                <div class="card-body text-center">
+                    <i class="bi bi-person-circle fs-1 text-success mb-3" style="display: block;"></i>
+                    <h5 class="card-title">Authors</h5>
+                    <p class="card-text text-muted">Manage author information</p>
+                </div>
+                <div class="card-footer bg-white border-top">
+                    <button class="btn btn-success w-100" disabled title="Coming soon">
+                        <i class="bi bi-arrow-right"></i> Manage Authors
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Publishers Management -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm border-warning">
+                <div class="card-body text-center">
+                    <i class="bi bi-building fs-1 text-warning mb-3" style="display: block;"></i>
+                    <h5 class="card-title">Publishers</h5>
+                    <p class="card-text text-muted">Manage publisher details</p>
+                </div>
+                <div class="card-footer bg-white border-top">
+                    <button class="btn btn-warning w-100" disabled title="Coming soon">
+                        <i class="bi bi-arrow-right"></i> Manage Publishers
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders Management -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm border-danger">
+                <div class="card-body text-center">
+                    <i class="bi bi-bag-check fs-1 text-danger mb-3" style="display: block;"></i>
+                    <h5 class="card-title">Orders</h5>
+                    <p class="card-text text-muted">View and manage customer orders</p>
+                </div>
+                <div class="card-footer bg-white border-top">
+                    <a asp-area="Admin" asp-controller="Order" asp-action="Index" class="btn btn-danger w-100">
+                        <i class="bi bi-arrow-right"></i> View Orders
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Image Management -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm border-secondary">
+                <div class="card-body text-center">
+                    <i class="bi bi-image fs-1 text-secondary mb-3" style="display: block;"></i>
+                    <h5 class="card-title">Image Uploads</h5>
+                    <p class="card-text text-muted">Manage book covers and profile images</p>
+                </div>
+                <div class="card-footer bg-white border-top">
+                    <a asp-area="Admin" asp-controller="Image" asp-action="Index" class="btn btn-secondary w-100">
+                        <i class="bi bi-arrow-right"></i> Manage Images
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .card .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+</style>

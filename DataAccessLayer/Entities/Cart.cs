@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
 
 namespace DataAccessLayer.Entities;
 
@@ -24,4 +23,7 @@ public class Cart : BaseEntity
     public DateTime? OrderDate { get; set; }
 
     public virtual ICollection<PurchaseItem>? PurchaseItems { get; set; }
+
+    // 0 - pending, 1 - completed
+    public int PaymentStatus { get; set; } = 0;
 }

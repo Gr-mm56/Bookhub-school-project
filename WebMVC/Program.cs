@@ -56,7 +56,7 @@ builder.Services.ConfigureApplicationCookie(options =>
     // When a user attempts to access a resource that requires authentication and they are not authenticated,
     // they will be redirected to this path.
     options.LoginPath = "/Account/Login";
-    
+
     options.ExpireTimeSpan = TimeSpan.FromMinutes(60); // Cookie expiration time
     options.SlidingExpiration = true;
     options.Cookie.HttpOnly = true;
@@ -88,6 +88,7 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
 app.UseMiddleware<RequestLoggingMiddleware>();
 
 app.UseHttpsRedirection();
@@ -96,6 +97,10 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapStaticAssets();
+
+app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
     name: "default",

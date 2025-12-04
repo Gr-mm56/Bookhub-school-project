@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace BusinessLayer.Models.Common
+﻿namespace BusinessLayer.Models.Common
 {
     public class PagedResultDto<T>
     {
@@ -10,4 +8,3 @@ namespace BusinessLayer.Models.Common
         public int Limit { get; set; }
     }
 }
-
