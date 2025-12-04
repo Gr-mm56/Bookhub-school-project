@@ -15,7 +15,7 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
     {
     }
 
-    public async Task<PagedResultDto<CartDto>> GetCartsAsync(int limit = 20, int offset = 0)
+    public async Task<PagedResultDto<CartDto>> GetAllAsync(int limit = 20, int offset = 0)
     {
         var query = Context.Carts
             .AsNoTracking()
@@ -24,47 +24,85 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
         return await PageAsync(query, limit, offset, CartMapper.ToDtoList);
     }
 
-    public async Task<CartDto?> GetCartByIdAsync(int id)
+    public async Task<CartDetailDto?> GetByIdAsync(int id)
     {
         var cart = await Context.Carts
             .AsNoTracking()
-            .FirstOrDefaultAsync(u => u.Id == id);
+            .Include(c => c.User)
+            .Include(c => c.PurchaseItems)
+            .FirstOrDefaultAsync(c => c.Id == id);
 
-        return cart != null ? CartMapper.ToDto(cart) : null;
-
+        return cart != null ? CartMapper.ToDetailDto(cart) : null;
     }
 
-    public async Task<CartDto> CreateCartAsync(CartCreateDto cartCreateDto)
+    public async Task<CartDto> CreateAsync(CartCreateDto cartCreateDto)
     {
+        // Validate that User exists
+        await ValidateRelatedEntitiesExistAsync(cartCreateDto);
+
+        // Validate other values
+        await ValidateValues(cartCreateDto.OrderId, cartCreateDto.TotalValue);
+
         Cart cart = CartMapper.CreateDtoToEntity(cartCreateDto);
 
         await Context.Carts.AddAsync(cart);
         await SaveAsync();
 
         return CartMapper.ToDto(cart);
-
     }
 
-    public async Task<bool> DeleteCartAsync(int id)
+    public async Task<bool> DeleteAsync(int id)
     {
         Cart? cart = await Context.Carts.FirstOrDefaultAsync(g => g.Id == id);
         if (cart == null)
+        {
             return false;
+        }
 
         Context.Carts.Remove(cart);
         await SaveAsync();
+
         return true;
     }
 
-    public async Task<CartDto?> UpdateCartAsync(int id, CartUpdateDto cartUpdateDto)
+    public async Task<CartDto?> UpdateAsync(int id, CartUpdateDto cartUpdateDto)
     {
+        // Validate other values
+        await ValidateValues(cartUpdateDto.OrderId, cartUpdateDto.TotalValue);
+
         Cart? cart = await Context.Carts.FirstOrDefaultAsync(u => u.Id == id);
         if (cart == null)
+        {
             return null;
+        }
 
         CartMapper.UpdateEntity(cart, cartUpdateDto);
         await SaveAsync();
 
         return CartMapper.ToDto(cart);
+    }
+
+    private async Task ValidateRelatedEntitiesExistAsync(CartCreateDto cartDto)
+    {
+        // Validate User exists
+        var userExists = await Context.Users.AnyAsync(u => u.Id == cartDto.UserId);
+        if (!userExists)
+        {
+            throw new ArgumentException($"Invalid User ID: {cartDto.UserId}");
+        }
+    }
+
+    private async Task ValidateValues(int? orderId, double totalValue)
+    {
+        // Validate values
+        if (orderId is < 0)
+        {
+            throw new ArgumentException($"Invalid Order ID: {orderId} - Cannot be negative");
+        }
+
+        if (totalValue < 0)
+        {
+            throw new ArgumentException($"Invalid Total Value: {totalValue} - Cannot be negative");
+        }
     }
 }

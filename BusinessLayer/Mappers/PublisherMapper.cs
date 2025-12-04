@@ -1,6 +1,4 @@
-﻿using BusinessLayer.Models.Book.Responses;
-using BusinessLayer.Models.Image.Responses;
-using BusinessLayer.Models.Publisher.Requests;
+﻿using BusinessLayer.Models.Publisher.Requests;
 using BusinessLayer.Models.Publisher.Responses;
 using DataAccessLayer.Entities;
 
@@ -17,13 +15,7 @@ public static class PublisherMapper
             Id = publisher.Id,
             Name = publisher.Name,
             Address = publisher.Address,
-            ProfilePhoto = publisher.ProfilePhoto != null
-                ? new ImageDto
-                {
-                    Id = publisher.ProfilePhoto.Id,
-                    FileUrl = publisher.ProfilePhoto.FileUrl
-                }
-                : null,
+            ProfilePhoto = publisher.ProfilePhoto != null ? ImageMapper.ToDto(publisher.ProfilePhoto) : null,
         };
     }
 
@@ -36,31 +28,12 @@ public static class PublisherMapper
             Id = publisher.Id,
             Name = publisher.Name,
             Address = publisher.Address,
-            ProfilePhoto = publisher.ProfilePhoto != null
-                ? new ImageDto
-                {
-                    Id = publisher.ProfilePhoto.Id,
-                    FileUrl = publisher.ProfilePhoto.FileUrl
-                }
-                : null,
-            Books = publisher.Books.Select(b => new BookDto
-            {
-                Id = b.Id,
-                Title = b.Title,
-                Description = b.Description,
-                Price = b.Price,
-                Image = b.Image != null
-                        ? new ImageDto
-                        {
-                            Id = b.Image.Id,
-                            FileUrl = b.Image.FileUrl
-                        }
-                        : null
-            }).ToList() ?? [],
+            ProfilePhoto = publisher.ProfilePhoto != null ? ImageMapper.ToDto(publisher.ProfilePhoto) : null,
+            Books = publisher.Books.Select(BookMapper.ToDto).ToList() ?? [],
         };
     }
 
-    public static Publisher ToEntity(PublisherRequestDto requestDto)
+    public static Publisher CreateEntity(PublisherRequestDto requestDto)
     {
         ArgumentNullException.ThrowIfNull(requestDto);
 

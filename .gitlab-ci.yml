@@ -1,0 +1,22 @@
+stages:
+  - build
+  - test
+
+default:
+  tags:
+    - shared-fi
+
+image: "mcr.microsoft.com/dotnet/sdk:9.0"
+
+before_script:
+  - dotnet restore
+
+build:
+  stage: build
+  script:
+    - dotnet build --configuration Release
+
+test:
+  stage: test
+  script:
+    - dotnet test --configuration Release

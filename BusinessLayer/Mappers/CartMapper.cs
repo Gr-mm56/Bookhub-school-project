@@ -31,7 +31,7 @@ public static class CartMapper
         {
             Id = cart.Id,
             UserId = cart.UserId,
-            User = UserMapper.ToDto(cart.User ?? new User()),
+            User = UserMapper.ToDto(cart.User),
             TotalValue = cart.TotalValue,
             OrderId = cart.OrderId,
             OrderDate = cart.OrderDate,

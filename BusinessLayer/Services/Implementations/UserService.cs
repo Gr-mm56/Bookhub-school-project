@@ -15,7 +15,7 @@ public class UserService : BaseService<BookHubDbContext>, IUserService
     {
     }
 
-    public async Task<PagedResultDto<UserDto>> GetUsersAsync(int limit = 20, int offset = 0)
+    public async Task<PagedResultDto<UserDto>> GetAllAsync(int limit = 20, int offset = 0)
     {
         var query = Context.Users
             .AsNoTracking()
@@ -24,47 +24,74 @@ public class UserService : BaseService<BookHubDbContext>, IUserService
         return await PageAsync(query, limit, offset, UserMapper.ToDtoList);
     }
 
-    public async Task<UserDto?> GetUserByIdAsync(int id)
+    public async Task<UserDetailDto?> GetByIdAsync(int id)
     {
         var user = await Context.Users
             .AsNoTracking()
+            .Include(u => u.Carts)
+            .Include(u => u.ProfilePhoto)
+            .Include(u => u.Ratings)
+            .Include(u => u.WishlistItems)
             .FirstOrDefaultAsync(u => u.Id == id);
 
-        return user != null ? UserMapper.ToDto(user) : null;
-
+        return user != null ? UserMapper.ToDetailDto(user) : null;
     }
 
-    public async Task<UserDto> CreateUserAsync(UserCreateDto userCreateDto)
+    public async Task<UserDto> CreateAsync(UserCreateDto userCreateDto)
     {
+        // Validate that Image exists
+        if (userCreateDto.ProfilePhotoId != null)
+        {
+            await ValidateImage(userCreateDto.ProfilePhotoId.Value);
+        }
+
         User user = UserMapper.CreateDtoToEntity(userCreateDto);
 
         await Context.Users.AddAsync(user);
         await SaveAsync();
 
         return UserMapper.ToDto(user);
-
     }
 
-    public async Task<bool> DeleteUserAsync(int id)
+    public async Task<bool> DeleteAsync(int id)
     {
         User? user = await Context.Users.FirstOrDefaultAsync(g => g.Id == id);
         if (user == null)
+        {
             return false;
+        }
 
         Context.Users.Remove(user);
         await SaveAsync();
         return true;
     }
 
-    public async Task<UserDto?> UpdateUserAsync(int id, UserUpdateDto userUpdateDto)
+    public async Task<UserDto?> UpdateAsync(int id, UserUpdateDto userUpdateDto)
     {
+        if (userUpdateDto.ProfilePhotoId != null)
+        {
+            await ValidateImage(userUpdateDto.ProfilePhotoId.Value);
+        }
+
         User? user = await Context.Users.FirstOrDefaultAsync(u => u.Id == id);
         if (user == null)
+        {
             return null;
+        }
 
         UserMapper.UpdateEntity(user, userUpdateDto);
         await SaveAsync();
 
         return UserMapper.ToDto(user);
+    }
+
+    private async Task ValidateImage(int imageId)
+    {
+        // Validate that Image exists
+        var imageExists = await Context.Users.AnyAsync(u => u.Id == imageId);
+        if (!imageExists)
+        {
+            throw new ArgumentException($"Invalid User ID: {imageId}");
+        }
     }
 }

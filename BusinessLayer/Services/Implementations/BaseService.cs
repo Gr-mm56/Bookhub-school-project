@@ -10,9 +10,20 @@ public abstract class BaseService<TContext>(TContext context)
 
     private static (int Limit, int Offset) NormalizePaging(int limit, int offset, int defaultLimit = 20, int maxLimit = 100)
     {
-        if (limit <= 0) limit = defaultLimit;
-        if (limit > maxLimit) limit = maxLimit;
-        if (offset < 0) offset = 0;
+        if (limit <= 0)
+        {
+            limit = defaultLimit;
+        }
+
+        if (limit > maxLimit)
+        {
+            limit = maxLimit;
+        }
+
+        if (offset < 0)
+        {
+            offset = 0;
+        }
         return (limit, offset);
     }
 

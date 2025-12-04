@@ -9,113 +9,101 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLayer.Services.Implementations;
 
-public class PublisherService(BookHubDbContext context) : BaseService<BookHubDbContext>(context), IPublisherService
+public class PublisherService : BaseService<BookHubDbContext>, IPublisherService
 {
-    public async Task<PagedResultDto<PublisherDto>> GetPublishersAsync(int limit = 20, int offset = 0)
+    public PublisherService(BookHubDbContext dbContext) : base(dbContext)
+    {
+
+    }
+
+    public async Task<PagedResultDto<PublisherBooksDto>> GetAllAsync(int limit = 20, int offset = 0)
     {
         var query = Context.Publishers
             .AsNoTracking()
             .Include(p => p.ProfilePhoto)
+            .Include(b => b.Books)
+                .ThenInclude(i => i.Image)
             .OrderBy(p => p.Name);
 
-        return await PageAsync(query, limit, offset, PublisherMapper.ToDtoList);
+        return await PageAsync<Publisher, PublisherBooksDto>(
+            query, 
+            limit, 
+            offset, 
+            publishers => PublisherMapper.ToDetailDtoList(publishers)
+        );
     }
 
-    public async Task<PublisherDto?> GetPublisherByIdAsync(int id)
+    public async Task<PublisherBooksDto?> GetByIdAsync(int id)
     {
         var publisher = await Context.Publishers
             .AsNoTracking()
             .Include(p => p.ProfilePhoto)
-            .FirstOrDefaultAsync(p => p.Id == id);
-
-        return publisher != null ? PublisherMapper.ToDto(publisher) : null;
-    }
-
-    public async Task<PublisherBooksDto?> GetPublisherBooksAsync(int id)
-    {
-        var publisher = await Context.Publishers
-            .AsNoTracking()
-            .Include(p => p.Books)
+            .Include(b => b.Books)
+                .ThenInclude(i => i.Image)
             .FirstOrDefaultAsync(p => p.Id == id);
 
         return publisher != null ? PublisherMapper.ToDetailDto(publisher) : null;
     }
 
-    public async Task<PublisherBooksDto> CreatePublisherAsync(PublisherRequestDto requestDto)
+    public async Task<PublisherBooksDto> CreateAsync(PublisherRequestDto requestDto)
     {
-        // Validate that all provided IDs exist
         await ValidateRelatedEntitiesExistAsync(requestDto);
 
-        var publisher = PublisherMapper.ToEntity(requestDto);
+        var publisher = PublisherMapper.CreateEntity(requestDto);
 
-        // Load related entities and associate them with the publisher
-        await AssociateRelatedEntitiesAsync(publisher, requestDto);
+        if (requestDto.ProfilePhotoId <= 0)
+        {
+            publisher.ProfilePhotoId = null;
+        }
+
+        await ExtendBooksCollectionAsync(publisher, requestDto);
 
         await Context.Publishers.AddAsync(publisher);
         await SaveAsync();
 
         // Reload with all related data
         var createdPublisher = await Context.Publishers
-            .Include(p => p.Books)
+            .Include(p => p.ProfilePhoto)
+            .Include(b => b.Books)
+                .ThenInclude(i => i.Image)
             .FirstAsync(p => p.Id == publisher.Id);
 
         return PublisherMapper.ToDetailDto(createdPublisher);
     }
 
-    public async Task<PublisherBooksDto?> UpdatePublisherAsync(int id, PublisherRequestDto requestDto)
+    public async Task<PublisherBooksDto?> UpdateAsync(int id, PublisherRequestDto requestDto)
     {
-        try
+        var publisher = await Context.Publishers
+            .Include(p => p.ProfilePhoto)
+            .Include(b => b.Books)
+            .FirstOrDefaultAsync(p => p.Id == id);
+
+        if (publisher == null)
         {
-            var publisher = await Context.Publishers
-                .Include(p => p.Books)
-                .FirstOrDefaultAsync(p => p.Id == id);
-
-            if (publisher == null)
-                return null;
-
-            // Validate that all provided IDs exist
-            await ValidateRelatedEntitiesExistAsync(requestDto);
-
-            // Update basic properties
-            PublisherMapper.UpdateEntity(publisher, requestDto);
-
-            try
-            {
-                // Ensure all requested books exist and check if they can be used before clearing
-                if (requestDto.BookIds != null && requestDto.BookIds.Any())
-                {
-                    var existingBooks = await Context.Books
-                        .Where(b => requestDto.BookIds.Contains(b.Id))
-                        .ToListAsync();
-
-                    if (existingBooks.Count != requestDto.BookIds.Count)
-                    {
-                        throw new ArgumentException("Some of the requested book IDs do not exist");
-                    }
-
-                    // Clear existing relationships and add new ones
-                    // This is where the error was happening - we'll keep it but handle exceptions
-                    publisher.Books.Clear();
-
-                    // Load and associate new related entities
-                    await AssociateRelatedEntitiesAsync(publisher, requestDto);
-                }
-
-                await SaveAsync();
-
-                return PublisherMapper.ToDetailDto(publisher);
-            }
-            catch (InvalidOperationException ex)
-            {
-                // This catches the entity framework error about severed relationships
-                throw new InvalidOperationException($"Cannot update publisher's books. Books must have a publisher assigned: {ex.Message}");
-            }
+            return null;
         }
-        catch (Exception ex)
+
+        await ValidateRelatedEntitiesExistAsync(requestDto);
+
+        PublisherMapper.UpdateEntity(publisher, requestDto);
+
+        if (requestDto.ProfilePhotoId <= 0)
         {
-            // Add a generic catch to prevent crashes
-            throw new ArgumentException($"Error updating publisher: {ex.Message}");
+            publisher.ProfilePhotoId = null;
         }
+
+        await ExtendBooksCollectionAsync(publisher, requestDto);
+
+        await SaveAsync();
+
+        // Reload with updated data
+        var updatedPublisher = await Context.Publishers
+            .Include(p => p.ProfilePhoto)
+            .Include(b => b.Books)
+                .ThenInclude(i => i.Image)
+            .FirstAsync(p => p.Id == id);
+
+        return PublisherMapper.ToDetailDto(updatedPublisher);
     }
 
     private async Task ValidateRelatedEntitiesExistAsync(PublisherRequestDto requestDto)
@@ -138,7 +126,6 @@ public class PublisherService(BookHubDbContext context) : BaseService<BookHubDbC
             }
         }
 
-        // Validate Image
         if (requestDto.ProfilePhotoId > 0)
         {
             var imageExists = await Context.Images.AnyAsync(i => i.Id == requestDto.ProfilePhotoId);
@@ -154,45 +141,46 @@ public class PublisherService(BookHubDbContext context) : BaseService<BookHubDbC
         }
     }
 
-    private async Task AssociateRelatedEntitiesAsync(Publisher publisher, PublisherRequestDto requestDto)
+    private async Task ExtendBooksCollectionAsync(Publisher publisher, PublisherRequestDto requestDto)
     {
-        // Load and associate Books
         if (requestDto.BookIds.Any())
         {
-            var books = await Context.Books
-                .Where(b => requestDto.BookIds.Contains(b.Id))
-                .ToListAsync();
-            publisher.Books = books;
+            var currentBookIds = publisher.Books.Select(b => b.Id).ToList();
+            
+            var newBookIds = requestDto.BookIds.Except(currentBookIds).ToList();
+            
+            if (newBookIds.Any())
+            {
+                var newBooks = await Context.Books
+                    .Where(b => newBookIds.Contains(b.Id))
+                    .ToListAsync();
+                
+                foreach (var book in newBooks)
+                {
+                    publisher.Books.Add(book);
+                }
+            }
         }
     }
 
-    public async Task<bool> DeletePublisherAsync(int id)
+    public async Task<bool> DeleteAsync(int id)
     {
-        try
-        {
-            var hasBooks = await Context.Books.AnyAsync(b => b.PublisherId == id);
-            if (hasBooks)
-            {
-                throw new InvalidOperationException("Cannot delete publisher with associated books. Reassign books to another publisher first.");
-            }
+        var publisher = await Context.Publishers
+            .Include(p => p.Books)
+            .FirstOrDefaultAsync(p => p.Id == id);
 
-            var publisher = await Context.Publishers.FirstOrDefaultAsync(p => p.Id == id);
-            if (publisher == null)
-            {
-                return false;
-            }
+        if (publisher == null)
+        {
+            return false;
+        }
 
-            Context.Publishers.Remove(publisher);
-            await SaveAsync();
-            return true;
-        }
-        catch (DbUpdateException ex)
+        if (publisher.Books.Any())
         {
-            throw new InvalidOperationException($"Database error while deleting publisher: {ex.Message}");
+            throw new InvalidOperationException("Cannot delete publisher who has associated books. Reassign books to another publisher first.");
         }
-        catch (Exception ex) when (!(ex is InvalidOperationException))
-        {
-            throw new ArgumentException($"Error deleting publisher: {ex.Message}");
-        }
+
+        Context.Publishers.Remove(publisher);
+        await SaveAsync();
+        return true;
     }
 }

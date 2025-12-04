@@ -8,9 +8,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLayer.Services.Implementations;
 
-public class ImageService(BookHubDbContext context) : BaseService<BookHubDbContext>(context), IImageService
+public class ImageService : BaseService<BookHubDbContext>, IImageService
 {
-    public async Task<PagedResultDto<ImageDto>> GetImagesAsync(int limit = 20, int offset = 0)
+    public ImageService(BookHubDbContext dbContext) : base(dbContext)
+    {
+
+    }
+
+    public async Task<PagedResultDto<ImageDto>> GetAllAsync(int limit = 20, int offset = 0)
     {
         var query = Context.Images
             .AsNoTracking()
@@ -19,7 +24,7 @@ public class ImageService(BookHubDbContext context) : BaseService<BookHubDbConte
         return await PageAsync(query, limit, offset, ImageMapper.ToDtoList);
     }
 
-    public async Task<ImageDto?> GetImageByIdAsync(int id)
+    public async Task<ImageDto?> GetByIdAsync(int id)
     {
         var image = await Context.Images
             .AsNoTracking()
@@ -28,37 +33,41 @@ public class ImageService(BookHubDbContext context) : BaseService<BookHubDbConte
         return image != null ? ImageMapper.ToDto(image) : null;
     }
 
-    public async Task<ImageRequestDto> CreateImageAsync(ImageRequestDto requestDto)
+    public async Task<ImageDto> CreateAsync(ImageRequestDto requestDto)
     {
-        var image = ImageMapper.ToEntity(requestDto);
-
-        // Set timestamps
-        image.CreatedAt = DateTime.UtcNow;
-        image.UpdatedAt = DateTime.UtcNow;
+        var image = ImageMapper.CreateEntity(requestDto);
 
         await Context.Images.AddAsync(image);
         await SaveAsync();
 
-        return requestDto;
+        var createdImage = await Context.Images
+            .Include(b => b.Author)
+            .Include(b => b.Publisher)
+            .Include(b => b.User)
+            .FirstAsync(p => p.Id == image.Id);
+
+        return ImageMapper.ToDto(createdImage);
     }
 
-    public async Task<ImageRequestDto?> UpdateImageAsync(int id, ImageRequestDto requestDto)
+    public async Task<ImageDto> UpdateAsync(int id, ImageRequestDto requestDto)
     {
         var image = await Context.Images
             .FirstOrDefaultAsync(i => i.Id == id);
 
         if (image == null)
+        {
             return null;
+        }
 
         // Update properties
         ImageMapper.UpdateEntity(image, requestDto);
 
         await SaveAsync();
 
-        return requestDto;
+        return ImageMapper.ToDto(image);
     }
 
-    public async Task<bool?> DeleteImageAsync(int id)
+    public async Task<bool> DeleteAsync(int id)
     {
         var image = await Context.Images.FirstOrDefaultAsync(i => i.Id == id);
         if (image == null)
@@ -75,7 +84,7 @@ public class ImageService(BookHubDbContext context) : BaseService<BookHubDbConte
         if (hasAuthorReferences || hasBookReferences || hasPublisherReferences || hasUserReferences)
         {
             // Image is referenced by other entities and cannot be deleted
-            return null;
+            return false;
         }
 
         Context.Images.Remove(image);

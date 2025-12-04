@@ -13,7 +13,9 @@ public static class GenreMapper
         return new GenreDto
         {
             Id = genre.Id,
-            Name = genre.Name
+            Name = genre.Name,
+            CreatedAt = genre.CreatedAt,
+            UpdatedAt = genre.UpdatedAt,
         };
     }
 
@@ -25,18 +27,23 @@ public static class GenreMapper
         {
             Id = genre.Id,
             Name = genre.Name,
+            CreatedAt = genre.CreatedAt,
+            UpdatedAt = genre.UpdatedAt,
             Books = genre.Books.Select(BookMapper.ToDto).ToList()
         };
     }
 
-    public static Genre ToEntity(GenreRequestDto requestDto)
+    public static Genre CreateEntity(GenreRequestDto requestDto)
     {
         ArgumentNullException.ThrowIfNull(requestDto);
 
         return new Genre
         {
             Name = requestDto.Name,
-            Books = new List<Book>()
+            CreatedAt = DateTime.Now,
+            UpdatedAt = DateTime.Now,
+            Books = new List<Book>(),
+            
         };
     }
 
@@ -46,6 +53,7 @@ public static class GenreMapper
         ArgumentNullException.ThrowIfNull(requestDto);
 
         genre.Name = requestDto.Name;
+        genre.UpdatedAt = DateTime.Now;
     }
 
     public static IEnumerable<GenreDto> ToDtoList(IEnumerable<Genre> genres)

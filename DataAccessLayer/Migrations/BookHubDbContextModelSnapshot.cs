@@ -15,11 +15,43 @@ namespace DataAccessLayer.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.9")
-                .HasAnnotation("Proxies:ChangeTracking", false)
-                .HasAnnotation("Proxies:CheckEquality", false)
-                .HasAnnotation("Proxies:LazyLoading", true);
+            modelBuilder.HasAnnotation("ProductVersion", "9.0.9");
+
+            modelBuilder.Entity("DataAccessLayer.Entities.AuditLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("EditCount")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("EntityId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("EntityName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ModificationDetails")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AuditLogs");
+                });
 
             modelBuilder.Entity("DataAccessLayer.Entities.Author", b =>
                 {
@@ -32,13 +64,15 @@ namespace DataAccessLayer.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasMaxLength(30)
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("ProfilePhotoId")
+                    b.Property<int?>("ProfilePhotoId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Surname")
                         .IsRequired()
+                        .HasMaxLength(30)
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -55,18 +89,45 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 1,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "J.R.R.",
-                            ProfilePhotoId = 9,
-                            Surname = "Tolkien",
+                            Name = "Wellington",
+                            ProfilePhotoId = 6,
+                            Surname = "Kuphal",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 2,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "J.K.",
-                            ProfilePhotoId = 10,
-                            Surname = "Rowling",
+                            Name = "Malcolm",
+                            ProfilePhotoId = 2,
+                            Surname = "Russel",
+                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Name = "Kadin",
+                            ProfilePhotoId = 5,
+                            Surname = "VonRueden",
+                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Name = "Florence",
+                            ProfilePhotoId = 2,
+                            Surname = "Murray",
+                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Name = "Melyna",
+                            ProfilePhotoId = 5,
+                            Surname = "Gleason",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
                 });
@@ -89,17 +150,18 @@ namespace DataAccessLayer.Migrations
                         .HasMaxLength(17)
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("ImageId")
+                    b.Property<int?>("ImageId")
                         .HasColumnType("INTEGER");
 
                     b.Property<double>("Price")
                         .HasColumnType("REAL");
 
-                    b.Property<int>("PublisherId")
+                    b.Property<int?>("PublisherId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Title")
                         .IsRequired()
+                        .HasMaxLength(150)
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -118,36 +180,300 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 1,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "The first volume in J.R.R. Tolkien's epic adventure, starting the journey to destroy the One Ring.",
-                            ISBN = "978-0618260243",
-                            ImageId = 6,
-                            Price = 12.99,
+                            Description = "Et minima facilis ratione praesentium tempora dignissimos placeat et voluptas. Iusto voluptatem sit illum. Et aut dolor voluptatem harum architecto eaque provident veritatis aspernatur. Quia dolorem sapiente dicta eum veritatis illo magnam.",
+                            ISBN = "666-1-6362726-71-3",
+                            ImageId = 2,
+                            Price = 45.380000000000003,
                             PublisherId = 1,
-                            Title = "The Fellowship of the Ring",
+                            Title = "Dolores qui nam assumenda labore sed sint.",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 2,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "The second volume of the trilogy, where the fellowship is scattered and the war for Middle-earth escalates.",
-                            ISBN = "978-0618260281",
-                            ImageId = 7,
-                            Price = 14.5,
-                            PublisherId = 1,
-                            Title = "The Two Towers",
+                            Description = "Fugit dicta ea deserunt. Et nam facere voluptate quis. Voluptas quis voluptates doloribus quia.",
+                            ISBN = "666-1-7929691-67-3",
+                            ImageId = 2,
+                            Price = 11.52,
+                            PublisherId = 2,
+                            Title = "Omnis nemo voluptatum recusandae qui.",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 3,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "The final volume, chronicling the final destruction of the Ring and the ultimate fate of Middle-earth.",
-                            ISBN = "978-0618260304",
-                            ImageId = 8,
-                            Price = 15.99,
+                            Description = "Aut veritatis aperiam deserunt. Soluta saepe unde voluptatem cumque rem eos corporis deserunt dolorem. Culpa ullam quia et consequatur ut reprehenderit laudantium voluptates blanditiis. Soluta neque consequatur qui et omnis. Est minima eius earum rerum rem dicta quo.",
+                            ISBN = "666-1-2622497-02-9",
+                            ImageId = 2,
+                            Price = 29.260000000000002,
                             PublisherId = 2,
-                            Title = "The Return of the King",
+                            Title = "Nisi magnam provident repellendus sequi reiciendis.",
+                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Similique aspernatur libero ut perspiciatis. Rerum velit minus provident exercitationem officiis qui facilis enim. Voluptas molestiae hic cum non eligendi nam et rerum. Est quaerat odio nostrum debitis voluptas dolores.",
+                            ISBN = "666-1-2202765-64-1",
+                            ImageId = 2,
+                            Price = 14.43,
+                            PublisherId = 1,
+                            Title = "Quidem et quia aliquam numquam voluptas.",
+                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Officiis iusto labore. Recusandae consequuntur vel aut odio expedita delectus quod et reprehenderit. Saepe illo porro molestias doloribus eum numquam aut. Beatae omnis quisquam pariatur fugiat iusto explicabo. Iste veniam vel aut nihil ipsam est ipsam nemo at.",
+                            ISBN = "666-1-8459889-46-8",
+                            ImageId = 1,
+                            Price = 40.229999999999997,
+                            PublisherId = 2,
+                            Title = "Rerum enim impedit odio nobis.",
+                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Sit eius perferendis. Consectetur quod earum consectetur nobis non quia consectetur. Tenetur velit amet quia quia quidem accusantium. Ut fuga quisquam assumenda doloribus iusto animi et omnis porro. Nisi eos earum.",
+                            ISBN = "666-1-9566378-14-5",
+                            ImageId = 1,
+                            Price = 11.26,
+                            PublisherId = 2,
+                            Title = "Consequuntur ut provident tempore quo et et.",
+                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Aut numquam mollitia nostrum eos velit corporis. Veniam voluptates vel eos nulla. Aut quis nam magni animi in ut incidunt. Et labore et.",
+                            ISBN = "666-1-1791411-97-2",
+                            ImageId = 4,
+                            Price = 21.02,
+                            PublisherId = 2,
+                            Title = "Occaecati veritatis.",
+                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 8,
+                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Iste tempora esse temporibus quidem aut. Aspernatur illo incidunt suscipit. Et mollitia quos fugit laudantium eaque ut veniam facere. Rerum minima illum sed omnis architecto. Saepe suscipit laudantium mollitia. Magni adipisci veniam aut quia.",
+                            ISBN = "666-1-5213774-93-3",
+                            ImageId = 4,
+                            Price = 18.25,
+                            PublisherId = 2,
+                            Title = "Est quam optio tempore consequatur facere qui.",
+                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 9,
+                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Aut architecto voluptates neque eveniet officiis adipisci. Laudantium exercitationem fugiat culpa. Aspernatur nihil voluptatem ut asperiores nostrum pariatur fugiat molestiae. Doloribus aut beatae aperiam sapiente rerum sit. Ratione voluptates et est quas cupiditate aut inventore fugit est. Iure sed commodi ullam.",
+                            ISBN = "666-1-2851824-67-1",
+                            ImageId = 2,
+                            Price = 17.469999999999999,
+                            PublisherId = 1,
+                            Title = "Ipsum tenetur maiores ut.",
+                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 10,
+                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Autem quaerat itaque quia. Eligendi ut quis. Quo est optio aperiam ut dolorem quidem. Temporibus ut mollitia consequatur id.",
+                            ISBN = "666-1-4918824-43-6",
+                            ImageId = 4,
+                            Price = 35.149999999999999,
+                            PublisherId = 1,
+                            Title = "Ea pariatur veniam nulla quia nobis quia.",
+                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 11,
+                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Ullam odio magni qui. Voluptatem veniam maxime vel. Labore qui consectetur consectetur ea cumque eveniet provident quae animi. Earum vitae molestias est ullam fuga in. Harum maxime reiciendis a debitis.\n\nAut dolores ut eum expedita vitae. Placeat itaque veniam ut nihil. Rerum assumenda sint hic. Qui ex ea.",
+                            ISBN = "666-1-8661076-53-6",
+                            ImageId = 3,
+                            Price = 7.0999999999999996,
+                            PublisherId = 1,
+                            Title = "Perspiciatis facilis itaque.",
+                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 12,
+                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Sed iure est eos tempora doloremque et exercitationem hic. Quos nobis qui. Hic et omnis laborum cum sint tempora ut. Illo aut sit quis.\n\nQuo accusantium ab. Eos iusto quia. Rerum voluptates incidunt nulla sit recusandae recusandae aspernatur beatae.",
+                            ISBN = "666-1-3895716-94-6",
+                            ImageId = 3,
+                            Price = 19.989999999999998,
+                            PublisherId = 2,
+                            Title = "Quidem impedit qui placeat eos voluptatem assumenda.",
+                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 13,
+                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Eum libero cumque ducimus libero quia id voluptatem. Non animi autem explicabo quis dolorum nemo sequi nesciunt id. Dolores sed doloremque perferendis corrupti perferendis nulla optio et. Dignissimos quam animi quis alias nihil sit dignissimos.",
+                            ISBN = "666-1-1588781-20-4",
+                            ImageId = 1,
+                            Price = 33.649999999999999,
+                            PublisherId = 1,
+                            Title = "Fugiat sunt quisquam saepe necessitatibus provident distinctio.",
+                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 14,
+                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Est a expedita ea et ea exercitationem corrupti. Est est veniam velit. Quo itaque minima porro numquam. Aut porro quia veniam a vitae sit. Sapiente quo et debitis autem.",
+                            ISBN = "666-1-9237867-24-7",
+                            ImageId = 4,
+                            Price = 29.140000000000001,
+                            PublisherId = 1,
+                            Title = "Et facilis.",
+                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 15,
+                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Sed ut quo. Ea dolorem quia molestiae cupiditate. Impedit pariatur et esse tenetur tempora. Ipsam error est non nam.\n\nAd ex distinctio placeat quibusdam quam veniam. Animi nemo et commodi. Consectetur error quia reprehenderit quam repudiandae expedita aut. Optio alias deleniti aliquid. Fugit aliquam et vero.",
+                            ISBN = "666-1-3415064-45-5",
+                            ImageId = 4,
+                            Price = 24.300000000000001,
+                            PublisherId = 1,
+                            Title = "Error delectus voluptatem error.",
+                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 16,
+                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Temporibus placeat rerum est fugit. Distinctio ut dignissimos magnam ipsum maiores ut qui. Asperiores nisi sunt sint nesciunt.\n\nConsequatur voluptatum esse voluptates aspernatur. Necessitatibus est maiores commodi sit quis et consequuntur nihil. Maiores iure quas nesciunt nobis pariatur aut voluptatum. Ratione et animi incidunt explicabo. Beatae nostrum et itaque. Incidunt sed natus fugiat vel tempore.",
+                            ISBN = "666-1-4111425-15-5",
+                            ImageId = 2,
+                            Price = 13.23,
+                            PublisherId = 2,
+                            Title = "Aspernatur quae neque.",
+                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 17,
+                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Vitae similique amet tenetur molestiae repellendus dolorem tempore dolor perferendis. Quia molestias nobis voluptas iste aperiam perspiciatis. Odit nihil deleniti saepe reiciendis consequatur nostrum similique laborum et.\n\nAutem cum aperiam sint. Illo laborum quaerat voluptatem corporis maiores doloremque deserunt autem. Et hic sit rem aliquam.",
+                            ISBN = "666-1-6869496-90-2",
+                            ImageId = 4,
+                            Price = 29.469999999999999,
+                            PublisherId = 2,
+                            Title = "Mollitia eum et similique est aut magni.",
+                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 18,
+                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Et quam veniam tempore et iusto qui ullam animi placeat. Dolorum molestiae sit fugiat consequuntur rem et sint repudiandae. Nulla nam consequuntur aut.",
+                            ISBN = "666-1-6291228-68-2",
+                            ImageId = 1,
+                            Price = 28.780000000000001,
+                            PublisherId = 1,
+                            Title = "Sint animi.",
+                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 19,
+                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Temporibus sed vero possimus id debitis a. Qui expedita possimus nesciunt similique. Voluptatem fugit deserunt iusto sit eveniet voluptas adipisci. Repellat velit labore et iusto.",
+                            ISBN = "666-1-7298722-01-3",
+                            ImageId = 4,
+                            Price = 32.460000000000001,
+                            PublisherId = 2,
+                            Title = "Nihil dolorem qui a.",
+                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 20,
+                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Omnis aperiam temporibus quia sit vel placeat. Quia eos ut et ducimus occaecati corrupti. Nihil exercitationem enim. Quam id harum. Consequatur neque saepe voluptatem repellendus quae sint vero.\n\nCum minus delectus inventore minima totam omnis nihil voluptate et. Non voluptate atque aperiam nisi saepe dolor. Id dicta accusantium in. Ipsum sit atque et. Consequuntur earum quos et cupiditate nulla possimus aspernatur commodi.",
+                            ISBN = "666-1-2549480-54-3",
+                            ImageId = 1,
+                            Price = 8.4800000000000004,
+                            PublisherId = 2,
+                            Title = "Laudantium nulla excepturi.",
+                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 21,
+                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Necessitatibus quaerat voluptatibus sit eveniet minima tempore aut consequatur. Rerum ad et non voluptas in nemo quis eligendi eum. Sunt voluptatem architecto. Commodi ut aut debitis.\n\nAdipisci molestiae ad rem possimus eos ut illum. Nisi recusandae architecto. Assumenda consequatur velit et autem non nam laudantium a. Est quibusdam repellat voluptates sit sed nemo accusamus incidunt illo. Ducimus pariatur delectus illo. Sed laboriosam iste.",
+                            ISBN = "666-1-0074241-16-9",
+                            ImageId = 3,
+                            Price = 42.659999999999997,
+                            PublisherId = 1,
+                            Title = "Quo sit sit.",
+                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 22,
+                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Repellendus veniam maxime voluptatum cumque sit tempore quia nesciunt incidunt. Quis cum voluptas voluptates voluptatem voluptates natus. Id id ipsa consequatur delectus odio error assumenda reiciendis. Quis esse vel et. Omnis enim saepe error laudantium alias quisquam. Voluptatibus recusandae assumenda inventore doloribus a enim sint similique doloribus.\n\nAliquid quod repudiandae dolor. Eos magnam eligendi. Repellendus vel adipisci. Explicabo omnis quidem nihil. Aspernatur omnis rerum fuga veritatis. Adipisci vel sunt vel nam exercitationem.",
+                            ISBN = "666-1-3113462-22-4",
+                            ImageId = 4,
+                            Price = 29.789999999999999,
+                            PublisherId = 1,
+                            Title = "Sit reprehenderit.",
+                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 23,
+                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Modi saepe sed enim est soluta. Officia et error iusto accusantium illum. Iure quo quae eos delectus minima enim illum est accusantium. Facere et ipsam et qui cum harum doloribus et. Sed commodi vel quas magni aut cupiditate.",
+                            ISBN = "666-1-1537081-15-9",
+                            ImageId = 4,
+                            Price = 45.359999999999999,
+                            PublisherId = 2,
+                            Title = "Dicta incidunt consequatur ea.",
+                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 24,
+                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Ut sed necessitatibus aut. Sit ea at. Incidunt ea quo qui repellendus. Perferendis quo et cumque et culpa facere error rerum quam. Et quia quam enim ea provident voluptatem. Iste tempore accusamus excepturi sapiente eaque consequatur aut.\n\nCum vel alias in praesentium aut vel unde. Nesciunt qui numquam quidem dolore. Dignissimos ea tempora iusto architecto eum. Occaecati soluta incidunt enim ratione sed ut nam nulla. Labore repudiandae delectus ipsa deserunt numquam quo ipsam.",
+                            ISBN = "666-1-7880231-41-0",
+                            ImageId = 4,
+                            Price = 23.469999999999999,
+                            PublisherId = 2,
+                            Title = "Repellat illo non.",
+                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 25,
+                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Tenetur quia facilis id. Rerum reiciendis est minima nisi. Amet sint sed sit aut natus ea omnis necessitatibus.",
+                            ISBN = "666-1-0615654-48-8",
+                            ImageId = 1,
+                            Price = 43.68,
+                            PublisherId = 2,
+                            Title = "Nesciunt magni laboriosam.",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
                 });
@@ -187,7 +513,9 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 1,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            TotalValue = 49.990000000000002,
+                            OrderDate = new DateTime(2025, 2, 17, 16, 51, 5, 965, DateTimeKind.Unspecified).AddTicks(8834),
+                            OrderId = 1729,
+                            TotalValue = 292.50999999999999,
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UserId = 1
                         },
@@ -195,7 +523,9 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 2,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            TotalValue = 0.0,
+                            OrderDate = new DateTime(2025, 7, 26, 8, 45, 7, 378, DateTimeKind.Unspecified).AddTicks(9460),
+                            OrderId = 1535,
+                            TotalValue = 231.18000000000001,
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UserId = 2
                         },
@@ -203,9 +533,9 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 3,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            OrderDate = new DateTime(2025, 9, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            OrderId = 1001,
-                            TotalValue = 120.5,
+                            OrderDate = new DateTime(2024, 5, 25, 10, 39, 3, 278, DateTimeKind.Unspecified).AddTicks(2620),
+                            OrderId = 1631,
+                            TotalValue = 204.75999999999999,
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UserId = 3
                         },
@@ -213,9 +543,9 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 4,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            OrderDate = new DateTime(2025, 9, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            OrderId = 1002,
-                            TotalValue = 15.75,
+                            OrderDate = new DateTime(2025, 4, 2, 20, 45, 33, 659, DateTimeKind.Unspecified).AddTicks(5317),
+                            OrderId = 1674,
+                            TotalValue = 212.91,
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UserId = 4
                         },
@@ -223,9 +553,29 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 5,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            TotalValue = 200.0,
+                            OrderDate = new DateTime(2024, 3, 12, 4, 38, 58, 477, DateTimeKind.Unspecified).AddTicks(5940),
+                            OrderId = 1898,
+                            TotalValue = 30.940000000000001,
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UserId = 5
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TotalValue = 138.91999999999999,
+                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 6
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            OrderDate = new DateTime(2024, 3, 31, 21, 33, 41, 734, DateTimeKind.Unspecified).AddTicks(7149),
+                            OrderId = 1644,
+                            TotalValue = 73.489999999999995,
+                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 7
                         });
                 });
 
@@ -255,105 +605,105 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 1,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Science Fiction",
+                            Name = "Literary Fiction",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 2,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Fantasy",
+                            Name = "Biography",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 3,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Mystery",
+                            Name = "Children's",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 4,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Thriller",
+                            Name = "Young Adult",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 5,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Romance",
+                            Name = "Adventure",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 6,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Historical Fiction",
+                            Name = "Fantasy",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 7,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Horror",
+                            Name = "Thriller",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 8,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Biography",
+                            Name = "Science Fiction",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 9,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Self-Help",
+                            Name = "Romance",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 10,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Poetry",
+                            Name = "Mystery",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 11,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Young Adult",
+                            Name = "Action",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 12,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Children's",
+                            Name = "Poetry",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 13,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Adventure",
+                            Name = "Historical Fiction",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 14,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Action",
+                            Name = "Horror",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 15,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Literary Fiction",
+                            Name = "Self-Help",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
                 });
@@ -364,6 +714,9 @@ namespace DataAccessLayer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("AuthorId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
@@ -371,10 +724,17 @@ namespace DataAccessLayer.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("PublisherId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("PublisherId");
 
                     b.ToTable("Images");
 
@@ -465,6 +825,75 @@ namespace DataAccessLayer.Migrations
                         });
                 });
 
+            modelBuilder.Entity("DataAccessLayer.Entities.LocalIdentityUser", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUsers", (string)null);
+                });
+
             modelBuilder.Entity("DataAccessLayer.Entities.Publisher", b =>
                 {
                     b.Property<int>("Id")
@@ -473,6 +902,7 @@ namespace DataAccessLayer.Migrations
 
                     b.Property<string>("Address")
                         .IsRequired()
+                        .HasMaxLength(150)
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreatedAt")
@@ -480,9 +910,10 @@ namespace DataAccessLayer.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("ProfilePhotoId")
+                    b.Property<int?>("ProfilePhotoId")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -498,19 +929,28 @@ namespace DataAccessLayer.Migrations
                         new
                         {
                             Id = 1,
-                            Address = "195 Broadway, New York, NY 10007, USA",
+                            Address = "36272 VonRueden Rapid, Murphyton, French Southern Territories",
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "HarperCollins",
-                            ProfilePhotoId = 11,
+                            Name = "Kuphal, Rempel and O'Reilly",
+                            ProfilePhotoId = 4,
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 2,
-                            Address = "1745 Broadway, New York, NY 10019, USA",
+                            Address = "24768 Corkery Lodge, South Emmatown, Solomon Islands",
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Penguin Random House",
-                            ProfilePhotoId = 12,
+                            Name = "Kohler Group",
+                            ProfilePhotoId = 4,
+                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Address = "0161 Alison Mountain, Windlerton, South Georgia and the South Sandwich Islands",
+                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Name = "Bradtke - Sauer",
+                            ProfilePhotoId = 1,
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
                 });
@@ -548,34 +988,16 @@ namespace DataAccessLayer.Migrations
                         new
                         {
                             Id = 1,
-                            BookId = 1,
-                            CartId = 1,
-                            Count = 2,
+                            BookId = 25,
+                            CartId = 3,
+                            Count = 5,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 2,
-                            BookId = 3,
-                            CartId = 1,
-                            Count = 1,
-                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 3,
-                            BookId = 2,
-                            CartId = 3,
-                            Count = 1,
-                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 4,
-                            BookId = 5,
+                            BookId = 13,
                             CartId = 4,
                             Count = 3,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -583,10 +1005,73 @@ namespace DataAccessLayer.Migrations
                         },
                         new
                         {
+                            Id = 3,
+                            BookId = 19,
+                            CartId = 3,
+                            Count = 4,
+                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 4,
+                            BookId = 17,
+                            CartId = 6,
+                            Count = 4,
+                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
                             Id = 5,
-                            BookId = 4,
-                            CartId = 5,
-                            Count = 1,
+                            BookId = 20,
+                            CartId = 3,
+                            Count = 4,
+                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 6,
+                            BookId = 7,
+                            CartId = 4,
+                            Count = 2,
+                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 7,
+                            BookId = 14,
+                            CartId = 6,
+                            Count = 3,
+                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 8,
+                            BookId = 24,
+                            CartId = 1,
+                            Count = 5,
+                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 9,
+                            BookId = 18,
+                            CartId = 3,
+                            Count = 4,
+                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 10,
+                            BookId = 10,
+                            CartId = 6,
+                            Count = 2,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
@@ -625,20 +1110,74 @@ namespace DataAccessLayer.Migrations
                         new
                         {
                             Id = 1,
-                            BookId = 1,
+                            BookId = 25,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Stars = 5,
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UserId = 1
+                            UserId = 3
                         },
                         new
                         {
                             Id = 2,
-                            BookId = 2,
+                            BookId = 13,
+                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Stars = 3,
+                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 4
+                        },
+                        new
+                        {
+                            Id = 3,
+                            BookId = 19,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Stars = 4,
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UserId = 2
+                            UserId = 3
+                        },
+                        new
+                        {
+                            Id = 4,
+                            BookId = 17,
+                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Stars = 4,
+                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 6
+                        },
+                        new
+                        {
+                            Id = 5,
+                            BookId = 20,
+                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Stars = 4,
+                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 3
+                        },
+                        new
+                        {
+                            Id = 6,
+                            BookId = 7,
+                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Stars = 2,
+                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 4
+                        },
+                        new
+                        {
+                            Id = 7,
+                            BookId = 14,
+                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Stars = 3,
+                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 6
+                        },
+                        new
+                        {
+                            Id = 8,
+                            BookId = 24,
+                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Stars = 5,
+                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 1
                         });
                 });
 
@@ -659,28 +1198,193 @@ namespace DataAccessLayer.Migrations
                     b.HasData(
                         new
                         {
-                            AuthorId = 1,
+                            AuthorId = 3,
                             BookId = 1
                         },
                         new
                         {
-                            AuthorId = 1,
+                            AuthorId = 4,
+                            BookId = 1
+                        },
+                        new
+                        {
+                            AuthorId = 4,
                             BookId = 2
                         },
                         new
                         {
+                            AuthorId = 2,
+                            BookId = 2
+                        },
+                        new
+                        {
+                            AuthorId = 5,
+                            BookId = 3
+                        },
+                        new
+                        {
+                            AuthorId = 4,
+                            BookId = 3
+                        },
+                        new
+                        {
+                            AuthorId = 4,
+                            BookId = 4
+                        },
+                        new
+                        {
+                            AuthorId = 4,
+                            BookId = 5
+                        },
+                        new
+                        {
+                            AuthorId = 4,
+                            BookId = 6
+                        },
+                        new
+                        {
                             AuthorId = 1,
-                            BookId = 3
+                            BookId = 7
+                        },
+                        new
+                        {
+                            AuthorId = 3,
+                            BookId = 7
+                        },
+                        new
+                        {
+                            AuthorId = 1,
+                            BookId = 8
+                        },
+                        new
+                        {
+                            AuthorId = 3,
+                            BookId = 8
                         },
                         new
                         {
                             AuthorId = 2,
-                            BookId = 1
+                            BookId = 9
+                        },
+                        new
+                        {
+                            AuthorId = 3,
+                            BookId = 9
+                        },
+                        new
+                        {
+                            AuthorId = 1,
+                            BookId = 10
+                        },
+                        new
+                        {
+                            AuthorId = 3,
+                            BookId = 10
+                        },
+                        new
+                        {
+                            AuthorId = 3,
+                            BookId = 11
+                        },
+                        new
+                        {
+                            AuthorId = 4,
+                            BookId = 12
+                        },
+                        new
+                        {
+                            AuthorId = 5,
+                            BookId = 12
+                        },
+                        new
+                        {
+                            AuthorId = 3,
+                            BookId = 13
+                        },
+                        new
+                        {
+                            AuthorId = 1,
+                            BookId = 14
+                        },
+                        new
+                        {
+                            AuthorId = 5,
+                            BookId = 15
+                        },
+                        new
+                        {
+                            AuthorId = 4,
+                            BookId = 15
+                        },
+                        new
+                        {
+                            AuthorId = 4,
+                            BookId = 16
+                        },
+                        new
+                        {
+                            AuthorId = 4,
+                            BookId = 17
+                        },
+                        new
+                        {
+                            AuthorId = 1,
+                            BookId = 18
+                        },
+                        new
+                        {
+                            AuthorId = 1,
+                            BookId = 19
                         },
                         new
                         {
                             AuthorId = 2,
-                            BookId = 3
+                            BookId = 19
+                        },
+                        new
+                        {
+                            AuthorId = 1,
+                            BookId = 20
+                        },
+                        new
+                        {
+                            AuthorId = 5,
+                            BookId = 20
+                        },
+                        new
+                        {
+                            AuthorId = 1,
+                            BookId = 21
+                        },
+                        new
+                        {
+                            AuthorId = 5,
+                            BookId = 21
+                        },
+                        new
+                        {
+                            AuthorId = 1,
+                            BookId = 22
+                        },
+                        new
+                        {
+                            AuthorId = 3,
+                            BookId = 23
+                        },
+                        new
+                        {
+                            AuthorId = 4,
+                            BookId = 24
+                        },
+                        new
+                        {
+                            AuthorId = 2,
+                            BookId = 25
+                        },
+                        new
+                        {
+                            AuthorId = 3,
+                            BookId = 25
                         });
                 });
 
@@ -702,21 +1406,276 @@ namespace DataAccessLayer.Migrations
                         new
                         {
                             BookId = 1,
-                            GenreId = 3
+                            GenreId = 8
                         },
                         new
                         {
                             BookId = 1,
-                            GenreId = 2
+                            GenreId = 12
+                        },
+                        new
+                        {
+                            BookId = 1,
+                            GenreId = 11
                         },
                         new
                         {
                             BookId = 2,
-                            GenreId = 2
+                            GenreId = 4
+                        },
+                        new
+                        {
+                            BookId = 2,
+                            GenreId = 9
+                        },
+                        new
+                        {
+                            BookId = 2,
+                            GenreId = 14
                         },
                         new
                         {
                             BookId = 3,
+                            GenreId = 6
+                        },
+                        new
+                        {
+                            BookId = 3,
+                            GenreId = 10
+                        },
+                        new
+                        {
+                            BookId = 3,
+                            GenreId = 1
+                        },
+                        new
+                        {
+                            BookId = 4,
+                            GenreId = 4
+                        },
+                        new
+                        {
+                            BookId = 4,
+                            GenreId = 11
+                        },
+                        new
+                        {
+                            BookId = 4,
+                            GenreId = 12
+                        },
+                        new
+                        {
+                            BookId = 5,
+                            GenreId = 5
+                        },
+                        new
+                        {
+                            BookId = 6,
+                            GenreId = 2
+                        },
+                        new
+                        {
+                            BookId = 6,
+                            GenreId = 8
+                        },
+                        new
+                        {
+                            BookId = 6,
+                            GenreId = 14
+                        },
+                        new
+                        {
+                            BookId = 7,
+                            GenreId = 5
+                        },
+                        new
+                        {
+                            BookId = 8,
+                            GenreId = 3
+                        },
+                        new
+                        {
+                            BookId = 8,
+                            GenreId = 8
+                        },
+                        new
+                        {
+                            BookId = 9,
+                            GenreId = 7
+                        },
+                        new
+                        {
+                            BookId = 10,
+                            GenreId = 10
+                        },
+                        new
+                        {
+                            BookId = 10,
+                            GenreId = 13
+                        },
+                        new
+                        {
+                            BookId = 10,
+                            GenreId = 6
+                        },
+                        new
+                        {
+                            BookId = 11,
+                            GenreId = 5
+                        },
+                        new
+                        {
+                            BookId = 11,
+                            GenreId = 2
+                        },
+                        new
+                        {
+                            BookId = 12,
+                            GenreId = 14
+                        },
+                        new
+                        {
+                            BookId = 12,
+                            GenreId = 10
+                        },
+                        new
+                        {
+                            BookId = 12,
+                            GenreId = 4
+                        },
+                        new
+                        {
+                            BookId = 13,
+                            GenreId = 5
+                        },
+                        new
+                        {
+                            BookId = 13,
+                            GenreId = 10
+                        },
+                        new
+                        {
+                            BookId = 13,
+                            GenreId = 3
+                        },
+                        new
+                        {
+                            BookId = 14,
+                            GenreId = 8
+                        },
+                        new
+                        {
+                            BookId = 15,
+                            GenreId = 2
+                        },
+                        new
+                        {
+                            BookId = 16,
+                            GenreId = 3
+                        },
+                        new
+                        {
+                            BookId = 16,
+                            GenreId = 13
+                        },
+                        new
+                        {
+                            BookId = 17,
+                            GenreId = 2
+                        },
+                        new
+                        {
+                            BookId = 17,
+                            GenreId = 13
+                        },
+                        new
+                        {
+                            BookId = 17,
+                            GenreId = 3
+                        },
+                        new
+                        {
+                            BookId = 18,
+                            GenreId = 4
+                        },
+                        new
+                        {
+                            BookId = 19,
+                            GenreId = 1
+                        },
+                        new
+                        {
+                            BookId = 19,
+                            GenreId = 10
+                        },
+                        new
+                        {
+                            BookId = 20,
+                            GenreId = 5
+                        },
+                        new
+                        {
+                            BookId = 20,
+                            GenreId = 8
+                        },
+                        new
+                        {
+                            BookId = 20,
+                            GenreId = 15
+                        },
+                        new
+                        {
+                            BookId = 21,
+                            GenreId = 12
+                        },
+                        new
+                        {
+                            BookId = 21,
+                            GenreId = 15
+                        },
+                        new
+                        {
+                            BookId = 21,
+                            GenreId = 6
+                        },
+                        new
+                        {
+                            BookId = 22,
+                            GenreId = 10
+                        },
+                        new
+                        {
+                            BookId = 22,
+                            GenreId = 14
+                        },
+                        new
+                        {
+                            BookId = 22,
+                            GenreId = 5
+                        },
+                        new
+                        {
+                            BookId = 23,
+                            GenreId = 12
+                        },
+                        new
+                        {
+                            BookId = 23,
+                            GenreId = 6
+                        },
+                        new
+                        {
+                            BookId = 23,
+                            GenreId = 4
+                        },
+                        new
+                        {
+                            BookId = 24,
+                            GenreId = 3
+                        },
+                        new
+                        {
+                            BookId = 25,
                             GenreId = 2
                         });
                 });
@@ -763,7 +1722,8 @@ namespace DataAccessLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProfilePhotoId");
+                    b.HasIndex("ProfilePhotoId")
+                        .IsUnique();
 
                     b.ToTable("Users");
 
@@ -771,61 +1731,78 @@ namespace DataAccessLayer.Migrations
                         new
                         {
                             Id = 1,
-                            City = "New York",
-                            Country = "USA",
+                            City = "Olafberg",
+                            Country = "Reunion",
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "John",
-                            ProfilePhotoId = 1,
-                            Street = "5th Avenue 123",
-                            Surname = "Doe",
+                            Name = "Wellington",
+                            Street = "VonRueden Rapid",
+                            Surname = "Kuphal",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 2,
-                            City = "London",
-                            Country = "UK",
+                            City = "Diegofurt",
+                            Country = "Denmark",
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Jane",
-                            ProfilePhotoId = 2,
-                            Street = "Baker Street 221B",
-                            Surname = "Smith",
+                            Name = "Florence",
+                            Street = "Brakus Grove",
+                            Surname = "Murray",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 3,
-                            City = "Tokyo",
-                            Country = "Japan",
+                            City = "Framiburgh",
+                            Country = "Kiribati",
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Taro",
-                            ProfilePhotoId = 3,
-                            Street = "Shibuya 1-2-3",
-                            Surname = "Yamada",
+                            Name = "Stacey",
+                            Street = "Corkery Lodge",
+                            Surname = "Buckridge",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 4,
-                            City = "Warsaw",
-                            Country = "Poland",
+                            City = "Roryberg",
+                            Country = "Saint Helena",
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Anna",
-                            ProfilePhotoId = 4,
-                            Street = "Marszałkowska 45",
-                            Surname = "Kowalska",
+                            Name = "Dannie",
+                            Street = "Emma Bridge",
+                            Surname = "Kihn",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 5,
-                            City = "Bratislava",
-                            Country = "Slovakia",
+                            City = "Lake Emiliostad",
+                            Country = "Nauru",
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Peter",
-                            ProfilePhotoId = 5,
-                            Street = "Hviezdoslavovo námestie 7",
-                            Surname = "Novák",
+                            Name = "Rebeca",
+                            Street = "Alison Mountain",
+                            Surname = "Waters",
+                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 6,
+                            City = "Lake Vincenzoton",
+                            Country = "New Caledonia",
+                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Name = "Angel",
+                            Street = "Berge Causeway",
+                            Surname = "Bradtke",
+                            UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 7,
+                            City = "Orlandoburgh",
+                            Country = "Andorra",
+                            CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Name = "Dennis",
+                            Street = "Torrance Row",
+                            Surname = "King",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
                 });
@@ -860,43 +1837,171 @@ namespace DataAccessLayer.Migrations
                         new
                         {
                             Id = 1,
-                            BookId = 2,
+                            BookId = 21,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UserId = 1
+                            UserId = 7
                         },
                         new
                         {
                             Id = 2,
-                            BookId = 5,
+                            BookId = 13,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UserId = 1
+                            UserId = 4
                         },
                         new
                         {
                             Id = 3,
-                            BookId = 1,
+                            BookId = 4,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UserId = 2
+                            UserId = 6
                         },
                         new
                         {
                             Id = 4,
-                            BookId = 3,
+                            BookId = 18,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UserId = 3
+                            UserId = 5
                         },
                         new
                         {
                             Id = 5,
-                            BookId = 4,
+                            BookId = 11,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UserId = 4
+                            UserId = 6
                         });
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex");
+
+                    b.ToTable("AspNetRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RoleId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetRoleClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ProviderKey")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("LoginProvider", "ProviderKey");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserLogins", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RoleId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetUserRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("UserId", "LoginProvider", "Name");
+
+                    b.ToTable("AspNetUserTokens", (string)null);
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.Author", b =>
@@ -904,7 +2009,7 @@ namespace DataAccessLayer.Migrations
                     b.HasOne("DataAccessLayer.Entities.Image", "ProfilePhoto")
                         .WithMany()
                         .HasForeignKey("ProfilePhotoId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("ProfilePhoto");
                 });
@@ -914,14 +2019,12 @@ namespace DataAccessLayer.Migrations
                     b.HasOne("DataAccessLayer.Entities.Image", "Image")
                         .WithMany()
                         .HasForeignKey("ImageId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("DataAccessLayer.Entities.Publisher", "Publisher")
                         .WithMany("Books")
                         .HasForeignKey("PublisherId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Image");
 
@@ -932,6 +2035,32 @@ namespace DataAccessLayer.Migrations
                 {
                     b.HasOne("DataAccessLayer.Entities.User", "User")
                         .WithMany("Carts")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Entities.Image", b =>
+                {
+                    b.HasOne("DataAccessLayer.Entities.Author", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorId");
+
+                    b.HasOne("DataAccessLayer.Entities.Publisher", "Publisher")
+                        .WithMany()
+                        .HasForeignKey("PublisherId");
+
+                    b.Navigation("Author");
+
+                    b.Navigation("Publisher");
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Entities.LocalIdentityUser", b =>
+                {
+                    b.HasOne("DataAccessLayer.Entities.User", "User")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -954,13 +2083,13 @@ namespace DataAccessLayer.Migrations
                     b.HasOne("DataAccessLayer.Entities.Book", "Book")
                         .WithMany()
                         .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("DataAccessLayer.Entities.Cart", "Cart")
                         .WithMany("PurchaseItems")
                         .HasForeignKey("CartId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Book");
@@ -973,13 +2102,13 @@ namespace DataAccessLayer.Migrations
                     b.HasOne("DataAccessLayer.Entities.Book", "Book")
                         .WithMany("Ratings")
                         .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("DataAccessLayer.Entities.User", "User")
                         .WithMany("Ratings")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Book");
@@ -989,40 +2118,48 @@ namespace DataAccessLayer.Migrations
 
             modelBuilder.Entity("DataAccessLayer.Entities.RelBookAuthor", b =>
                 {
-                    b.HasOne("DataAccessLayer.Entities.Author", null)
+                    b.HasOne("DataAccessLayer.Entities.Author", "Author")
                         .WithMany()
                         .HasForeignKey("AuthorId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DataAccessLayer.Entities.Book", null)
+                    b.HasOne("DataAccessLayer.Entities.Book", "Book")
                         .WithMany()
                         .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Author");
+
+                    b.Navigation("Book");
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.RelBookGenre", b =>
                 {
-                    b.HasOne("DataAccessLayer.Entities.Book", null)
+                    b.HasOne("DataAccessLayer.Entities.Book", "Book")
                         .WithMany()
                         .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DataAccessLayer.Entities.Genre", null)
+                    b.HasOne("DataAccessLayer.Entities.Genre", "Genre")
                         .WithMany()
                         .HasForeignKey("GenreId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Book");
+
+                    b.Navigation("Genre");
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.User", b =>
                 {
                     b.HasOne("DataAccessLayer.Entities.Image", "ProfilePhoto")
-                        .WithMany()
-                        .HasForeignKey("ProfilePhotoId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .WithOne("User")
+                        .HasForeignKey("DataAccessLayer.Entities.User", "ProfilePhotoId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("ProfilePhoto");
                 });
@@ -1032,18 +2169,69 @@ namespace DataAccessLayer.Migrations
                     b.HasOne("DataAccessLayer.Entities.Book", "Book")
                         .WithMany()
                         .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("DataAccessLayer.Entities.User", "User")
                         .WithMany("WishlistItems")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Book");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.HasOne("DataAccessLayer.Entities.LocalIdentityUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.HasOne("DataAccessLayer.Entities.LocalIdentityUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("DataAccessLayer.Entities.LocalIdentityUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.HasOne("DataAccessLayer.Entities.LocalIdentityUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.Book", b =>
@@ -1054,6 +2242,11 @@ namespace DataAccessLayer.Migrations
             modelBuilder.Entity("DataAccessLayer.Entities.Cart", b =>
                 {
                     b.Navigation("PurchaseItems");
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Entities.Image", b =>
+                {
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.Publisher", b =>

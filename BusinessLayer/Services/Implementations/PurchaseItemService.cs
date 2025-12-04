@@ -15,7 +15,7 @@ public class PurchaseItemService : BaseService<BookHubDbContext>, IPurchaseItemS
     {
     }
 
-    public async Task<PagedResultDto<PurchaseItemDto>> GetPurchaseItemsAsync(int limit = 20, int offset = 0)
+    public async Task<PagedResultDto<PurchaseItemDto>> GetAllAsync(int limit = 20, int offset = 0)
     {
         var query = Context.PurchaseItems
             .AsNoTracking()
@@ -24,47 +24,91 @@ public class PurchaseItemService : BaseService<BookHubDbContext>, IPurchaseItemS
         return await PageAsync(query, limit, offset, PurchaseItemMapper.ToDtoList);
     }
 
-    public async Task<PurchaseItemDto?> GetPurchaseItemByIdAsync(int id)
+    public async Task<PurchaseItemDetailDto?> GetByIdAsync(int id)
     {
         var purchaseItem = await Context.PurchaseItems
             .AsNoTracking()
-            .FirstOrDefaultAsync(u => u.Id == id);
+            .Include(p => p.Book)
+            .Include(p => p.Cart)
+            .FirstOrDefaultAsync(p => p.Id == id);
 
-        return purchaseItem != null ? PurchaseItemMapper.ToDto(purchaseItem) : null;
-
+        return purchaseItem != null ? PurchaseItemMapper.ToDetailDto(purchaseItem) : null;
     }
 
-    public async Task<PurchaseItemDto> CreatePurchaseItemAsync(PurchaseItemCreateDto purchaseItemCreateDto)
+    public async Task<PurchaseItemDto> CreateAsync(PurchaseItemCreateDto purchaseItemCreateDto)
     {
+        // Validate that Cart and Book exist
+        await ValidateRelatedEntitiesExistAsync(purchaseItemCreateDto);
+
+        // Validate Count value
+        if (purchaseItemCreateDto.Count < 0)
+        {
+            throw new ArgumentException($"Invalid Count: {purchaseItemCreateDto.Count} - Cannot be negative");
+        }
+
         PurchaseItem purchaseItem = PurchaseItemMapper.CreateDtoToEntity(purchaseItemCreateDto);
 
         await Context.PurchaseItems.AddAsync(purchaseItem);
         await SaveAsync();
 
         return PurchaseItemMapper.ToDto(purchaseItem);
-
     }
 
-    public async Task<bool> DeletePurchaseItemAsync(int id)
+    public async Task<bool> DeleteAsync(int id)
     {
         PurchaseItem? purchaseItem = await Context.PurchaseItems.FirstOrDefaultAsync(g => g.Id == id);
         if (purchaseItem == null)
+        {
             return false;
+        }
 
         Context.PurchaseItems.Remove(purchaseItem);
         await SaveAsync();
+
         return true;
     }
 
-    public async Task<PurchaseItemDto?> UpdatePurchaseItemAsync(int id, PurchaseItemUpdateDto purchaseItemUpdateDto)
+    public async Task<PurchaseItemDto?> UpdateAsync(int id, PurchaseItemUpdateDto purchaseItemUpdateDto)
     {
+        // Validate Count value
+        if (purchaseItemUpdateDto.Count < 0)
+        {
+            throw new ArgumentException($"Invalid Count: {purchaseItemUpdateDto.Count} - Cannot be negative");
+        }
+
         PurchaseItem? purchaseItem = await Context.PurchaseItems.FirstOrDefaultAsync(u => u.Id == id);
         if (purchaseItem == null)
+        {
             return null;
+        }
 
         PurchaseItemMapper.UpdateEntity(purchaseItem, purchaseItemUpdateDto);
         await SaveAsync();
 
         return PurchaseItemMapper.ToDto(purchaseItem);
+    }
+
+    private async Task ValidateRelatedEntitiesExistAsync(PurchaseItemCreateDto purchaseItemDto)
+    {
+        var errors = new List<string>();
+
+        // Validate Cart exists
+        var cartExists = await Context.Carts.AnyAsync(u => u.Id == purchaseItemDto.CartId);
+        if (!cartExists)
+        {
+            errors.Add($"Invalid User ID: {purchaseItemDto.CartId}");
+        }
+
+        // Validate Book exists
+        var bookExists = await Context.Books.AnyAsync(b => b.Id == purchaseItemDto.BookId);
+        if (!bookExists)
+        {
+            errors.Add($"Invalid Book ID: {purchaseItemDto.BookId}");
+        }
+
+        if (errors.Any())
+        {
+            throw new ArgumentException($"Validation failed: {string.Join("; ", errors)}");
+        }
     }
 }

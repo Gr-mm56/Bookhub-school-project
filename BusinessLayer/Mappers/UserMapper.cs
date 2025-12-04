@@ -43,7 +43,7 @@ public static class UserMapper
             Carts = user.Carts?.Select(CartMapper.ToDto).ToList() ?? new List<CartDto>(),
             Ratings = user.Ratings?.Select(RatingMapper.ToDto).ToList() ?? new List<RatingDto>(),
             WishlistItems = user.WishlistItems?.Select(WishlistItemMapper.ToDto).ToList() ?? new List<WishlistItemDto>(),
-            ProfilePhoto = ImageMapper.ToDto(user.ProfilePhoto ?? new Image()),
+            ProfilePhoto = user.ProfilePhoto != null ? ImageMapper.ToDto(user.ProfilePhoto) : null,
             CreatedAt = user.CreatedAt,
             UpdatedAt = user.UpdatedAt
         };

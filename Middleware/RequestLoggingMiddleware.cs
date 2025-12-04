@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 
 namespace Middleware;
+
 public class RequestLoggingMiddleware
 {
     private readonly RequestDelegate _next;
