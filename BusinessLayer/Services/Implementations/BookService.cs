@@ -48,6 +48,7 @@ public class BookService : BaseService<BookHubDbContext>, IBookService
             .Include(b => b.Authors)
             .Include(b => b.Genres)
             .Include(b => b.Publisher)
+            .Include(b => b.Ratings)
             .FirstOrDefaultAsync(b => b.Id == id);
 
         var result = book != null ? BookMapper.ToDetailDto(book) : null;

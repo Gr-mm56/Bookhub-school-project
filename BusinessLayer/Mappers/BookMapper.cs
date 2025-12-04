@@ -40,7 +40,8 @@ public static class BookMapper
             Image = book.Image != null ? ImageMapper.ToDto(book.Image) : null,
             Authors = AuthorMapper.ToDtoList(book.Authors).ToList(),
             Genres = GenreMapper.ToDtoList(book.Genres).ToList(),
-            Publisher = book.Publisher != null ? PublisherMapper.ToDto(book.Publisher) : null
+            Publisher = book.Publisher != null ? PublisherMapper.ToDto(book.Publisher) : null,
+            Ratings = RatingMapper.ToDtoList(book.Ratings).ToList()
         };
     }
 
@@ -60,7 +61,8 @@ public static class BookMapper
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
             Genres = new List<Genre>(),
-            Authors = new List<Author>()
+            Authors = new List<Author>(),
+            Ratings = new List<Rating>()
         };
     }
 
