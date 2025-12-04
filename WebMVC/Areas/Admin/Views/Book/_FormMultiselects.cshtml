@@ -1,0 +1,28 @@
+﻿@model WebMVC.Areas.Admin.Models.Book.BookCreateEditViewModelWithOptions
+
+<!-- Genres Multiselect -->
+<div class="mb-3">
+    <label asp-for="Book.GenreIds" class="form-label">Additional Genres *</label>
+    <select asp-for="Book.GenreIds" class="form-select" multiple="multiple" style="height: 150px;">
+        @foreach (var genre in Model.Genres)
+        {
+            <option value="@genre.Id">@genre.Name</option>
+        }
+    </select>
+    <small class="text-muted d-block mt-1">Hold Ctrl (Cmd on Mac) to select multiple genres</small>
+    <span asp-validation-for="Book.GenreIds" class="text-danger small d-block mt-1"></span>
+</div>
+
+<!-- Authors Multiselect -->
+<div class="mb-3">
+    <label asp-for="Book.AuthorIds" class="form-label">Authors *</label>
+    <select asp-for="Book.AuthorIds" class="form-select" multiple="multiple" style="height: 150px;">
+        @foreach (var author in Model.Authors)
+        {
+            <option value="@author.Id">@author.Name</option>
+        }
+    </select>
+    <small class="text-muted d-block mt-1">Hold Ctrl (Cmd on Mac) to select multiple authors</small>
+    <span asp-validation-for="Book.AuthorIds" class="text-danger small d-block mt-1"></span>
+</div>
+

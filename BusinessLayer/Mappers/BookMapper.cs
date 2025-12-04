@@ -14,10 +14,10 @@ public static class BookMapper
         {
             Id = book.Id,
             Title = book.Title,
-            Description = book.Description,
             Price = book.Price,
             CreatedAt = book.CreatedAt,
             UpdatedAt = book.UpdatedAt,
+            PrimaryGenreId = book.PrimaryGenreId,
             Image = book.Image != null ? ImageMapper.ToDto(book.Image) : null
         };
     }
@@ -35,6 +35,8 @@ public static class BookMapper
             ISBN = book.ISBN,
             CreatedAt = book.CreatedAt,
             UpdatedAt = book.UpdatedAt,
+            PrimaryGenreId = book.PrimaryGenreId,
+            PrimaryGenre = book.PrimaryGenre != null ? GenreMapper.ToDto(book.PrimaryGenre) : null,
             Image = book.Image != null ? ImageMapper.ToDto(book.Image) : null,
             Authors = AuthorMapper.ToDtoList(book.Authors).ToList(),
             Genres = GenreMapper.ToDtoList(book.Genres).ToList(),
@@ -52,6 +54,7 @@ public static class BookMapper
             ISBN = requestDto.ISBN,
             Description = requestDto.Description,
             Price = requestDto.Price,
+            PrimaryGenreId = requestDto.PrimaryGenreId,
             ImageId = requestDto.ImageId,
             PublisherId = requestDto.PublisherId,
             CreatedAt = DateTime.UtcNow,
@@ -70,6 +73,7 @@ public static class BookMapper
         book.ISBN = requestDto.ISBN;
         book.Description = requestDto.Description;
         book.Price = requestDto.Price;
+        book.PrimaryGenreId = requestDto.PrimaryGenreId;
         book.ImageId = requestDto.ImageId;
         book.UpdatedAt = DateTime.Now;
     }

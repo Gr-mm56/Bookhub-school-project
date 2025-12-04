@@ -65,7 +65,12 @@ public class BookHubDbContext: IdentityDbContext<LocalIdentityUser>
         {
             relationship.DeleteBehavior = DeleteBehavior.Restrict;
         }
-
+        // Book 1 PrimaryGenre
+        modelBuilder.Entity<Book>()
+            .HasOne(b => b.PrimaryGenre)
+            .WithMany(g => g.PrimaryBooks)
+            .HasForeignKey(b => b.PrimaryGenreId);
+        
         // Book 1 Image
         modelBuilder.Entity<Book>()
             .HasOne(b => b.Image)
@@ -129,6 +134,35 @@ public class BookHubDbContext: IdentityDbContext<LocalIdentityUser>
             .HasOne(p => p.Book)
             .WithMany()
             .OnDelete(DeleteBehavior.Cascade);
+
+        // Indexes for search performance
+        // Book indexes for title and price searches
+        modelBuilder.Entity<Book>()
+            .HasIndex(b => b.Title)
+            .HasDatabaseName("idx_book_title");
+
+        modelBuilder.Entity<Book>()
+            .HasIndex(b => b.Price)
+            .HasDatabaseName("idx_book_price");
+
+        // Author indexes for name searches
+        modelBuilder.Entity<Author>()
+            .HasIndex(a => a.Name)
+            .HasDatabaseName("idx_author_name");
+
+        modelBuilder.Entity<Author>()
+            .HasIndex(a => a.Surname)
+            .HasDatabaseName("idx_author_surname");
+
+        // Genre index for name searches
+        modelBuilder.Entity<Genre>()
+            .HasIndex(g => g.Name)
+            .HasDatabaseName("idx_genre_name");
+
+        // Publisher index for name searches
+        modelBuilder.Entity<Publisher>()
+            .HasIndex(p => p.Name)
+            .HasDatabaseName("idx_publisher_name");
 
         modelBuilder.Seed();
     }

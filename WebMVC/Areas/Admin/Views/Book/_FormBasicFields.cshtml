@@ -1,0 +1,16 @@
+﻿@model WebMVC.Areas.Admin.Models.Book.BookCreateEditViewModelWithOptions
+
+<!-- Title -->
+<div class="col-md-6 mb-3">
+    <label asp-for="Book.Title" class="form-label">Title *</label>
+    <input asp-for="Book.Title" class="form-control" placeholder="Enter book title" />
+    <span asp-validation-for="Book.Title" class="text-danger small d-block mt-1"></span>
+</div>
+
+<!-- ISBN -->
+<div class="col-md-6 mb-3">
+    <label asp-for="Book.ISBN" class="form-label">ISBN *</label>
+    <input asp-for="Book.ISBN" class="form-control" placeholder="Enter ISBN" />
+    <span asp-validation-for="Book.ISBN" class="text-danger small d-block mt-1"></span>
+</div>
+

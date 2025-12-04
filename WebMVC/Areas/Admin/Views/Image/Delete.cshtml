@@ -1,0 +1,51 @@
+﻿@model WebMVC.Areas.Admin.Models.Image.ImageDeleteViewModel
+@{
+    ViewBag.Title = "Delete Image";
+    Layout = "_Layout";
+}
+
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <h1 class="display-6 mb-4">Delete Image</h1>
+
+            <div class="card border-danger">
+                <div class="card-body">
+                    <div class="alert alert-warning" role="alert">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        <strong>Warning!</strong> This action cannot be undone. Are you sure you want to delete this image?
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Image Details</h5>
+                            <dl class="row">
+                                <dt class="col-sm-4">Image ID:</dt>
+                                <dd class="col-sm-8">
+                                    <span class="badge bg-secondary">@Model.Id</span>
+                                </dd>
+
+                                <dt class="col-sm-4">File Path:</dt>
+                                <dd class="col-sm-8">
+                                    <code>@Model.FileUrl</code>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+
+                    <form asp-area="Admin" asp-controller="Image" asp-action="Delete" method="post" class="d-inline">
+                        <input type="hidden" asp-for="Id" />
+                        
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you absolutely sure?');">
+                            <i class="bi bi-trash"></i> Delete Image
+                        </button>
+                        <a asp-area="Admin" asp-controller="Image" asp-action="Index" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

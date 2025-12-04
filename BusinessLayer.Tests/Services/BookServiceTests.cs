@@ -24,6 +24,7 @@ public class BookServiceTests
             Price = 25.99,
             ImageId = 1,
             PublisherId = 1,
+            PrimaryGenreId = 2,
             GenreIds = [1],
             AuthorIds = [1]
         };
@@ -35,7 +36,6 @@ public class BookServiceTests
         Assert.NotNull(created);
         Assert.True(created.Id > 0, "Created book should have a positive Id");
         Assert.Equal(createDto.Title, created.Title);
-        Assert.Equal(createDto.Description, created.Description);
         Assert.Equal(createDto.Price, created.Price);
         Assert.NotNull(created.Image);
         Assert.Equal(createDto.ImageId, created.Image.Id);
@@ -63,6 +63,7 @@ public class BookServiceTests
             Price = 25.99,
             ImageId = 1,
             PublisherId = 1,
+            PrimaryGenreId = 2,
             GenreIds = [],
             AuthorIds = [1]
         };
@@ -88,6 +89,7 @@ public class BookServiceTests
             Price = 25.99,
             ImageId = 1,
             PublisherId = 1,
+            PrimaryGenreId = 2,
             GenreIds = [],
             AuthorIds = [1]
         };
@@ -113,6 +115,7 @@ public class BookServiceTests
             Price = 25.99,
             ImageId = 1,
             PublisherId = 1,
+            PrimaryGenreId = 2,
             GenreIds = [1],
             AuthorIds = [9999]
         };
@@ -138,6 +141,7 @@ public class BookServiceTests
             Price = 25.99,
             ImageId = 1,
             PublisherId = 1,
+            PrimaryGenreId = 2,
             GenreIds = [9999],
             AuthorIds = [1]
         };
@@ -163,6 +167,7 @@ public class BookServiceTests
             Price = 25.99,
             ImageId = 1,
             PublisherId = 9999,
+            PrimaryGenreId = 2,
             GenreIds = [1],
             AuthorIds = [1]
         };
@@ -188,6 +193,7 @@ public class BookServiceTests
             Price = 25.99,
             ImageId = 9999,
             PublisherId = 1,
+            PrimaryGenreId = 2,
             GenreIds = [1],
             AuthorIds = [1]
         };
@@ -214,6 +220,7 @@ public class BookServiceTests
             Price = 29.99,
             ImageId = 1,
             PublisherId = 1,
+            PrimaryGenreId = 2,
             GenreIds = [1],
             AuthorIds = [1]
         };
@@ -268,6 +275,7 @@ public class BookServiceTests
                 Price = 10.00 + i,
                 ImageId = 1,
                 PublisherId = 1,
+                PrimaryGenreId = 2,
                 GenreIds = [1],
                 AuthorIds = [1]
             };
@@ -298,6 +306,7 @@ public class BookServiceTests
             Price = 20.00,
             ImageId = 1,
             PublisherId = 1,
+            PrimaryGenreId = 2,
             GenreIds = [1],
             AuthorIds = [1]
         };
@@ -312,6 +321,7 @@ public class BookServiceTests
             Price = 30.00,
             ImageId = 1,
             PublisherId = 1,
+            PrimaryGenreId = 2,
             GenreIds = [1],
             AuthorIds = [1]
         };
@@ -323,7 +333,6 @@ public class BookServiceTests
         Assert.NotNull(updated);
         Assert.Equal(created.Id, updated.Id);
         Assert.Equal(updateDto.Title, updated.Title);
-        Assert.Equal(updateDto.Description, updated.Description);
         Assert.Equal(updateDto.Price, updated.Price);
     }
 
@@ -341,6 +350,7 @@ public class BookServiceTests
             Price = 30.00,
             ImageId = 1,
             PublisherId = 1,
+            PrimaryGenreId = 2,
             GenreIds = [1],
             AuthorIds = [1]
         };
@@ -366,6 +376,7 @@ public class BookServiceTests
             Price = 20.00,
             ImageId = 1,
             PublisherId = 1,
+            PrimaryGenreId = 2,
             GenreIds = [1],
             AuthorIds = [1]
         };
@@ -379,6 +390,7 @@ public class BookServiceTests
             Price = 30.00,
             ImageId = 9999,
             PublisherId = 1,
+            PrimaryGenreId = 2,
             GenreIds = [1],
             AuthorIds = [1]
         };
@@ -404,6 +416,7 @@ public class BookServiceTests
             Price = 15.00,
             ImageId = 1,
             PublisherId = 1,
+            PrimaryGenreId = 2,
             GenreIds = [1],
             AuthorIds = [1]
         };
@@ -449,6 +462,7 @@ public class BookServiceTests
             Price = 45.00,
             ImageId = 1,
             PublisherId = 1,
+            PrimaryGenreId = 2,
             GenreIds = [1],
             AuthorIds = [1]
         };
@@ -460,6 +474,7 @@ public class BookServiceTests
             Price = 25.00,
             ImageId = 1,
             PublisherId = 1,
+            PrimaryGenreId = 2,
             GenreIds = [1],
             AuthorIds = [1]
         };
@@ -469,7 +484,7 @@ public class BookServiceTests
 
         var searchDto = new BookSearchDto
         {
-            Title = "Programming"
+            SearchTerm = "Programming"
         };
 
         // Act
@@ -496,6 +511,7 @@ public class BookServiceTests
             Price = testPrice,
             ImageId = 1,
             PublisherId = 1,
+            PrimaryGenreId = 2,
             GenreIds = [1],
             AuthorIds = [1]
         };
@@ -512,11 +528,11 @@ public class BookServiceTests
 
         // Assert
         Assert.NotNull(searchResult);
-        Assert.Contains(searchResult.Items, item => item.Id == created.Id && item.Price == testPrice);
+        Assert.Contains(searchResult.Items, item => item.Id == created.Id && Math.Abs(item.Price - testPrice) < 0.0001);
     }
 
     [Fact]
-    public async Task SearchBooks_NoMatches_ReturnsEmptyResult()
+    public async Task SearchBooks_ByPublisher_ReturnsMatchingBooks()
     {
         // Arrange
         var provider = _serviceProviderBuilder.Create();
@@ -524,7 +540,7 @@ public class BookServiceTests
 
         var searchDto = new BookSearchDto
         {
-            Title = "NonExistentBookTitle12345",
+            SearchTerm = "HarperCollins"
         };
 
         // Act
@@ -532,7 +548,7 @@ public class BookServiceTests
 
         // Assert
         Assert.NotNull(searchResult);
-        Assert.Empty(searchResult.Items);
+        Assert.NotEmpty(searchResult.Items);
     }
 
     [Fact]
@@ -550,6 +566,7 @@ public class BookServiceTests
             Price = 25.99,
             ImageId = 1,
             PublisherId = 0,
+            PrimaryGenreId = 2,
             GenreIds = [1],
             AuthorIds = [1]
         };
@@ -561,7 +578,6 @@ public class BookServiceTests
         Assert.NotNull(created);
         Assert.True(created.Id > 0, "Created book should have a positive Id");
         Assert.Equal(createDto.Title, created.Title);
-        Assert.Equal(createDto.Description, created.Description);
         Assert.Equal(createDto.Price, created.Price);
         Assert.NotNull(created.Image);
         Assert.Equal(createDto.ImageId, created.Image.Id);
@@ -591,6 +607,7 @@ public class BookServiceTests
             Price = 25.99,
             ImageId = 0,
             PublisherId = 1,
+            PrimaryGenreId = 2,
             GenreIds = [1],
             AuthorIds = [1]
         };
@@ -602,7 +619,6 @@ public class BookServiceTests
         Assert.NotNull(created);
         Assert.True(created.Id > 0, "Created book should have a positive Id");
         Assert.Equal(createDto.Title, created.Title);
-        Assert.Equal(createDto.Description, created.Description);
         Assert.Equal(createDto.Price, created.Price);
 
         // Verify persistence by fetching from service
@@ -629,6 +645,7 @@ public class BookServiceTests
             Price = 25.99,
             ImageId = 9999,
             PublisherId = 9999,
+            PrimaryGenreId = 2,
             GenreIds = [9999],
             AuthorIds = [9999]
         };
@@ -647,40 +664,6 @@ public class BookServiceTests
     }
 
     [Fact]
-    public async Task SearchBooks_ByDescription_ReturnsMatchingBooks()
-    {
-        // Arrange
-        var provider = _serviceProviderBuilder.Create();
-        var bookService = provider.GetRequiredService<IBookService>();
-
-        var createDto = new BookRequestDto
-        {
-            Title = "Search Test Book",
-            ISBN = "978-3-16-148410-0",
-            Description = "Machine Learning Algorithms",
-            Price = 45.99,
-            ImageId = 1,
-            PublisherId = 1,
-            GenreIds = [1],
-            AuthorIds = [1]
-        };
-
-        await bookService.CreateAsync(createDto);
-
-        var searchDto = new BookSearchDto
-        {
-            Description = "Machine Learning"
-        };
-
-        // Act
-        var result = await bookService.SearchBooksAsync(searchDto);
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.Contains(result.Items, b => b.Description != null && b.Description.Contains("Machine Learning"));
-    }
-
-    [Fact]
     public async Task SearchBooks_ByGenre_ReturnsMatchingBooks()
     {
         var provider = _serviceProviderBuilder.Create();
@@ -688,7 +671,7 @@ public class BookServiceTests
 
         var searchDto = new BookSearchDto
         {
-            Genre = "Science"
+            SearchTerm = "Science"
         };
 
         // Act
@@ -696,30 +679,6 @@ public class BookServiceTests
 
         // Assert
         Assert.NotNull(result);
-    }
-
-    [Fact]
-    public async Task SearchBooks_ByPublisher_ExposesBug()
-    {
-        // Arrange
-        var provider = _serviceProviderBuilder.Create();
-        var bookService = provider.GetRequiredService<IBookService>();
-
-        var searchDto = new BookSearchDto
-        {
-            Publisher = "HarperCollins"
-        };
-
-        // Act
-        var result = await bookService.SearchBooksAsync(searchDto);
-
-        Assert.NotNull(result);
-        Assert.All(result.Items, item =>
-        {
-            Assert.NotNull(item.Publisher);
-            // This would fail because publisher name filtering is broken
-            // Assert.Contains("HarperCollins", item.Publisher.Name);
-        });
     }
 
     [Fact]
@@ -736,6 +695,7 @@ public class BookServiceTests
             Price = 20.00,
             ImageId = 1,
             PublisherId = 1,
+            PrimaryGenreId = 2,
             GenreIds = [1],
             AuthorIds = [1]
         };
@@ -749,6 +709,7 @@ public class BookServiceTests
             Price = 30.00,
             ImageId = 1,
             PublisherId = 1,
+            PrimaryGenreId = 2,
             GenreIds = [1, 2],
             AuthorIds = [1, 2]
         };

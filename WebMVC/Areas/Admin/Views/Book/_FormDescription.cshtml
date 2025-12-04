@@ -1,0 +1,7 @@
+﻿@model WebMVC.Areas.Admin.Models.Book.BookCreateEditViewModelWithOptions
+
+<div class="mb-3">
+    <label asp-for="Book.Description" class="form-label">Description</label>
+    <textarea asp-for="Book.Description" class="form-control" rows="3" placeholder="Enter book description"></textarea>
+    <span asp-validation-for="Book.Description" class="text-danger small d-block mt-1"></span>
+</div>

@@ -29,7 +29,8 @@ public static class GenreMapper
             Name = genre.Name,
             CreatedAt = genre.CreatedAt,
             UpdatedAt = genre.UpdatedAt,
-            Books = genre.Books.Select(BookMapper.ToDto).ToList()
+            Books = genre.Books.Select(BookMapper.ToDto).ToList(),
+            PrimaryBooks = genre.PrimaryBooks.Select(BookMapper.ToDto).ToList()
         };
     }
 

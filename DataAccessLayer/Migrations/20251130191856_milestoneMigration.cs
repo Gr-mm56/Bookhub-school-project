@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DataAccessLayer.Migrations
 {
     /// <inheritdoc />
-    public partial class MilestoneMigration : Migration
+    public partial class milestoneMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -202,6 +202,7 @@ namespace DataAccessLayer.Migrations
                     ISBN = table.Column<string>(type: "TEXT", maxLength: 17, nullable: false),
                     Description = table.Column<string>(type: "TEXT", maxLength: 300, nullable: true),
                     Price = table.Column<double>(type: "REAL", nullable: false),
+                    PrimaryGenreId = table.Column<int>(type: "INTEGER", nullable: false),
                     PublisherId = table.Column<int>(type: "INTEGER", nullable: true),
                     ImageId = table.Column<int>(type: "INTEGER", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
@@ -210,6 +211,12 @@ namespace DataAccessLayer.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Books", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Books_Genres_PrimaryGenreId",
+                        column: x => x.PrimaryGenreId,
+                        principalTable: "Genres",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -495,11 +502,11 @@ namespace DataAccessLayer.Migrations
                 columns: new[] { "Id", "CreatedAt", "Name", "ProfilePhotoId", "Surname", "UpdatedAt" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Wellington", 6, "Kuphal", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 2, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Malcolm", 2, "Russel", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 3, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Kadin", 5, "VonRueden", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 4, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Florence", 2, "Murray", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 5, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Melyna", 5, "Gleason", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) }
+                    { 1, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Wellington", 10, "Kuphal", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { 2, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Malcolm", 9, "Russel", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { 3, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Kadin", 10, "VonRueden", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { 4, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Florence", 9, "Murray", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { 5, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Melyna", 10, "Gleason", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) }
                 });
 
             migrationBuilder.InsertData(
@@ -521,41 +528,41 @@ namespace DataAccessLayer.Migrations
                 columns: new[] { "Id", "Address", "CreatedAt", "Name", "ProfilePhotoId", "UpdatedAt" },
                 values: new object[,]
                 {
-                    { 1, "36272 VonRueden Rapid, Murphyton, French Southern Territories", new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Kuphal, Rempel and O'Reilly", 4, new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 2, "24768 Corkery Lodge, South Emmatown, Solomon Islands", new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Kohler Group", 4, new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 3, "0161 Alison Mountain, Windlerton, South Georgia and the South Sandwich Islands", new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Bradtke - Sauer", 1, new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) }
+                    { 1, "36272 VonRueden Rapid, Murphyton, French Southern Territories", new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Kuphal, Rempel and O'Reilly", 12, new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { 2, "24768 Corkery Lodge, South Emmatown, Solomon Islands", new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Kohler Group", 12, new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { 3, "0161 Alison Mountain, Windlerton, South Georgia and the South Sandwich Islands", new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Bradtke - Sauer", 11, new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) }
                 });
 
             migrationBuilder.InsertData(
                 table: "Books",
-                columns: new[] { "Id", "CreatedAt", "Description", "ISBN", "ImageId", "Price", "PublisherId", "Title", "UpdatedAt" },
+                columns: new[] { "Id", "CreatedAt", "Description", "ISBN", "ImageId", "Price", "PrimaryGenreId", "PublisherId", "Title", "UpdatedAt" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Et minima facilis ratione praesentium tempora dignissimos placeat et voluptas. Iusto voluptatem sit illum. Et aut dolor voluptatem harum architecto eaque provident veritatis aspernatur. Quia dolorem sapiente dicta eum veritatis illo magnam.", "666-1-6362726-71-3", 2, 45.380000000000003, 1, "Dolores qui nam assumenda labore sed sint.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 2, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Fugit dicta ea deserunt. Et nam facere voluptate quis. Voluptas quis voluptates doloribus quia.", "666-1-7929691-67-3", 2, 11.52, 2, "Omnis nemo voluptatum recusandae qui.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 3, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Aut veritatis aperiam deserunt. Soluta saepe unde voluptatem cumque rem eos corporis deserunt dolorem. Culpa ullam quia et consequatur ut reprehenderit laudantium voluptates blanditiis. Soluta neque consequatur qui et omnis. Est minima eius earum rerum rem dicta quo.", "666-1-2622497-02-9", 2, 29.260000000000002, 2, "Nisi magnam provident repellendus sequi reiciendis.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 4, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Similique aspernatur libero ut perspiciatis. Rerum velit minus provident exercitationem officiis qui facilis enim. Voluptas molestiae hic cum non eligendi nam et rerum. Est quaerat odio nostrum debitis voluptas dolores.", "666-1-2202765-64-1", 2, 14.43, 1, "Quidem et quia aliquam numquam voluptas.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 5, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Officiis iusto labore. Recusandae consequuntur vel aut odio expedita delectus quod et reprehenderit. Saepe illo porro molestias doloribus eum numquam aut. Beatae omnis quisquam pariatur fugiat iusto explicabo. Iste veniam vel aut nihil ipsam est ipsam nemo at.", "666-1-8459889-46-8", 1, 40.229999999999997, 2, "Rerum enim impedit odio nobis.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 6, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Sit eius perferendis. Consectetur quod earum consectetur nobis non quia consectetur. Tenetur velit amet quia quia quidem accusantium. Ut fuga quisquam assumenda doloribus iusto animi et omnis porro. Nisi eos earum.", "666-1-9566378-14-5", 1, 11.26, 2, "Consequuntur ut provident tempore quo et et.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 7, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Aut numquam mollitia nostrum eos velit corporis. Veniam voluptates vel eos nulla. Aut quis nam magni animi in ut incidunt. Et labore et.", "666-1-1791411-97-2", 4, 21.02, 2, "Occaecati veritatis.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 8, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Iste tempora esse temporibus quidem aut. Aspernatur illo incidunt suscipit. Et mollitia quos fugit laudantium eaque ut veniam facere. Rerum minima illum sed omnis architecto. Saepe suscipit laudantium mollitia. Magni adipisci veniam aut quia.", "666-1-5213774-93-3", 4, 18.25, 2, "Est quam optio tempore consequatur facere qui.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 9, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Aut architecto voluptates neque eveniet officiis adipisci. Laudantium exercitationem fugiat culpa. Aspernatur nihil voluptatem ut asperiores nostrum pariatur fugiat molestiae. Doloribus aut beatae aperiam sapiente rerum sit. Ratione voluptates et est quas cupiditate aut inventore fugit est. Iure sed commodi ullam.", "666-1-2851824-67-1", 2, 17.469999999999999, 1, "Ipsum tenetur maiores ut.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 10, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Autem quaerat itaque quia. Eligendi ut quis. Quo est optio aperiam ut dolorem quidem. Temporibus ut mollitia consequatur id.", "666-1-4918824-43-6", 4, 35.149999999999999, 1, "Ea pariatur veniam nulla quia nobis quia.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 11, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Ullam odio magni qui. Voluptatem veniam maxime vel. Labore qui consectetur consectetur ea cumque eveniet provident quae animi. Earum vitae molestias est ullam fuga in. Harum maxime reiciendis a debitis.\n\nAut dolores ut eum expedita vitae. Placeat itaque veniam ut nihil. Rerum assumenda sint hic. Qui ex ea.", "666-1-8661076-53-6", 3, 7.0999999999999996, 1, "Perspiciatis facilis itaque.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 12, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Sed iure est eos tempora doloremque et exercitationem hic. Quos nobis qui. Hic et omnis laborum cum sint tempora ut. Illo aut sit quis.\n\nQuo accusantium ab. Eos iusto quia. Rerum voluptates incidunt nulla sit recusandae recusandae aspernatur beatae.", "666-1-3895716-94-6", 3, 19.989999999999998, 2, "Quidem impedit qui placeat eos voluptatem assumenda.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 13, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Eum libero cumque ducimus libero quia id voluptatem. Non animi autem explicabo quis dolorum nemo sequi nesciunt id. Dolores sed doloremque perferendis corrupti perferendis nulla optio et. Dignissimos quam animi quis alias nihil sit dignissimos.", "666-1-1588781-20-4", 1, 33.649999999999999, 1, "Fugiat sunt quisquam saepe necessitatibus provident distinctio.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 14, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Est a expedita ea et ea exercitationem corrupti. Est est veniam velit. Quo itaque minima porro numquam. Aut porro quia veniam a vitae sit. Sapiente quo et debitis autem.", "666-1-9237867-24-7", 4, 29.140000000000001, 1, "Et facilis.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 15, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Sed ut quo. Ea dolorem quia molestiae cupiditate. Impedit pariatur et esse tenetur tempora. Ipsam error est non nam.\n\nAd ex distinctio placeat quibusdam quam veniam. Animi nemo et commodi. Consectetur error quia reprehenderit quam repudiandae expedita aut. Optio alias deleniti aliquid. Fugit aliquam et vero.", "666-1-3415064-45-5", 4, 24.300000000000001, 1, "Error delectus voluptatem error.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 16, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Temporibus placeat rerum est fugit. Distinctio ut dignissimos magnam ipsum maiores ut qui. Asperiores nisi sunt sint nesciunt.\n\nConsequatur voluptatum esse voluptates aspernatur. Necessitatibus est maiores commodi sit quis et consequuntur nihil. Maiores iure quas nesciunt nobis pariatur aut voluptatum. Ratione et animi incidunt explicabo. Beatae nostrum et itaque. Incidunt sed natus fugiat vel tempore.", "666-1-4111425-15-5", 2, 13.23, 2, "Aspernatur quae neque.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 17, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Vitae similique amet tenetur molestiae repellendus dolorem tempore dolor perferendis. Quia molestias nobis voluptas iste aperiam perspiciatis. Odit nihil deleniti saepe reiciendis consequatur nostrum similique laborum et.\n\nAutem cum aperiam sint. Illo laborum quaerat voluptatem corporis maiores doloremque deserunt autem. Et hic sit rem aliquam.", "666-1-6869496-90-2", 4, 29.469999999999999, 2, "Mollitia eum et similique est aut magni.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 18, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Et quam veniam tempore et iusto qui ullam animi placeat. Dolorum molestiae sit fugiat consequuntur rem et sint repudiandae. Nulla nam consequuntur aut.", "666-1-6291228-68-2", 1, 28.780000000000001, 1, "Sint animi.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 19, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Temporibus sed vero possimus id debitis a. Qui expedita possimus nesciunt similique. Voluptatem fugit deserunt iusto sit eveniet voluptas adipisci. Repellat velit labore et iusto.", "666-1-7298722-01-3", 4, 32.460000000000001, 2, "Nihil dolorem qui a.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 20, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Omnis aperiam temporibus quia sit vel placeat. Quia eos ut et ducimus occaecati corrupti. Nihil exercitationem enim. Quam id harum. Consequatur neque saepe voluptatem repellendus quae sint vero.\n\nCum minus delectus inventore minima totam omnis nihil voluptate et. Non voluptate atque aperiam nisi saepe dolor. Id dicta accusantium in. Ipsum sit atque et. Consequuntur earum quos et cupiditate nulla possimus aspernatur commodi.", "666-1-2549480-54-3", 1, 8.4800000000000004, 2, "Laudantium nulla excepturi.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 21, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Necessitatibus quaerat voluptatibus sit eveniet minima tempore aut consequatur. Rerum ad et non voluptas in nemo quis eligendi eum. Sunt voluptatem architecto. Commodi ut aut debitis.\n\nAdipisci molestiae ad rem possimus eos ut illum. Nisi recusandae architecto. Assumenda consequatur velit et autem non nam laudantium a. Est quibusdam repellat voluptates sit sed nemo accusamus incidunt illo. Ducimus pariatur delectus illo. Sed laboriosam iste.", "666-1-0074241-16-9", 3, 42.659999999999997, 1, "Quo sit sit.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 22, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Repellendus veniam maxime voluptatum cumque sit tempore quia nesciunt incidunt. Quis cum voluptas voluptates voluptatem voluptates natus. Id id ipsa consequatur delectus odio error assumenda reiciendis. Quis esse vel et. Omnis enim saepe error laudantium alias quisquam. Voluptatibus recusandae assumenda inventore doloribus a enim sint similique doloribus.\n\nAliquid quod repudiandae dolor. Eos magnam eligendi. Repellendus vel adipisci. Explicabo omnis quidem nihil. Aspernatur omnis rerum fuga veritatis. Adipisci vel sunt vel nam exercitationem.", "666-1-3113462-22-4", 4, 29.789999999999999, 1, "Sit reprehenderit.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 23, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Modi saepe sed enim est soluta. Officia et error iusto accusantium illum. Iure quo quae eos delectus minima enim illum est accusantium. Facere et ipsam et qui cum harum doloribus et. Sed commodi vel quas magni aut cupiditate.", "666-1-1537081-15-9", 4, 45.359999999999999, 2, "Dicta incidunt consequatur ea.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 24, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Ut sed necessitatibus aut. Sit ea at. Incidunt ea quo qui repellendus. Perferendis quo et cumque et culpa facere error rerum quam. Et quia quam enim ea provident voluptatem. Iste tempore accusamus excepturi sapiente eaque consequatur aut.\n\nCum vel alias in praesentium aut vel unde. Nesciunt qui numquam quidem dolore. Dignissimos ea tempora iusto architecto eum. Occaecati soluta incidunt enim ratione sed ut nam nulla. Labore repudiandae delectus ipsa deserunt numquam quo ipsam.", "666-1-7880231-41-0", 4, 23.469999999999999, 2, "Repellat illo non.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 25, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Tenetur quia facilis id. Rerum reiciendis est minima nisi. Amet sint sed sit aut natus ea omnis necessitatibus.", "666-1-0615654-48-8", 1, 43.68, 2, "Nesciunt magni laboriosam.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) }
+                    { 1, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Et minima facilis ratione praesentium tempora dignissimos placeat et voluptas. Iusto voluptatem sit illum. Et aut dolor voluptatem harum architecto eaque provident veritatis aspernatur. Quia dolorem sapiente dicta eum veritatis illo magnam.", "666-1-6362726-71-3", 6, 45.380000000000003, 8, 2, "Dolores qui nam assumenda labore sed sint.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { 2, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Fugit dicta ea deserunt. Et nam facere voluptate quis. Voluptas quis voluptates doloribus quia.", "666-1-7929691-67-3", 8, 11.52, 4, 2, "Voluptatum recusandae qui.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { 3, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Non aut veritatis aperiam deserunt ut soluta saepe. Voluptatem cumque rem eos corporis deserunt dolorem. Culpa ullam quia et consequatur ut reprehenderit laudantium voluptates blanditiis. Soluta neque consequatur qui et omnis.\n\nMinima eius earum rerum rem dicta quo reprehenderit. Illum quidem et quia aliquam numquam voluptas. Non explicabo sed quod. Sunt soluta ducimus sit non eum quaerat magnam. Aspernatur libero ut perspiciatis est rerum velit.", "666-1-9262249-70-2", null, 45.789999999999999, 3, 2, "Provident repellendus sequi.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { 4, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Voluptatem magnam sed rerum. Impedit odio nobis dolorem deleniti. Et et pariatur molestiae voluptate id at. Iusto culpa eaque officiis iusto labore a recusandae consequuntur.\n\nOdio expedita delectus quod et reprehenderit minus saepe illo porro. Doloribus eum numquam aut cupiditate beatae omnis. Pariatur fugiat iusto explicabo saepe iste veniam vel. Nihil ipsam est.", "666-1-6266496-62-4", 6, 18.170000000000002, 1, 2, "Qui facilis enim voluptas voluptas molestiae hic.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { 5, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Architecto sit eius perferendis harum consectetur quod. Consectetur nobis non quia consectetur officia tenetur velit amet quia. Quidem accusantium delectus.", "666-1-0956637-81-4", null, 28.890000000000001, 8, 2, "Itaque consequuntur ut provident tempore quo et.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { 6, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Qui consequuntur molestiae omnis eius ex. Commodi sed aut. Mollitia nostrum eos velit.\n\nVeniam voluptates vel eos nulla. Aut quis nam magni animi in ut incidunt. Et labore et. Excepturi quo est quam optio tempore consequatur facere qui.", "666-1-0389150-50-1", 6, 38.109999999999999, 4, 1, "Doloribus iusto animi et omnis porro.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { 7, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Temporibus et mollitia quos fugit. Eaque ut veniam facere odio rerum. Illum sed omnis architecto amet.", "666-1-4945247-68-1", null, 9.3499999999999996, 5, 1, "Repellendus qui doloribus enim ut exercitationem.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { 8, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Et harum quisquam fugit minima. Ut occaecati aut architecto. Neque eveniet officiis adipisci eos laudantium exercitationem fugiat culpa et. Nihil voluptatem ut. Nostrum pariatur fugiat molestiae in doloribus aut beatae aperiam sapiente. Sit sint ratione voluptates et est quas cupiditate.", "666-1-1854199-92-8", 6, 27.530000000000001, 8, 1, "Commodi magni adipisci veniam aut.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { 9, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Sequi illum quo incidunt dolores ducimus vel nobis libero non. Velit autem quaerat itaque quia. Eligendi ut quis. Quo est optio aperiam ut dolorem quidem.", "666-1-3233948-28-1", 8, 35.75, 6, 2, "Iure sed.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { 10, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Libero quae asperiores quidem magni. Odio magni qui velit voluptatem. Maxime vel aut labore qui. Consectetur ea cumque eveniet. Quae animi perspiciatis earum vitae molestias est.\n\nIn nostrum harum maxime reiciendis a debitis. Velit aut dolores ut eum. Vitae ullam placeat itaque veniam ut nihil consectetur. Assumenda sint hic eaque qui ex ea dolorum.", "666-1-2256986-61-0", 8, 37.960000000000001, 8, 2, "Id at.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { 11, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Sed iure est eos tempora doloremque et exercitationem hic. Quos nobis qui. Hic et omnis laborum cum sint tempora ut. Illo aut sit quis.\n\nQuo accusantium ab. Eos iusto quia. Rerum voluptates incidunt nulla sit recusandae recusandae aspernatur beatae.", "666-1-3895716-94-6", null, 19.989999999999998, 10, 2, "Placeat eos voluptatem assumenda.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { 12, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Eum libero cumque ducimus libero quia id voluptatem. Non animi autem explicabo quis dolorum nemo sequi nesciunt id. Dolores sed doloremque perferendis corrupti perferendis nulla optio et. Dignissimos quam animi quis alias nihil sit dignissimos.", "666-1-1588781-20-4", 6, 33.649999999999999, 10, 1, "Sunt quisquam saepe necessitatibus provident distinctio.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { 13, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Ea exercitationem corrupti dolor est est veniam velit quis quo. Minima porro numquam natus aut porro quia veniam a vitae. Quis sapiente quo et. Autem dolor sit corrupti error delectus voluptatem error ut odio.\n\nConsequatur id quam iusto in ut molestiae. Minima quasi sed ut quo autem ea dolorem quia. Cupiditate laudantium impedit pariatur et esse tenetur tempora quis ipsam.", "666-1-6724754-66-6", 7, 48.149999999999999, 7, 1, "Molestiae exercitationem consequatur minus rerum.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { 14, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Repudiandae expedita aut nesciunt optio alias. Aliquid dolorem fugit aliquam et vero. Quis nemo aspernatur quae neque nihil magni aut dolor. Dolore animi ipsum deserunt in sit.", "666-1-7422532-36-1", null, 30.34, 3, 1, "Provident ad ex distinctio placeat.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { 15, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Nostrum consequatur voluptatum esse voluptates aspernatur eum necessitatibus est maiores. Sit quis et consequuntur nihil. Maiores iure quas nesciunt nobis pariatur aut voluptatum.\n\nEt animi incidunt explicabo. Beatae nostrum et itaque. Incidunt sed natus fugiat vel tempore. Aut ut mollitia eum et.", "666-1-2421994-39-3", 8, 9.0600000000000005, 2, 1, "Placeat rerum est fugit distinctio distinctio.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { 16, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Dolorem tempore dolor perferendis qui quia molestias nobis voluptas. Aperiam perspiciatis doloribus odit nihil deleniti saepe. Consequatur nostrum similique laborum et sunt consequuntur autem cum aperiam. Vel illo laborum quaerat voluptatem corporis maiores.\n\nAutem quaerat et hic sit rem aliquam. Ut accusantium sint animi cum non hic dolores numquam numquam. Eligendi rerum non non rem ipsum tenetur et quam.", "666-1-6902581-90-5", 8, 13.48, 5, 2, "Consequatur est sapiente laudantium earum.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { 17, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Dicta sed laboriosam. Dolorem qui a omnis incidunt ut quo porro. Modi beatae ratione vel.\n\nMinima deserunt temporibus sed. Possimus id debitis a aliquam qui expedita possimus nesciunt. Porro voluptatem fugit deserunt iusto sit eveniet. Adipisci commodi repellat velit labore et iusto voluptas facere. Laudantium nulla excepturi exercitationem.", "666-1-6438146-59-1", 7, 43.009999999999998, 5, 2, "Ullam animi placeat vero.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { 18, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Occaecati corrupti et nihil exercitationem enim. Quam id harum. Consequatur neque saepe voluptatem repellendus quae sint vero. Molestiae cum minus delectus inventore minima totam.", "666-1-5707113-75-1", null, 43.810000000000002, 5, 2, "Alias cupiditate velit ipsam beatae iste nam.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { 19, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Consequuntur earum quos et cupiditate nulla possimus aspernatur commodi. Nulla ullam quo. Sit ipsa beatae possimus velit. Dignissimos sequi eos laborum aut.", "666-1-3872600-41-1", null, 5.8700000000000001, 4, 2, "Animi non voluptate atque aperiam.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { 20, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Aspernatur sunt voluptatem architecto ratione commodi. Aut debitis hic nobis adipisci molestiae ad rem possimus eos. Illum illo nisi recusandae architecto officiis assumenda consequatur velit et. Non nam laudantium a hic est. Repellat voluptates sit sed nemo accusamus incidunt illo velit.", "666-1-6108622-57-3", 8, 18.77, 1, 2, "Necessitatibus quaerat voluptatibus sit eveniet minima.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { 21, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Ut deleniti omnis cum. Tenetur repellendus veniam maxime voluptatum cumque sit tempore quia. Incidunt sunt quis cum. Voluptates voluptatem voluptates natus omnis.\n\nIpsa consequatur delectus odio error assumenda reiciendis. Quis esse vel et. Omnis enim saepe error laudantium alias quisquam. Voluptatibus recusandae assumenda inventore doloribus a enim sint similique doloribus. Nesciunt aliquid quod repudiandae dolor aperiam eos magnam eligendi aut.", "666-1-5601033-11-3", null, 24.32, 2, 2, "Sed laboriosam.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { 22, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Exercitationem et molestiae atque dicta incidunt consequatur ea. Non quia facere. Accusamus adipisci quia. Non eveniet dolor cum dolores modi saepe. Enim est soluta. Officia et error iusto accusantium illum.\n\nQuo quae eos delectus minima enim. Est accusantium eos facere et ipsam et qui cum. Doloribus et culpa sed commodi vel quas magni. Cupiditate officiis possimus ipsam repellat illo non minus et rerum. Numquam in amet. Sed sunt velit aut vel dolorem.", "666-1-6430786-04-1", null, 22.149999999999999, 9, 1, "Explicabo omnis.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { 23, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Quam deserunt et quia quam enim ea provident. Porro iste tempore accusamus excepturi. Eaque consequatur aut sint et cum vel alias in praesentium. Vel unde enim. Qui numquam quidem dolore.\n\nEa tempora iusto architecto eum dolorem. Soluta incidunt enim ratione sed ut nam. Cumque labore repudiandae delectus ipsa deserunt numquam quo ipsam. Vero voluptatem nesciunt magni laboriosam aperiam fuga consequuntur sint quidem.", "666-1-3837907-87-6", 7, 31.120000000000001, 9, 1, "Eaque sit ea at ut incidunt.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { 24, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Ea omnis necessitatibus labore occaecati architecto eum. Ut magnam quibusdam. Fugit sit enim. Cupiditate ea porro. Expedita nulla et ea. Nisi repellendus nam ducimus et.", "666-1-6389723-81-5", 6, 10.31, 3, 2, "Eos voluptatem ipsum consectetur tenetur quia facilis.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { 25, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), "Omnis et excepturi nemo provident molestiae. Nostrum quisquam qui velit. Ut labore dolorem soluta quas omnis sunt molestiae et tenetur. Quibusdam laborum dolor. Dolor dolorum dicta corporis architecto sunt quibusdam dicta. Maiores praesentium placeat accusantium quaerat consequatur.\n\nPariatur impedit rerum qui nisi deleniti architecto eum quam eum. Consequatur dolorem porro eligendi aliquid magnam repellat libero harum. Consequuntur aliquid maxime voluptatem odio. Ipsa aut perspiciatis libero consequatur esse sunt hic. Ut minima fugiat qui perferendis et expedita quod hic minima.", "666-1-1250616-11-5", 6, 11.5, 5, 2, "Assumenda minima tenetur iusto.", new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified) }
                 });
 
             migrationBuilder.InsertData(
@@ -752,14 +759,39 @@ namespace DataAccessLayer.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "idx_author_name",
+                table: "Authors",
+                column: "Name");
+
+            migrationBuilder.CreateIndex(
+                name: "idx_author_surname",
+                table: "Authors",
+                column: "Surname");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Authors_ProfilePhotoId",
                 table: "Authors",
                 column: "ProfilePhotoId");
 
             migrationBuilder.CreateIndex(
+                name: "idx_book_price",
+                table: "Books",
+                column: "Price");
+
+            migrationBuilder.CreateIndex(
+                name: "idx_book_title",
+                table: "Books",
+                column: "Title");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Books_ImageId",
                 table: "Books",
                 column: "ImageId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Books_PrimaryGenreId",
+                table: "Books",
+                column: "PrimaryGenreId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Books_PublisherId",
@@ -772,6 +804,11 @@ namespace DataAccessLayer.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "idx_genre_name",
+                table: "Genres",
+                column: "Name");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Images_AuthorId",
                 table: "Images",
                 column: "AuthorId");
@@ -780,6 +817,11 @@ namespace DataAccessLayer.Migrations
                 name: "IX_Images_PublisherId",
                 table: "Images",
                 column: "PublisherId");
+
+            migrationBuilder.CreateIndex(
+                name: "idx_publisher_name",
+                table: "Publishers",
+                column: "Name");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Publishers_ProfilePhotoId",
@@ -958,13 +1000,13 @@ namespace DataAccessLayer.Migrations
                 name: "Carts");
 
             migrationBuilder.DropTable(
-                name: "Genres");
-
-            migrationBuilder.DropTable(
                 name: "Books");
 
             migrationBuilder.DropTable(
                 name: "Users");
+
+            migrationBuilder.DropTable(
+                name: "Genres");
 
             migrationBuilder.DropTable(
                 name: "Images");

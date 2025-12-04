@@ -30,6 +30,7 @@ public class BookService : BaseService<BookHubDbContext>, IBookService
         var book = await Context.Books
             .AsNoTracking()
             .Include(b => b.Image)
+            .Include(b => b.PrimaryGenre)
             .Include(b => b.Authors)
             .Include(b => b.Genres)
             .Include(b => b.Publisher)
@@ -46,31 +47,23 @@ public class BookService : BaseService<BookHubDbContext>, IBookService
             .Include(b => b.Authors)
             .Include(b => b.Genres)
             .Include(b => b.Publisher)
+            .Include(b => b.PrimaryGenre)
             .AsQueryable();
 
-        if (!string.IsNullOrEmpty(searchDto.Title))
+        if (!string.IsNullOrEmpty(searchDto.SearchTerm))
         {
-            query = query.Where(b => b.Title.Contains(searchDto.Title.Trim()));
-        }
-
-        if (!string.IsNullOrEmpty(searchDto.Description))
-        {
-            query = query.Where(b => b.Description != null && b.Description.Contains(searchDto.Description.Trim()));
-        }
-
-        if (!string.IsNullOrEmpty(searchDto.Author))
-        {
-            query = query.Where(b => b.Authors.Any(a => a.Name.Contains(searchDto.Author.Trim())));
-        }
-
-        if (!string.IsNullOrEmpty(searchDto.Genre))
-        {
-            query = query.Where(b => b.Genres.Any(g => g.Name.Contains(searchDto.Genre.Trim())));
-        }
-
-        if (!string.IsNullOrEmpty(searchDto.Publisher))
-        {
-            query = query.Where(b => b.Publisher != null);
+            var searchTerm = searchDto.SearchTerm.Trim().ToLower();
+            
+            query = query.Where(b => 
+                b.Title.ToLower().Contains(searchTerm) ||
+                // Search in author names (first or last name)
+                b.Authors.Any(a => (a.Name.ToLower() + " " + a.Surname.ToLower()).Contains(searchTerm) ||
+                                    a.Name.ToLower().Contains(searchTerm) ||
+                                    a.Surname.ToLower().Contains(searchTerm)) ||
+                (b.Publisher != null && b.Publisher.Name.ToLower().Contains(searchTerm)) ||
+                (b.PrimaryGenre != null && b.PrimaryGenre.Name.ToLower().Contains(searchTerm)) ||
+                b.Genres.Any(g => g.Name.ToLower().Contains(searchTerm))
+            );
         }
 
         if (searchDto.Price.HasValue)
@@ -89,7 +82,15 @@ public class BookService : BaseService<BookHubDbContext>, IBookService
             throw new ArgumentException("You must provide at least one genre and author");
         }
         await ValidateRelatedEntitiesExistAsync(requestDto);
+        if (requestDto.PublisherId == 0)
+        {
+            requestDto.PublisherId = null;
+        }
 
+        if (requestDto.ImageId == 0)
+        {
+            requestDto.ImageId = null;
+        }
         var book = BookMapper.CreateEntity(requestDto);
 
         await AssociateRelatedEntitiesAsync(book, requestDto);
@@ -120,6 +121,11 @@ public class BookService : BaseService<BookHubDbContext>, IBookService
         {
             return null;
         }
+/*
+        if (requestDto.PublisherId == 0)
+        {
+            requestDto.PublisherId = null;
+        }*/
 
         await ValidateRelatedEntitiesExistAsync(requestDto);
 
@@ -180,6 +186,24 @@ public class BookService : BaseService<BookHubDbContext>, IBookService
                 errors.Add($"Invalid Publisher ID: {requestDto.PublisherId}");
             }
         }
+      /*  else if (requestDto.PublisherId < 0)
+        {
+            errors.Add($"Publisher ID must be provided and greater than or equal to 0");
+        }*/
+        if (requestDto.PrimaryGenreId > 0)
+        {
+            var primaryGenreExists = await Context.Genres
+                .AnyAsync(g => g.Id == requestDto.PrimaryGenreId);
+
+            if (!primaryGenreExists)
+            {
+                errors.Add($"Invalid Primary Genre ID: {requestDto.PrimaryGenreId}");
+            }
+        }
+        else
+        {
+            errors.Add($"Primary Genre ID must be provided and greater than 0");
+        }
 
         if (requestDto.ImageId > 0)
         {
@@ -189,6 +213,11 @@ public class BookService : BaseService<BookHubDbContext>, IBookService
                 errors.Add($"Invalid Image ID: {requestDto.ImageId}");
             }
         }
+      /*  else if (requestDto.ImageId < 0)
+        {
+            errors.Add($"Image ID must be provided and greater than or equal to 0");
+
+        }*/
 
         if (errors.Count != 0)
         {

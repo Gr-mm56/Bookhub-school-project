@@ -7,9 +7,11 @@ namespace BusinessLayer.Models.Book.Responses;
 
 public class BookDetailDto : BookDto
 {
-    public string ISBN { get; set; }
-    public List<GenreDto> Genres { get; set; }
-    public List<AuthorDto> Authors { get; set; }
+    public string? Description { get; set; }
+    public required string ISBN { get; set; }
+    public GenreDto? PrimaryGenre { get; set; }
+    public List<GenreDto> Genres { get; set; } = [];
+    public List<AuthorDto> Authors { get; set; } = [];
     public PublisherDto? Publisher { get; set; }
-    public List<RatingDto> Ratings { get; set; }
+    public List<RatingDto> Ratings { get; set; } = [];
 }

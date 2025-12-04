@@ -1,10 +1,9 @@
-using BusinessLayer.Services.Implementations;
-using BusinessLayer.Services.Interfaces;
 using DataAccessLayer.Context;
 using DataAccessLayer.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Middleware;
+using WebMVC.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,16 +15,8 @@ builder.Services.AddDbContext<BookHubDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
-builder.Services.AddScoped<IRatingService, RatingService>();
-builder.Services.AddScoped<IGenreService, GenreService>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<ICartService, CartService>();
-builder.Services.AddScoped<IPurchaseItemService, PurchaseItemService>();
-builder.Services.AddScoped<IWishlistItemService, WishlistItemService>();
-builder.Services.AddScoped<IBookService, BookService>();
-builder.Services.AddScoped<IAuthorService, AuthorService>();
-builder.Services.AddScoped<IPublisherService, PublisherService>();
-builder.Services.AddScoped<IImageService, ImageService>();
+builder.Services.AddBusinessServices();
+builder.Services.AddUploadService(builder.Configuration, builder.Environment);
 
 // Disclaimer: Identity code was copied from Seminar
 // Add Identity
@@ -88,6 +79,8 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+app.ConfigureStaticFileServing(app.Configuration, app.Environment);
 
 app.UseMiddleware<RequestLoggingMiddleware>();
 

@@ -1,0 +1,74 @@
+﻿@{
+    var formId = ViewBag.FormId ?? "bookForm";
+    var submitBtnId = ViewBag.SubmitBtnId ?? "submitBtn";
+}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('@formId');
+        const submitBtn = document.getElementById('@submitBtnId');
+
+        // Update submit button based on form validity
+        function updateSubmitButtonState() {
+            const titleInput = form.querySelector('input[name="Book.Title"]');
+            const isbnInput = form.querySelector('input[name="Book.ISBN"]');
+            const priceInput = form.querySelector('input[name="Book.Price"]');
+            const primaryGenreSelect = form.querySelector('select[name="Book.PrimaryGenreId"]');
+            const genreMultiselect = form.querySelector('select[name="Book.GenreIds"]');
+            const authorMultiselect = form.querySelector('select[name="Book.AuthorIds"]');
+            
+            let isValid = true;
+
+            if (!titleInput.value.trim()) {
+                isValid = false;
+            }
+
+            if (!isbnInput.value.trim()) {
+                isValid = false;
+            }
+
+            const price = parseFloat(priceInput.value);
+            if (!priceInput.value || isNaN(price) || price <= 0) {
+                isValid = false;
+            }
+
+            if (primaryGenreSelect.value === '') {
+                isValid = false;
+            }
+
+            if (genreMultiselect.selectedOptions.length === 0) {
+                isValid = false;
+            }
+
+            if (authorMultiselect.selectedOptions.length === 0) {
+                isValid = false;
+            }
+
+            submitBtn.disabled = !isValid;
+        }
+
+        form.addEventListener('change', updateSubmitButtonState);
+        form.addEventListener('input', updateSubmitButtonState);
+        form.addEventListener('keyup', updateSubmitButtonState);
+
+        form.addEventListener('submit', function() {
+            const genreMultiselect = form.querySelector('select[name="Book.GenreIds"]');
+            const authorMultiselect = form.querySelector('select[name="Book.AuthorIds"]');
+            
+            Array.from(genreMultiselect.options).forEach(option => {
+                if (Array.from(genreMultiselect.selectedOptions).includes(option)) {
+                    option.selected = true;
+                }
+            });
+            
+            Array.from(authorMultiselect.options).forEach(option => {
+                if (Array.from(authorMultiselect.selectedOptions).includes(option)) {
+                    option.selected = true;
+                }
+            });
+        });
+
+        updateSubmitButtonState();
+    });
+</script>
+

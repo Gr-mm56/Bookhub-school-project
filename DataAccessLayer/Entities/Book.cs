@@ -21,12 +21,18 @@ public class Book : BaseEntity
     [Required]
     [Range(0.0, double.MaxValue, ErrorMessage = "The Price must be non-negative.")]
     public required double Price { get; set; }
+    
+    [Required]
+    public required int PrimaryGenreId { get; set; }
+    
+    [ForeignKey(nameof(PrimaryGenreId))]
+    public virtual Genre? PrimaryGenre { get; set; }
 
-    public virtual ICollection<Genre> Genres { get; set; }
+    public virtual ICollection<Genre> Genres { get; set; } = new List<Genre>();
 
-    public virtual ICollection<Rating>? Ratings { get; set; }
+    public virtual ICollection<Rating> Ratings { get; set; } = new List<Rating>();
 
-    public virtual ICollection<Author> Authors { get; set; }
+    public virtual ICollection<Author> Authors { get; set; } = new List<Author>();
 
     [ForeignKey(nameof(PublisherId))]
     public virtual Publisher? Publisher { get; set; }

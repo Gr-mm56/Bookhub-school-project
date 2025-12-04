@@ -88,7 +88,7 @@ public class AccountController : Controller
                 lockoutOnFailure: false);
         if (result.Succeeded)
         {
-            return RedirectToAction(nameof(LoginSuccess), nameof(AccountController).Replace("Controller", ""));
+            return RedirectToAction(nameof(Index), nameof(HomeController).Replace("Controller", ""));
         }
 
         ModelState.AddModelError(string.Empty, "Invalid login attempt.");

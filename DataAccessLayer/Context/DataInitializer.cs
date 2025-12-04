@@ -72,8 +72,9 @@ public static class DataInitializer
             .RuleFor(b => b.ISBN, f => f.Random.ReplaceNumbers("666-1-#######-##-#"))
             .RuleFor(b => b.Price, f => Math.Round(f.Random.Double(5, 50), 2))
             .RuleFor(b => b.Description, f => f.Lorem.Paragraphs(1, 2))
-            .RuleFor(b => b.ImageId, f => f.Random.Number(1, 4))
+            .RuleFor(b => b.ImageId, f => f.Random.Bool(0.7f) ? f.Random.Number(6, 8) : null)
             .RuleFor(b => b.PublisherId, f => f.Random.Number(1, 2))
+            .RuleFor(b => b.PrimaryGenreId, f => f.Random.Number(1, 10))
             .Generate(25);
     }
 
@@ -221,7 +222,7 @@ public static class DataInitializer
             .RuleFor(a => a.Id, _ => index++)
             .RuleFor(a => a.Name, f => f.Name.FirstName())
             .RuleFor(a => a.Surname, f => f.Name.LastName())
-            .RuleFor(a => a.ProfilePhotoId, f => f.Random.Number(1, 7))
+            .RuleFor(a => a.ProfilePhotoId, f => f.Random.Number(9, 10))
             .Generate(5);
     }
 
@@ -232,7 +233,7 @@ public static class DataInitializer
             .RuleFor(p => p.Id, _ => index++)
             .RuleFor(p => p.Name, f => f.Company.CompanyName())
             .RuleFor(p => p.Address, f => f.Address.FullAddress())
-            .RuleFor(p => p.ProfilePhotoId, f => f.Random.Number(1, 4))
+            .RuleFor(p => p.ProfilePhotoId, f => f.Random.Number(11, 12))
             .Generate(3);
     }
 

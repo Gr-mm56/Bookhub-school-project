@@ -18,12 +18,15 @@ public class BookRequestDto
     [Required]
     [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than 0")]
     public required double Price { get; set; }
+    
+    [Required]
+    public required int PrimaryGenreId { get; set; }
 
-    public int ImageId { get; set; }
+    public int? ImageId { get; set; }
 
-    public int PublisherId { get; set; }
+    public int? PublisherId { get; set; }
 
-    public List<int> GenreIds { get; set; } = new List<int>();
+    public List<int> GenreIds { get; set; } = [];
 
-    public List<int> AuthorIds { get; set; } = new List<int>();
+    public List<int> AuthorIds { get; set; } = [];
 }
