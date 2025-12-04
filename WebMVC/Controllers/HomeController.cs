@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using BusinessLayer.Models.Book.Requests;
 using BusinessLayer.Services.Interfaces;
 using DataAccessLayer.Entities;
 using Microsoft.AspNetCore.Identity;
@@ -13,47 +12,49 @@ namespace WebMVC.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly ISearchFacade _searchFacade;
         private readonly IBookService _bookService;
         private readonly SignInManager<LocalIdentityUser> _signInManager;
 
         public HomeController(
             ILogger<HomeController> logger, 
+            ISearchFacade searchFacade,
             IBookService bookService,
             SignInManager<LocalIdentityUser> signInManager)
         {
             _logger = logger;
+            _searchFacade = searchFacade;
             _bookService = bookService;
             _signInManager = signInManager;
         }
 
-        public async Task<IActionResult> Index(string? searchTerm = null, int pageNumber = 1, int pageSize = 12)
+        public async Task<IActionResult> Index(
+            string? searchTerm = null, 
+            int bookPageNumber = 1, 
+            int authorPageNumber = 1, 
+            int publisherPageNumber = 1)
         {
             try
             {
-                if (pageNumber < 1) pageNumber = 1;
-                if (pageSize is < 1 or > 100) pageSize = 12;
+                var searchResultDto = await _searchFacade.SearchAsync(
+                    searchTerm,
+                    bookPageNumber,
+                    authorPageNumber,
+                    publisherPageNumber);
 
-                var offset = (pageNumber - 1) * pageSize;
-
-                var searchDto = new BookSearchDto
-                {
-                    Limit = pageSize,
-                    Offset = offset,
-                    SearchTerm = searchTerm
-                };
-
-                var result = await _bookService.SearchBooksAsync(searchDto);
-
-                var bookCards = BookMapper.ToBookCardViewModels(result.Items);
+                var bookCards = BookMapper.ToBookCardViewModels(searchResultDto.Books);
+                var authorCards = BookMapper.ToAuthorCardViewModels(searchResultDto.Authors);
+                var publisherCards = BookMapper.ToPublisherCardViewModels(searchResultDto.Publishers);
 
                 var viewModel = new HomePageViewModel
                 {
                     Books = bookCards,
+                    Authors = authorCards,
+                    Publishers = publisherCards,
                     SearchQuery = searchTerm,
-                    PageNumber = pageNumber,
-                    PageSize = pageSize,
-                    TotalCount = result.Total,
-                    TotalPages = (int)Math.Ceiling((double)result.Total / pageSize),
+                    BookPagination = searchResultDto.BookPagination,
+                    AuthorPagination = searchResultDto.AuthorPagination,
+                    PublisherPagination = searchResultDto.PublisherPagination,
                     IsSignedIn = _signInManager.IsSignedIn(User)
                 };
 
@@ -61,12 +62,10 @@ namespace WebMVC.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error loading books for home page");
+                _logger.LogError(ex, "Error loading home page");
                 return View(new HomePageViewModel 
                 { 
                     SearchQuery = searchTerm,
-                    PageNumber = pageNumber,
-                    PageSize = pageSize,
                     IsSignedIn = _signInManager.IsSignedIn(User)
                 });
             }

@@ -1,4 +1,6 @@
-﻿using BusinessLayer.Models.Book.Responses;
+﻿using BusinessLayer.Models.Author.Responses;
+using BusinessLayer.Models.Book.Responses;
+using BusinessLayer.Models.Publisher.Responses;
 using WebMVC.Models;
 
 namespace WebMVC.Mappers
@@ -67,6 +69,39 @@ namespace WebMVC.Mappers
                     CreatedAt = r.CreatedAt 
                 }).ToList()
             };
+        }
+
+        public static AuthorCardViewModel ToAuthorCardViewModel(AuthorBooksDto authorDto)
+        {
+            return new AuthorCardViewModel
+            {
+                Id = authorDto.Id,
+                Name = authorDto.Name,
+                Surname = authorDto.Surname,
+                ProfilePhotoUrl = authorDto.ProfilePhoto?.FileUrl,
+                BookCount = authorDto.Books?.Count ?? 0
+            };
+        }
+
+        public static List<AuthorCardViewModel> ToAuthorCardViewModels(IEnumerable<AuthorBooksDto> authorDtos)
+        {
+            return authorDtos.Select(ToAuthorCardViewModel).ToList();
+        }
+
+        public static PublisherCardViewModel ToPublisherCardViewModel(PublisherBooksDto publisherDto)
+        {
+            return new PublisherCardViewModel
+            {
+                Id = publisherDto.Id,
+                Name = publisherDto.Name,
+                ProfilePhotoUrl = publisherDto.ProfilePhoto?.FileUrl,
+                BookCount = publisherDto.Books?.Count ?? 0
+            };
+        }
+
+        public static List<PublisherCardViewModel> ToPublisherCardViewModels(IEnumerable<PublisherBooksDto> publisherDtos)
+        {
+            return publisherDtos.Select(ToPublisherCardViewModel).ToList();
         }
     }
 }
