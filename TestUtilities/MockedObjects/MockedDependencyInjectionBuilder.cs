@@ -44,6 +44,7 @@ public class MockedDependencyInjectionBuilder
     public MockedDependencyInjectionBuilder AddServices()
     {
         _serviceCollection = _serviceCollection
+            .AddMemoryCache()
             .AddScoped<IRatingService, RatingService>()
             .AddScoped<IGenreService, GenreService>()
             .AddScoped<IUserService, UserService>()
