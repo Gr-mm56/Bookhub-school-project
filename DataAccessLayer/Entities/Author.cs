@@ -18,5 +18,5 @@ public class Author : BaseEntity
 
     public int? ProfilePhotoId { get; set; }
 
-    public virtual ICollection<Book> Books { get; set; }
+    public virtual ICollection<Book> Books { get; set; } = new List<Book>();
 }

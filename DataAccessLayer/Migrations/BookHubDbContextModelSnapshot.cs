@@ -25,6 +25,7 @@ namespace DataAccessLayer.Migrations
 
                     b.Property<string>("Action")
                         .IsRequired()
+                        .HasMaxLength(500)
                         .HasColumnType("TEXT");
 
                     b.Property<int>("EditCount")
@@ -35,10 +36,12 @@ namespace DataAccessLayer.Migrations
 
                     b.Property<string>("EntityName")
                         .IsRequired()
+                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ModificationDetails")
                         .IsRequired()
+                        .HasMaxLength(2000)
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("ModifiedAt")
@@ -46,6 +49,7 @@ namespace DataAccessLayer.Migrations
 
                     b.Property<string>("Username")
                         .IsRequired()
+                        .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -760,6 +764,7 @@ namespace DataAccessLayer.Migrations
 
                     b.Property<string>("FileUrl")
                         .IsRequired()
+                        .HasMaxLength(300)
                         .HasColumnType("TEXT");
 
                     b.Property<int?>("PublisherId")
