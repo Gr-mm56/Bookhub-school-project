@@ -25,5 +25,5 @@ public class Cart : BaseEntity
     public virtual ICollection<PurchaseItem>? PurchaseItems { get; set; }
 
     // 0 - pending, 1 - completed
-    public bool PaymentStatus { get; set; } = false;
+    public int PaymentStatus { get; set; } = 0;
 }

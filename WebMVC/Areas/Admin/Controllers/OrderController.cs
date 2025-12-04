@@ -50,7 +50,7 @@ public class OrderController : AdminController
         {
             TotalValue = 0,
             OrderDate = DateTime.Now,
-            PaymentStatus = false,
+            PaymentStatus = 0,
             BookIds = new List<int>(),
         };
 

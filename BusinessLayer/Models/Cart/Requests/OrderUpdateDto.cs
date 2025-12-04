@@ -16,5 +16,5 @@ public class OrderUpdateDto
     public List<int> BookIds = [];
 
     [Required]
-    public bool PaymentStatus { get; set; }
+    public int PaymentStatus { get; set; }
 }

@@ -20,5 +20,5 @@ public class CartDto
 
     public DateTime UpdatedAt { get; set; }
 
-    public bool PaymentStatus { get; set; }
+    public int PaymentStatus { get; set; }
 }

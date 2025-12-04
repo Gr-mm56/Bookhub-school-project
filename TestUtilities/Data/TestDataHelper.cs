@@ -160,7 +160,7 @@ public class TestDataHelper
                 TotalValue = 49.99,
                 OrderId = null,
                 OrderDate = null,
-                PaymentStatus = false,
+                PaymentStatus = 0,
             },
             new Cart
             {
@@ -169,7 +169,7 @@ public class TestDataHelper
                 TotalValue = 0,
                 OrderId = null,
                 OrderDate = null,
-                PaymentStatus = false,
+                PaymentStatus = 0,
             },
             new Cart
             {
@@ -178,7 +178,7 @@ public class TestDataHelper
                 TotalValue = 120.50,
                 OrderId = 1001,
                 OrderDate = seedDate,
-                PaymentStatus = true,
+                PaymentStatus = 1,
             },
             new Cart
             {
@@ -187,7 +187,7 @@ public class TestDataHelper
                 TotalValue = 15.75,
                 OrderId = 1002,
                 OrderDate = seedDate,
-                PaymentStatus = false,
+                PaymentStatus = 0,
             },
             new Cart
             {
@@ -196,7 +196,7 @@ public class TestDataHelper
                 TotalValue = 200.00,
                 OrderId = null,
                 OrderDate = null,
-                PaymentStatus = false,
+                PaymentStatus = 0,
             }
         ];
     }

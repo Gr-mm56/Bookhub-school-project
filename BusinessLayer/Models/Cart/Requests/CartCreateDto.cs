@@ -15,5 +15,5 @@ public class CartCreateDto
     public DateTime? OrderDate { get; set; }
 
     [Required]
-    public bool PaymentStatus { get; set; }
+    public int PaymentStatus { get; set; }
 }

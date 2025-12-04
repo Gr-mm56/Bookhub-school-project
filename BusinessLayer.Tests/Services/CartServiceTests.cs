@@ -22,7 +22,7 @@ public class CartServiceTests
             TotalValue = 25.50,
             OrderId = null,
             OrderDate = null,
-            PaymentStatus = false
+            PaymentStatus = 0
         };
 
         // Act
@@ -55,7 +55,7 @@ public class CartServiceTests
             TotalValue = 30.00,
             OrderId = 54,
             OrderDate = null,
-            PaymentStatus = true
+            PaymentStatus = 1
         };
 
         // Act & Assert
@@ -77,7 +77,7 @@ public class CartServiceTests
             TotalValue = -10.00,
             OrderId = null,
             OrderDate = null,
-            PaymentStatus = false
+            PaymentStatus = 0
         };
 
         // Act & Assert
@@ -99,7 +99,7 @@ public class CartServiceTests
             TotalValue = 20.00,
             OrderId = null,
             OrderDate = null,
-            PaymentStatus = false
+            PaymentStatus = 0
         };
 
         var created = await cartService.CreateAsync(createDto);
@@ -141,7 +141,7 @@ public class CartServiceTests
                 TotalValue = 10.00 + i,
                 OrderId = null,
                 OrderDate = null,
-                PaymentStatus = false
+                PaymentStatus = 0
             };
             await cartService.CreateAsync(createDto);
         }
@@ -168,7 +168,7 @@ public class CartServiceTests
             TotalValue = 20.00,
             OrderId = 1,
             OrderDate = null,
-            PaymentStatus = false
+            PaymentStatus = 0
         };
 
         var created = await cartService.CreateAsync(createDto);
@@ -178,7 +178,7 @@ public class CartServiceTests
             TotalValue = 30.00,
             OrderId = 123,
             OrderDate = DateTime.UtcNow,
-            PaymentStatus = false
+            PaymentStatus = 0
         };
 
         // Act
@@ -204,7 +204,7 @@ public class CartServiceTests
             TotalValue = 20.00,
             OrderId = null,
             OrderDate = null,
-            PaymentStatus = false
+            PaymentStatus = 0
         };
 
         await cartService.CreateAsync(createDto);
@@ -235,7 +235,7 @@ public class CartServiceTests
             TotalValue = 20.00,
             OrderId = null,
             OrderDate = null,
-            PaymentStatus = false
+            PaymentStatus = 0
         };
 
         var created = await cartService.CreateAsync(createDto);
@@ -266,7 +266,7 @@ public class CartServiceTests
             TotalValue = 20.00,
             OrderId = null,
             OrderDate = null,
-            PaymentStatus = false
+            PaymentStatus = 0
         };
 
         var created = await cartService.CreateAsync(createDto);

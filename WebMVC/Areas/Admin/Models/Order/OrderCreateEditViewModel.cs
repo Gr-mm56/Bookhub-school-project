@@ -15,7 +15,7 @@ public class OrderCreateEditViewModel
     public DateTime? OrderDate { get; set; }
 
     [Required]
-    public bool PaymentStatus { get; set; }
+    public int PaymentStatus { get; set; }
 
     [MinLength(1, ErrorMessage = "At least one book must be selected")]
     public List<int> BookIds { get; set; } = [];
