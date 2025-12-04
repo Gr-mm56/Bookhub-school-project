@@ -8,15 +8,15 @@ namespace WebMVC.Areas.Admin.Controllers;
 public class ImageController : AdminController
 {
     private readonly IImageService _imageService;
-    private readonly IWebHostEnvironment _webHostEnvironment;
+    private readonly IUploadService _uploadService;
     private const int PageSize = 12;
     private const long MaxFileSize = 5 * 1024 * 1024; // 5 MB
     private static readonly string[] AllowedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
 
-    public ImageController(IImageService imageService, IWebHostEnvironment webHostEnvironment)
+    public ImageController(IImageService imageService, IUploadService uploadService)
     {
         _imageService = imageService;
-        _webHostEnvironment = webHostEnvironment;
+        _uploadService = uploadService;
     }
 
     public async Task<IActionResult> Index(int page = 1)
@@ -73,26 +73,17 @@ public class ImageController : AdminController
 
         try
         {
-            var uploadsPath = Path.Combine(_webHostEnvironment.WebRootPath, "assets", "uploads");
-            if (!Directory.Exists(uploadsPath))
+            // Open file stream and delegate to upload service for file handling
+            await using (var fileStream = model.File.OpenReadStream())
             {
-                Directory.CreateDirectory(uploadsPath);
+                var virtualPath = await _uploadService.SaveImageAsync(fileStream, model.File.FileName);
+                
+                var imageRequestDto = new BusinessLayer.Models.Image.Requests.ImageRequestDto
+                {
+                    FileUrl = virtualPath
+                };
+                await _imageService.CreateAsync(imageRequestDto);
             }
-
-            var fileName = $"{Guid.NewGuid()}{fileExtension}";
-            var filePath = Path.Combine(uploadsPath, fileName);
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await model.File.CopyToAsync(stream);
-            }
-
-            var relativeFilePath = $"assets/uploads/{fileName}";
-            var imageRequestDto = new BusinessLayer.Models.Image.Requests.ImageRequestDto
-            {
-                FileUrl = relativeFilePath
-            };
-            await _imageService.CreateAsync(imageRequestDto);
 
             TempData["SuccessMessage"] = "Image uploaded successfully!";
             return RedirectToAction(nameof(Index));
@@ -135,16 +126,10 @@ public class ImageController : AdminController
         try
         {
             var imageDto = await _imageService.GetByIdAsync(model.Id);
-            if (imageDto != null)
+            if (imageDto != null && !string.IsNullOrWhiteSpace(imageDto.FileUrl))
             {
-                if (imageDto.FileUrl.Contains("assets/uploads/"))
-                {
-                    var filePath = Path.Combine(_webHostEnvironment.WebRootPath, imageDto.FileUrl);
-                    if (System.IO.File.Exists(filePath))
-                    {
-                        System.IO.File.Delete(filePath);
-                    }
-                }
+                // Delegate file deletion to upload service
+                await _uploadService.DeleteImageAsync(imageDto.FileUrl);
             }
 
             var deleted = await _imageService.DeleteAsync(model.Id);

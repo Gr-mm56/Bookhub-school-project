@@ -9,24 +9,7 @@ using WebAPI.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<BookHubDbContext>(options =>
-{
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
-// Add services to the container.
-
-builder.Services.AddScoped<IRatingService, RatingService>();
-builder.Services.AddScoped<IGenreService, GenreService>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<ICartService, CartService>();
-builder.Services.AddScoped<IPurchaseItemService, PurchaseItemService>();
-builder.Services.AddScoped<IWishlistItemService, WishlistItemService>();
-builder.Services.AddScoped<IBookService, BookService>();
-builder.Services.AddScoped<IAuthorService, AuthorService>();
-builder.Services.AddScoped<IPublisherService, PublisherService>();
-builder.Services.AddScoped<IImageService, ImageService>();
-
-// register upload service as the BusinessLayer FileSystemUploadService using a factory
+builder.Services.AddBusinessServices();
 builder.Services.AddFileSystemUploadService(builder.Configuration, builder.Environment);
 
 builder.Services.AddControllers();

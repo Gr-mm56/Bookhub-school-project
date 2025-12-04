@@ -3,13 +3,14 @@ using BusinessLayer.Services.Interfaces;
 using Infrastructure.Repository;
 using Microsoft.Extensions.FileProviders;
 
-namespace WebAPI.Extensions;
+namespace WebMVC.Extensions;
 
 public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddBusinessServices(
         this IServiceCollection services)
     {
+        services.AddScoped<IRatingService, RatingService>();
         services.AddScoped<IGenreService, GenreService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<ICartService, CartService>();
@@ -23,7 +24,7 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection AddFileSystemUploadService(
+    public static IServiceCollection AddUploadService(
         this IServiceCollection services,
         IConfiguration configuration,
         IWebHostEnvironment environment)
@@ -84,3 +85,4 @@ public static class ServiceCollectionExtensions
         return (storagePath, virtualBase);
     }
 }
+
