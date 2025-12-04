@@ -9,6 +9,8 @@ using WebAPI.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddMemoryCache();
+
 builder.Services.AddBusinessServices();
 builder.Services.AddFileSystemUploadService(builder.Configuration, builder.Environment);
 

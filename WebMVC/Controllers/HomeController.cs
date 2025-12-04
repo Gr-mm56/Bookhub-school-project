@@ -4,6 +4,7 @@ using BusinessLayer.Models.Book.Requests;
 using BusinessLayer.Services.Interfaces;
 using DataAccessLayer.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.OutputCaching;
 using WebMVC.Mappers;
 using WebMVC.Models;
 
@@ -71,6 +72,7 @@ namespace WebMVC.Controllers
             }
         }
 
+        [OutputCache(Duration = 10, VaryByRouteValueNames = ["id"])]
         public async Task<IActionResult> Detail(int id)
         {
             try

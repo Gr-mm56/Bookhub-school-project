@@ -1,5 +1,6 @@
 ﻿using BusinessLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using WebMVC.Areas.Admin.Mappers;
 using WebMVC.Areas.Admin.Models.Book;
 
@@ -28,6 +29,7 @@ public class BookController : AdminController
         _authorService = authorService;
     }
 
+    [OutputCache(Duration = 10, VaryByQueryKeys = ["page"])]
     public async Task<IActionResult> Index(int page = 1)
     {
         if (page < 1)
