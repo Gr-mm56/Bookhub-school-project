@@ -3,7 +3,6 @@ using BusinessLayer.Models.Cart.Requests;
 using BusinessLayer.Models.Cart.Responses;
 using BusinessLayer.Models.PurchaseItem.Responses;
 using BusinessLayer.Models.User.Responses;
-using DataAccessLayer.Entities;
 using WebMVC.Areas.Admin.Models.Order;
 
 namespace WebMVC.Areas.Admin.Mappers;

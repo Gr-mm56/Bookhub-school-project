@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using DataAccessLayer.Enums;
 
 namespace BusinessLayer.Models.Cart.Responses;
 
@@ -21,5 +20,5 @@ public class CartDto
 
     public DateTime UpdatedAt { get; set; }
 
-    public PaymentStatusEnum PaymentStatus { get; set; }
+    public bool PaymentStatus { get; set; }
 }

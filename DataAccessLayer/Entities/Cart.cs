@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using DataAccessLayer.Enums;
 
 namespace DataAccessLayer.Entities;
 
@@ -25,5 +24,6 @@ public class Cart : BaseEntity
 
     public virtual ICollection<PurchaseItem>? PurchaseItems { get; set; }
 
-    public PaymentStatusEnum PaymentStatus { get; set; } = PaymentStatusEnum.Pending;
+    // 0 - pending, 1 - completed
+    public bool PaymentStatus { get; set; } = false;
 }

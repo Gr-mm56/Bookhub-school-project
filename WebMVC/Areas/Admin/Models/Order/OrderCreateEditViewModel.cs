@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using DataAccessLayer.Enums;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace WebMVC.Areas.Admin.Models.Order;
 
@@ -14,8 +14,8 @@ public class OrderCreateEditViewModel
     [DataType(DataType.DateTime)]
     public DateTime? OrderDate { get; set; }
 
-    [EnumDataType(typeof(PaymentStatusEnum))]
-    public PaymentStatusEnum PaymentStatus { get; set; }
+    [Required]
+    public bool PaymentStatus { get; set; }
 
     [MinLength(1, ErrorMessage = "At least one book must be selected")]
     public List<int> BookIds { get; set; } = [];

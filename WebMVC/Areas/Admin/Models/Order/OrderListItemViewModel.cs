@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using DataAccessLayer.Enums;
 
 namespace WebMVC.Areas.Admin.Models.Order;
 
@@ -13,8 +12,7 @@ public class OrderListItemViewModel
 
     public DateTime? OrderDate { get; set; }
 
-    [EnumDataType(typeof(PaymentStatusEnum))]
-    public PaymentStatusEnum PaymentStatus { get; set; }
+    public bool PaymentStatus { get; set; }
 
     public DateTime CreatedAt { get; set; }
 

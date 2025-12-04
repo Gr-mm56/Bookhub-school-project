@@ -1,6 +1,4 @@
 ﻿using BusinessLayer.Services.Interfaces;
-using DataAccessLayer.Enums;
-using DataAccessLayer.Migrations;
 using Microsoft.AspNetCore.Mvc;
 using WebMVC.Areas.Admin.Mappers;
 using WebMVC.Areas.Admin.Models.Order;
@@ -52,7 +50,7 @@ public class OrderController : AdminController
         {
             TotalValue = 0,
             OrderDate = DateTime.Now,
-            PaymentStatus = PaymentStatusEnum.Pending,
+            PaymentStatus = false,
             BookIds = new List<int>(),
         };
 

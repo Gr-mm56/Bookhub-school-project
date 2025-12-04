@@ -1,4 +1,5 @@
 ﻿@model WebMVC.Areas.Admin.Models.Order.OrderViewModel
+@using WebMVC.Extensions
 
 @{
     ViewBag.Title = "Orders Management";
@@ -45,7 +46,7 @@
                             <tr>
                                 <td>@order.OrderId</td>
                                 <td>@Math.Round(order.TotalValue, 2)</td>
-                                <td>@order.PaymentStatus</td>
+                                <td>@order.PaymentStatus.PaymentTypeToText()</td>
                                 <td>@order.OrderDate</td>
                                 <td>@order.UpdatedAt</td>
                                 <td class="text-end">

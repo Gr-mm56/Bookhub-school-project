@@ -1,4 +1,5 @@
 ﻿@model WebMVC.Areas.Admin.Models.Order.OrderDeleteViewModel
+@using WebMVC.Extensions
 
 @{
     ViewBag.Title = "Delete Order";
@@ -26,7 +27,7 @@
                         <dd class="col-sm-8">@Model.OrderDate</dd>
 
                         <dt class="col-sm-4">Order Payment Status:</dt>
-                        <dd class="col-sm-8">@Model.PaymentStatus</dd>
+                        <dd class="col-sm-8">@Model.PaymentStatus.PaymentTypeToText()</dd>
 
                         <dt class="col-sm-4">Created At:</dt>
                         <dd class="col-sm-8">@Model.CreatedAt</dd>

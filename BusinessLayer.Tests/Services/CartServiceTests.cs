@@ -2,7 +2,6 @@
 using TestUtilities.MockedObjects;
 using Microsoft.Extensions.DependencyInjection;
 using BusinessLayer.Models.Cart.Requests;
-using DataAccessLayer.Enums;
 
 namespace BusinessLayer.Tests.Services;
 
@@ -23,7 +22,7 @@ public class CartServiceTests
             TotalValue = 25.50,
             OrderId = null,
             OrderDate = null,
-            PaymentStatus = PaymentStatusEnum.Pending
+            PaymentStatus = false
         };
 
         // Act
@@ -56,7 +55,7 @@ public class CartServiceTests
             TotalValue = 30.00,
             OrderId = 54,
             OrderDate = null,
-            PaymentStatus = PaymentStatusEnum.Completed
+            PaymentStatus = true
         };
 
         // Act & Assert
@@ -78,7 +77,7 @@ public class CartServiceTests
             TotalValue = -10.00,
             OrderId = null,
             OrderDate = null,
-            PaymentStatus = PaymentStatusEnum.Pending
+            PaymentStatus = false
         };
 
         // Act & Assert
@@ -100,7 +99,7 @@ public class CartServiceTests
             TotalValue = 20.00,
             OrderId = null,
             OrderDate = null,
-            PaymentStatus = PaymentStatusEnum.Pending
+            PaymentStatus = false
         };
 
         var created = await cartService.CreateAsync(createDto);
@@ -142,7 +141,7 @@ public class CartServiceTests
                 TotalValue = 10.00 + i,
                 OrderId = null,
                 OrderDate = null,
-                PaymentStatus = PaymentStatusEnum.Pending
+                PaymentStatus = false
             };
             await cartService.CreateAsync(createDto);
         }
@@ -169,7 +168,7 @@ public class CartServiceTests
             TotalValue = 20.00,
             OrderId = 1,
             OrderDate = null,
-            PaymentStatus = PaymentStatusEnum.Pending
+            PaymentStatus = false
         };
 
         var created = await cartService.CreateAsync(createDto);
@@ -179,7 +178,7 @@ public class CartServiceTests
             TotalValue = 30.00,
             OrderId = 123,
             OrderDate = DateTime.UtcNow,
-            PaymentStatus = PaymentStatusEnum.Pending
+            PaymentStatus = false
         };
 
         // Act
@@ -205,7 +204,7 @@ public class CartServiceTests
             TotalValue = 20.00,
             OrderId = null,
             OrderDate = null,
-            PaymentStatus = PaymentStatusEnum.Pending
+            PaymentStatus = false
         };
 
         await cartService.CreateAsync(createDto);
@@ -236,7 +235,7 @@ public class CartServiceTests
             TotalValue = 20.00,
             OrderId = null,
             OrderDate = null,
-            PaymentStatus = PaymentStatusEnum.Pending
+            PaymentStatus = false
         };
 
         var created = await cartService.CreateAsync(createDto);
@@ -267,7 +266,7 @@ public class CartServiceTests
             TotalValue = 20.00,
             OrderId = null,
             OrderDate = null,
-            PaymentStatus = PaymentStatusEnum.Pending
+            PaymentStatus = false
         };
 
         var created = await cartService.CreateAsync(createDto);
