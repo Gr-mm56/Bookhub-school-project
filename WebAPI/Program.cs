@@ -9,6 +9,7 @@ using WebAPI.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddDbContext<BookHubDbContext>(options =>
 {
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
@@ -78,7 +79,6 @@ if (app.Environment.IsDevelopment())
 app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseMiddleware<RequestTimingMiddleware>();
 app.UseMiddleware<TokenAuthenticationMiddleware>();
-app.UseMiddleware<AuditLogMiddleware>();
 
 // Configure the HTTP request pipeline.
 
