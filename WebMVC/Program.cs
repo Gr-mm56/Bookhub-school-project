@@ -13,6 +13,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddMemoryCache();
 builder.Services.AddOutputCache();
 
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddDbContext<BookHubDbContext>(options =>
 {
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
