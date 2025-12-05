@@ -1,9 +1,19 @@
+using BusinessLayer.Services.Implementations;
+using BusinessLayer.Services.Interfaces;
 using DataAccessLayer.Context;
 using DataAccessLayer.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Middleware;
+using MongoDB.Driver;
+using Serilog;
 using WebMVC.Extensions;
+
+// Configure Serilog
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .WriteTo.Console()
+    .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -66,6 +76,15 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
+
+builder.Services.AddSingleton<IMongoClient>(_ =>
+{
+    var connectionString = builder.Configuration.GetConnectionString("MongoDB")
+                           ?? "mongodb://localhost:27017";
+    return new MongoClient(connectionString);
+});
+
+builder.Services.AddSingleton<ILogService, MongoLogService>();
 
 var app = builder.Build();
 

@@ -3,9 +3,16 @@ using BusinessLayer.Services.Interfaces;
 using DataAccessLayer.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using MongoDB.Driver;
 using Middleware;
+using MongoDB.Driver;
+using Serilog;
 using WebAPI.Extensions;
+
+// Configure Serilog
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .WriteTo.Console()
+    .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -77,7 +84,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseMiddleware<RequestLoggingMiddleware>();
-app.UseMiddleware<RequestTimingMiddleware>();
 app.UseMiddleware<TokenAuthenticationMiddleware>();
 
 // Configure the HTTP request pipeline.
