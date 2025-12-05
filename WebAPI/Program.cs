@@ -9,6 +9,13 @@ using WebAPI.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddDbContext<BookHubDbContext>(options =>
+{
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
+
+builder.Services.AddMemoryCache();
+
 builder.Services.AddBusinessServices();
 builder.Services.AddFileSystemUploadService(builder.Configuration, builder.Environment);
 

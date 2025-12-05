@@ -1,4 +1,4 @@
-﻿using BusinessLayer.Mappers;
+﻿﻿using BusinessLayer.Mappers;
 using BusinessLayer.Models.Author.Requests;
 using BusinessLayer.Models.Author.Responses;
 using BusinessLayer.Models.Common;
@@ -6,18 +6,31 @@ using BusinessLayer.Services.Interfaces;
 using DataAccessLayer.Context;
 using DataAccessLayer.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace BusinessLayer.Services.Implementations;
 
 public class AuthorService : BaseService<BookHubDbContext>, IAuthorService
 {
-    public AuthorService(BookHubDbContext dbContext) : base(dbContext)
-    {
+    private readonly IMemoryCache _memoryCache;
+    private const string AuthorAllCacheKey = "authors_all";
+    private const string AuthorDetailCacheKey = "authors_detail";
+    private static readonly TimeSpan CacheExpiration = TimeSpan.FromSeconds(60);
 
+    public AuthorService(BookHubDbContext dbContext, IMemoryCache memoryCache) : base(dbContext)
+    {
+        _memoryCache = memoryCache;
     }
 
     public async Task<PagedResultDto<AuthorBooksDto>> GetAllAsync(int limit = 20, int offset = 0)
     {
+        var cacheKey = $"{AuthorAllCacheKey}_{limit}_{offset}";
+        
+        if (_memoryCache.TryGetValue(cacheKey, out PagedResultDto<AuthorBooksDto>? cachedResult))
+        {
+            return cachedResult!;
+        }
+
         var query = Context.Authors
             .AsNoTracking()
             .Include(a => a.ProfilePhoto)
@@ -25,16 +38,30 @@ public class AuthorService : BaseService<BookHubDbContext>, IAuthorService
                 .ThenInclude(b => b.Image)
             .OrderBy(a => a.Surname);
 
-        return await PageAsync<Author, AuthorBooksDto>(
+        var result = await PageAsync<Author, AuthorBooksDto>(
             query, 
             limit, 
             offset, 
             authors => AuthorMapper.ToDetailDtoList(authors)
         );
+        
+        var cacheOptions = new MemoryCacheEntryOptions()
+            .SetSlidingExpiration(CacheExpiration);
+        
+        _memoryCache.Set(cacheKey, result, cacheOptions);
+        
+        return result;
     }
 
     public async Task<AuthorBooksDto?> GetByIdAsync(int id)
     {
+        var cacheKey = $"{AuthorDetailCacheKey}_{id}";
+        
+        if (_memoryCache.TryGetValue(cacheKey, out AuthorBooksDto? cachedAuthor))
+        {
+            return cachedAuthor;
+        }
+
         var author = await Context.Authors
             .AsNoTracking()
             .Include(a => a.ProfilePhoto)
@@ -42,7 +69,17 @@ public class AuthorService : BaseService<BookHubDbContext>, IAuthorService
                 .ThenInclude(b => b.Image)
             .FirstOrDefaultAsync(a => a.Id == id);
 
-        return author != null ? AuthorMapper.ToDetailDto(author) : null;
+        var result = author != null ? AuthorMapper.ToDetailDto(author) : null;
+        
+        if (result != null)
+        {
+            var cacheOptions = new MemoryCacheEntryOptions()
+                .SetSlidingExpiration(CacheExpiration);
+            
+            _memoryCache.Set(cacheKey, result, cacheOptions);
+        }
+        
+        return result;
     }
 
     public async Task<AuthorBooksDto> CreateAsync(AuthorRequestDto requestDto)
@@ -68,6 +105,8 @@ public class AuthorService : BaseService<BookHubDbContext>, IAuthorService
             .Include(a => a.Books)
                 .ThenInclude(b => b.Image)
             .FirstAsync(a => a.Id == author.Id);
+
+        InvalidateAuthorCache();
 
         return AuthorMapper.ToDetailDto(createdAuthor);
     }
@@ -103,6 +142,8 @@ public class AuthorService : BaseService<BookHubDbContext>, IAuthorService
             .Include(a => a.Books)
                 .ThenInclude(b => b.Image)
             .FirstAsync(a => a.Id == id);
+
+        InvalidateAuthorCache();
 
         return AuthorMapper.ToDetailDto(updatedAuthor);
     }
@@ -188,6 +229,14 @@ public class AuthorService : BaseService<BookHubDbContext>, IAuthorService
 
         Context.Authors.Remove(author);
         await SaveAsync();
+        
+        InvalidateAuthorCache();
+        
         return true;
+    }
+
+    private void InvalidateAuthorCache()
+    {
+        _memoryCache.Remove(AuthorAllCacheKey);
     }
 }

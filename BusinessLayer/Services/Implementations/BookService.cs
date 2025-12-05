@@ -6,15 +6,22 @@ using BusinessLayer.Services.Interfaces;
 using DataAccessLayer.Context;
 using DataAccessLayer.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace BusinessLayer.Services.Implementations;
 
 public class BookService : BaseService<BookHubDbContext>, IBookService
 {
-    public BookService(BookHubDbContext dbContext) : base(dbContext)
-    {
+    private readonly IMemoryCache _memoryCache;
+    private const string BookSearchCacheKey = "books_search";
+    private const string BookDetailCacheKey = "books_detail";
+    private static readonly TimeSpan CacheExpiration = TimeSpan.FromSeconds(60);
 
+    public BookService(BookHubDbContext dbContext, IMemoryCache memoryCache) : base(dbContext)
+    {
+        _memoryCache = memoryCache;
     }
+
     public async Task<PagedResultDto<BookDto>> GetAllAsync(int limit = 20, int offset = 0)
     {
         var query = Context.Books
@@ -27,6 +34,13 @@ public class BookService : BaseService<BookHubDbContext>, IBookService
 
     public async Task<BookDetailDto?> GetByIdAsync(int id)
     {
+        var cacheKey = $"{BookDetailCacheKey}_{id}";
+        
+        if (_memoryCache.TryGetValue(cacheKey, out BookDetailDto? cachedBook))
+        {
+            return cachedBook;
+        }
+
         var book = await Context.Books
             .AsNoTracking()
             .Include(b => b.Image)
@@ -34,13 +48,31 @@ public class BookService : BaseService<BookHubDbContext>, IBookService
             .Include(b => b.Authors)
             .Include(b => b.Genres)
             .Include(b => b.Publisher)
+            .Include(b => b.Ratings)
             .FirstOrDefaultAsync(b => b.Id == id);
 
-        return book != null ? BookMapper.ToDetailDto(book) : null;
+        var result = book != null ? BookMapper.ToDetailDto(book) : null;
+        
+        if (result != null)
+        {
+            var cacheOptions = new MemoryCacheEntryOptions()
+                .SetSlidingExpiration(CacheExpiration);
+            
+            _memoryCache.Set(cacheKey, result, cacheOptions);
+        }
+        
+        return result;
     }
 
     public async Task<PagedResultDto<BookDetailDto>> SearchBooksAsync(BookSearchDto searchDto)
     {
+        var cacheKey = $"{BookSearchCacheKey}_{searchDto.SearchTerm ?? ""}_{searchDto.Price}_{searchDto.Limit}_{searchDto.Offset}";
+        
+        if (_memoryCache.TryGetValue(cacheKey, out PagedResultDto<BookDetailDto>? cachedResult))
+        {
+            return cachedResult!;
+        }
+
         var query = Context.Books
             .AsNoTracking()
             .Include(b => b.Image)
@@ -73,7 +105,14 @@ public class BookService : BaseService<BookHubDbContext>, IBookService
 
         query = query.OrderBy(b => b.Title);
 
-        return await PageAsync(query, searchDto.Limit, searchDto.Offset, BookMapper.ToDetailDtoList);
+        var result = await PageAsync(query, searchDto.Limit, searchDto.Offset, BookMapper.ToDetailDtoList);
+        
+        var cacheOptions = new MemoryCacheEntryOptions()
+            .SetSlidingExpiration(CacheExpiration);
+        
+        _memoryCache.Set(cacheKey, result, cacheOptions);
+        
+        return result;
     }
     public async Task<BookDto> CreateAsync(BookRequestDto requestDto)
     {
@@ -105,6 +144,8 @@ public class BookService : BaseService<BookHubDbContext>, IBookService
             .Include(b => b.Publisher)
             .FirstAsync(b => b.Id == book.Id);
 
+        InvalidateBookCache();
+
         return BookMapper.ToDto(createdBook);
     }
 
@@ -121,11 +162,6 @@ public class BookService : BaseService<BookHubDbContext>, IBookService
         {
             return null;
         }
-/*
-        if (requestDto.PublisherId == 0)
-        {
-            requestDto.PublisherId = null;
-        }*/
 
         await ValidateRelatedEntitiesExistAsync(requestDto);
 
@@ -137,6 +173,8 @@ public class BookService : BaseService<BookHubDbContext>, IBookService
         await AssociateRelatedEntitiesAsync(book, requestDto);
 
         await SaveAsync();
+
+        InvalidateBookCache();
 
         return BookMapper.ToDto(book);
     }
@@ -254,6 +292,17 @@ public class BookService : BaseService<BookHubDbContext>, IBookService
 
         Context.Books.Remove(book);
         await SaveAsync();
+        
+        InvalidateBookCache();
+        
         return true;
+    }
+
+    private void InvalidateBookCache()
+    {
+        // Invalidate all book-related cache entries when data changes
+        _memoryCache.Remove(BookSearchCacheKey);
+        // Note: We rely on sliding expiration for detail cache entries
+        // They will expire automatically after 10 seconds of inactivity
     }
 }

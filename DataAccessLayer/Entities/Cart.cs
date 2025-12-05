@@ -15,7 +15,7 @@ public class Cart : BaseEntity
     public virtual User User { get; set; }
 
     [Required]
-    [Range(0, double.MaxValue, ErrorMessage = "TotalValue must be non-negative.")]
+    [Range(0, double.MaxValue)]
     public required double TotalValue { get; set; }
 
     public int? OrderId { get; set; }

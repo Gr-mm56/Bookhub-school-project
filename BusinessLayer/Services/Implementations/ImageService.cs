@@ -1,36 +1,73 @@
-﻿using BusinessLayer.Mappers;
+﻿﻿using BusinessLayer.Mappers;
 using BusinessLayer.Models.Common;
 using BusinessLayer.Models.Image.Requests;
 using BusinessLayer.Models.Image.Responses;
 using BusinessLayer.Services.Interfaces;
 using DataAccessLayer.Context;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace BusinessLayer.Services.Implementations;
 
 public class ImageService : BaseService<BookHubDbContext>, IImageService
 {
-    public ImageService(BookHubDbContext dbContext) : base(dbContext)
-    {
+    private readonly IMemoryCache _memoryCache;
+    private const string ImageAllCacheKey = "images_all";
+    private const string ImageDetailCacheKey = "images_detail";
+    private static readonly TimeSpan CacheExpiration = TimeSpan.FromSeconds(10);
 
+    public ImageService(BookHubDbContext dbContext, IMemoryCache memoryCache) : base(dbContext)
+    {
+        _memoryCache = memoryCache;
     }
 
     public async Task<PagedResultDto<ImageDto>> GetAllAsync(int limit = 20, int offset = 0)
     {
+        var cacheKey = $"{ImageAllCacheKey}_{limit}_{offset}";
+        
+        if (_memoryCache.TryGetValue(cacheKey, out PagedResultDto<ImageDto>? cachedResult))
+        {
+            return cachedResult!;
+        }
+
         var query = Context.Images
             .AsNoTracking()
             .OrderBy(i => i.Id);
 
-        return await PageAsync(query, limit, offset, ImageMapper.ToDtoList);
+        var result = await PageAsync(query, limit, offset, ImageMapper.ToDtoList);
+        
+        var cacheOptions = new MemoryCacheEntryOptions()
+            .SetSlidingExpiration(CacheExpiration);
+        
+        _memoryCache.Set(cacheKey, result, cacheOptions);
+        
+        return result;
     }
 
     public async Task<ImageDto?> GetByIdAsync(int id)
     {
+        var cacheKey = $"{ImageDetailCacheKey}_{id}";
+        
+        if (_memoryCache.TryGetValue(cacheKey, out ImageDto? cachedImage))
+        {
+            return cachedImage;
+        }
+
         var image = await Context.Images
             .AsNoTracking()
             .FirstOrDefaultAsync(i => i.Id == id);
 
-        return image != null ? ImageMapper.ToDto(image) : null;
+        var result = image != null ? ImageMapper.ToDto(image) : null;
+        
+        if (result != null)
+        {
+            var cacheOptions = new MemoryCacheEntryOptions()
+                .SetSlidingExpiration(CacheExpiration);
+            
+            _memoryCache.Set(cacheKey, result, cacheOptions);
+        }
+        
+        return result;
     }
 
     public async Task<ImageDto> CreateAsync(ImageRequestDto requestDto)
@@ -45,6 +82,8 @@ public class ImageService : BaseService<BookHubDbContext>, IImageService
             .Include(b => b.Publisher)
             .Include(b => b.User)
             .FirstAsync(p => p.Id == image.Id);
+
+        InvalidateImageCache();
 
         return ImageMapper.ToDto(createdImage);
     }
@@ -63,6 +102,8 @@ public class ImageService : BaseService<BookHubDbContext>, IImageService
         ImageMapper.UpdateEntity(image, requestDto);
 
         await SaveAsync();
+
+        InvalidateImageCache();
 
         return ImageMapper.ToDto(image);
     }
@@ -89,6 +130,14 @@ public class ImageService : BaseService<BookHubDbContext>, IImageService
 
         Context.Images.Remove(image);
         await SaveAsync();
+        
+        InvalidateImageCache();
+        
         return true;
+    }
+
+    private void InvalidateImageCache()
+    {
+        _memoryCache.Remove(ImageAllCacheKey);
     }
 }

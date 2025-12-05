@@ -4,6 +4,7 @@ namespace DataAccessLayer.Entities;
 public class Image : BaseEntity
 {
     [Required]
+    [MaxLength(300)]
     public required string FileUrl { get; set; }
 
     public virtual User? User { get; set; }

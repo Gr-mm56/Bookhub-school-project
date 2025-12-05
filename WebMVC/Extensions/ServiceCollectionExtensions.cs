@@ -20,6 +20,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IAuthorService, AuthorService>();
         services.AddScoped<IPublisherService, PublisherService>();
         services.AddScoped<IImageService, ImageService>();
+        
+        services.AddScoped<ISearchFacade, SearchFacade>();
 
         return services;
     }
@@ -31,10 +33,8 @@ public static class ServiceCollectionExtensions
     {
         var (storagePath, virtualBase) = ResolveStoragePath(configuration, environment);
 
-        // Register the repository with the resolved paths
         services.AddSingleton<IUploadRepository>(new UploadRepository(storagePath, virtualBase));
         
-        // Register the upload service - it will receive IUploadRepository through DI
         services.AddSingleton<IUploadService, FileSystemUploadService>();
 
         return services;
@@ -64,7 +64,6 @@ public static class ServiceCollectionExtensions
             .Replace('\\', Path.DirectorySeparatorChar)
             .Trim(Path.DirectorySeparatorChar);
 
-        // Find solution root
         var current = new DirectoryInfo(environment.ContentRootPath);
         var solutionRoot = current;
         while (solutionRoot != null && solutionRoot.GetFiles("*.sln").Length == 0)
