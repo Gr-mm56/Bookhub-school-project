@@ -15,6 +15,7 @@ namespace WebMVC.Controllers
         private readonly ISearchFacade _searchFacade;
         private readonly IAuthorService _authorService;
         private readonly IBookService _bookService;
+        private readonly IPublisherService _publisherService;
         private readonly SignInManager<LocalIdentityUser> _signInManager;
 
         public HomeController(
@@ -22,12 +23,14 @@ namespace WebMVC.Controllers
             ISearchFacade searchFacade,
             IAuthorService authorService,
             IBookService bookService,
+            IPublisherService publisherService,
             SignInManager<LocalIdentityUser> signInManager)
         {
             _logger = logger;
             _searchFacade = searchFacade;
             _authorService = authorService;
             _bookService = bookService;
+            _publisherService = publisherService;
             _signInManager = signInManager;
         }
 
@@ -47,7 +50,7 @@ namespace WebMVC.Controllers
 
                 var bookCards = BookMapper.ToBookCardViewModels(searchResultDto.Books);
                 var authorCards = AuthorMapper.ToAuthorCardViewModels(searchResultDto.Authors);
-                var publisherCards = BookMapper.ToPublisherCardViewModels(searchResultDto.Publishers);
+                var publisherCards = PublisherMapper.ToPublisherCardViewModels(searchResultDto.Publishers);
 
                 var viewModel = new HomePageViewModel
                 {
@@ -105,6 +108,18 @@ namespace WebMVC.Controllers
             }
 
             var viewModel = AuthorMapper.ToAuthorDetailViewModel(author);
+            return View(viewModel);
+        }
+
+        public async Task<IActionResult> PublisherDetail(int id)
+        {
+            var publisher = await _publisherService.GetByIdAsync(id);
+            if (publisher == null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = PublisherMapper.ToPublisherDetailViewModel(publisher);
             return View(viewModel);
         }
 

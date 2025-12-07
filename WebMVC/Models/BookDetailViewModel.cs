@@ -11,7 +11,7 @@ public class BookDetailViewModel
     public GenreViewModel? PrimaryGenre { get; set; }
     public List<GenreViewModel> Genres { get; set; } = [];
     public List<AuthorDetailViewModel> Authors { get; set; } = [];
-    public PublisherViewModel? Publisher { get; set; }
+    public PublisherDetailViewModel? Publisher { get; set; }
     public List<RatingViewModel> Ratings { get; set; } = [];
     public bool IsSignedIn { get; set; }
     
@@ -23,12 +23,6 @@ public class BookDetailViewModel
 }
 
 public class GenreViewModel
-{
-    public int Id { get; set; }
-    public string Name { get; set; }
-}
-
-public class PublisherViewModel
 {
     public int Id { get; set; }
     public string Name { get; set; }
