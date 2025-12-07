@@ -1,7 +1,8 @@
-﻿﻿using BusinessLayer.Mappers;
+﻿using BusinessLayer.Mappers;
 using BusinessLayer.Models.Common;
 using BusinessLayer.Models.Publisher.Requests;
 using BusinessLayer.Models.Publisher.Responses;
+using BusinessLayer.Services.Extensions;
 using BusinessLayer.Services.Interfaces;
 using DataAccessLayer.Context;
 using DataAccessLayer.Entities;
@@ -26,60 +27,43 @@ public class PublisherService : BaseService<BookHubDbContext>, IPublisherService
     {
         var cacheKey = $"{PublisherAllCacheKey}_{limit}_{offset}";
         
-        if (_memoryCache.TryGetValue(cacheKey, out PagedResultDto<PublisherBooksDto>? cachedResult))
-        {
-            return cachedResult!;
-        }
+        return await _memoryCache.GetOrCreateAsync(
+            cacheKey,
+            CacheExpiration,
+            async () => 
+            {
+                var query = Context.Publishers
+                    .AsNoTracking()
+                    .WithDetailIncludes()
+                    .OrderBy(p => p.Name);
 
-        var query = Context.Publishers
-            .AsNoTracking()
-            .Include(p => p.ProfilePhoto)
-            .Include(b => b.Books)
-                .ThenInclude(i => i.Image)
-            .OrderBy(p => p.Name);
-
-        var result = await PageAsync<Publisher, PublisherBooksDto>(
-            query, 
-            limit, 
-            offset, 
-            publishers => PublisherMapper.ToDetailDtoList(publishers)
+                return await PageAsync<Publisher, PublisherBooksDto>(
+                    query, 
+                    limit, 
+                    offset, 
+                    publishers => PublisherMapper.ToDetailDtoList(publishers)
+                );
+            }
         );
-        
-        var cacheOptions = new MemoryCacheEntryOptions()
-            .SetSlidingExpiration(CacheExpiration);
-        
-        _memoryCache.Set(cacheKey, result, cacheOptions);
-        
-        return result;
     }
 
     public async Task<PublisherBooksDto?> GetByIdAsync(int id)
     {
         var cacheKey = $"{PublisherDetailCacheKey}_{id}";
         
-        if (_memoryCache.TryGetValue(cacheKey, out PublisherBooksDto? cachedPublisher))
-        {
-            return cachedPublisher;
-        }
+        return await _memoryCache.GetOrCreateAsync(
+            cacheKey,
+            CacheExpiration,
+            async () => 
+            {
+                var publisher = await Context.Publishers
+                    .AsNoTracking()
+                    .WithDetailIncludes()
+                    .FirstOrDefaultAsync(p => p.Id == id);
 
-        var publisher = await Context.Publishers
-            .AsNoTracking()
-            .Include(p => p.ProfilePhoto)
-            .Include(b => b.Books)
-                .ThenInclude(i => i.Image)
-            .FirstOrDefaultAsync(p => p.Id == id);
-
-        var result = publisher != null ? PublisherMapper.ToDetailDto(publisher) : null;
-        
-        if (result != null)
-        {
-            var cacheOptions = new MemoryCacheEntryOptions()
-                .SetSlidingExpiration(CacheExpiration);
-            
-            _memoryCache.Set(cacheKey, result, cacheOptions);
-        }
-        
-        return result;
+                return publisher != null ? PublisherMapper.ToDetailDto(publisher) : null;
+            }
+        );
     }
 
     public async Task<PublisherBooksDto> CreateAsync(PublisherRequestDto requestDto)
@@ -98,14 +82,11 @@ public class PublisherService : BaseService<BookHubDbContext>, IPublisherService
         await Context.Publishers.AddAsync(publisher);
         await SaveAsync();
 
-        // Reload with all related data
         var createdPublisher = await Context.Publishers
-            .Include(p => p.ProfilePhoto)
-            .Include(b => b.Books)
-                .ThenInclude(i => i.Image)
+            .WithDetailIncludes()
             .FirstAsync(p => p.Id == publisher.Id);
 
-        InvalidatePublisherCache();
+        _memoryCache.InvalidateAllCache();
 
         return PublisherMapper.ToDetailDto(createdPublisher);
     }
@@ -137,12 +118,10 @@ public class PublisherService : BaseService<BookHubDbContext>, IPublisherService
 
         // Reload with updated data
         var updatedPublisher = await Context.Publishers
-            .Include(p => p.ProfilePhoto)
-            .Include(b => b.Books)
-                .ThenInclude(i => i.Image)
+            .WithDetailIncludes()
             .FirstAsync(p => p.Id == id);
 
-        InvalidatePublisherCache();
+        _memoryCache.InvalidateAllCache();
 
         return PublisherMapper.ToDetailDto(updatedPublisher);
     }
@@ -223,13 +202,9 @@ public class PublisherService : BaseService<BookHubDbContext>, IPublisherService
         Context.Publishers.Remove(publisher);
         await SaveAsync();
         
-        InvalidatePublisherCache();
+        _memoryCache.InvalidateAllCache();
         
         return true;
     }
-
-    private void InvalidatePublisherCache()
-    {
-        _memoryCache.Remove(PublisherAllCacheKey);
-    }
+    
 }

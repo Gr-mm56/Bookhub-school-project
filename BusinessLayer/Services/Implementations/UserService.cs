@@ -73,7 +73,7 @@ public class UserService : BaseService<BookHubDbContext>, IUserService
             await ValidateImage(userUpdateDto.ProfilePhotoId.Value);
         }
 
-        User? user = await Context.Users.FirstOrDefaultAsync(u => u.Id == id);
+        var user = await Context.Users.FirstOrDefaultAsync(u => u.Id == id);
         if (user == null)
         {
             return null;

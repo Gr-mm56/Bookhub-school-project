@@ -1,7 +1,8 @@
-﻿﻿using BusinessLayer.Mappers;
+﻿using BusinessLayer.Mappers;
 using BusinessLayer.Models.Common;
 using BusinessLayer.Models.Image.Requests;
 using BusinessLayer.Models.Image.Responses;
+using BusinessLayer.Services.Extensions;
 using BusinessLayer.Services.Interfaces;
 using DataAccessLayer.Context;
 using Microsoft.EntityFrameworkCore;
@@ -83,12 +84,12 @@ public class ImageService : BaseService<BookHubDbContext>, IImageService
             .Include(b => b.User)
             .FirstAsync(p => p.Id == image.Id);
 
-        InvalidateImageCache();
+        _memoryCache.InvalidateAllCache();
 
         return ImageMapper.ToDto(createdImage);
     }
 
-    public async Task<ImageDto> UpdateAsync(int id, ImageRequestDto requestDto)
+    public async Task<ImageDto?> UpdateAsync(int id, ImageRequestDto requestDto)
     {
         var image = await Context.Images
             .FirstOrDefaultAsync(i => i.Id == id);
@@ -103,7 +104,7 @@ public class ImageService : BaseService<BookHubDbContext>, IImageService
 
         await SaveAsync();
 
-        InvalidateImageCache();
+        _memoryCache.InvalidateAllCache();
 
         return ImageMapper.ToDto(image);
     }
@@ -131,13 +132,9 @@ public class ImageService : BaseService<BookHubDbContext>, IImageService
         Context.Images.Remove(image);
         await SaveAsync();
         
-        InvalidateImageCache();
+        _memoryCache.InvalidateAllCache();
         
         return true;
     }
-
-    private void InvalidateImageCache()
-    {
-        _memoryCache.Remove(ImageAllCacheKey);
-    }
+    
 }

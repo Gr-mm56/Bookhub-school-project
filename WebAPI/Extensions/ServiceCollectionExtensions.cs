@@ -1,4 +1,4 @@
-﻿using BusinessLayer.Services.Implementations;
+﻿﻿using BusinessLayer.Services.Implementations;
 using BusinessLayer.Services.Interfaces;
 using Infrastructure.Repository;
 using Microsoft.Extensions.FileProviders;
@@ -20,6 +20,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IPublisherService, PublisherService>();
         services.AddScoped<IRatingService, RatingService>();
         services.AddScoped<IImageService, ImageService>();
+        
+        services.AddScoped<IBookManagementFacade, BookManagementFacade>();
 
         return services;
     }

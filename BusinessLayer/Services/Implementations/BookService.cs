@@ -2,6 +2,7 @@
 using BusinessLayer.Models.Book.Requests;
 using BusinessLayer.Models.Book.Responses;
 using BusinessLayer.Models.Common;
+using BusinessLayer.Services.Extensions;
 using BusinessLayer.Services.Interfaces;
 using DataAccessLayer.Context;
 using DataAccessLayer.Entities;
@@ -26,7 +27,7 @@ public class BookService : BaseService<BookHubDbContext>, IBookService
     {
         var query = Context.Books
             .AsNoTracking()
-            .Include(b => b.Image)
+            .WithListIncludes()
             .OrderBy(b => b.Title);
 
         return await PageAsync(query, limit, offset, BookMapper.ToDtoList);
@@ -35,91 +36,71 @@ public class BookService : BaseService<BookHubDbContext>, IBookService
     public async Task<BookDetailDto?> GetByIdAsync(int id)
     {
         var cacheKey = $"{BookDetailCacheKey}_{id}";
-        
-        if (_memoryCache.TryGetValue(cacheKey, out BookDetailDto? cachedBook))
-        {
-            return cachedBook;
-        }
 
-        var book = await Context.Books
-            .AsNoTracking()
-            .Include(b => b.Image)
-            .Include(b => b.PrimaryGenre)
-            .Include(b => b.Authors)
-            .Include(b => b.Genres)
-            .Include(b => b.Publisher)
-            .Include(b => b.Ratings)
-            .FirstOrDefaultAsync(b => b.Id == id);
+        return await _memoryCache.GetOrCreateAsync(
+            cacheKey,
+            CacheExpiration,
+            async () =>
+            {
+                var book = await Context.Books
+                    .AsNoTracking()
+                    .WithDetailIncludes()
+                    .FirstOrDefaultAsync(b => b.Id == id);
 
-        var result = book != null ? BookMapper.ToDetailDto(book) : null;
-        
-        if (result != null)
-        {
-            var cacheOptions = new MemoryCacheEntryOptions()
-                .SetSlidingExpiration(CacheExpiration);
-            
-            _memoryCache.Set(cacheKey, result, cacheOptions);
-        }
-        
-        return result;
+                return book != null ? BookMapper.ToDetailDto(book) : null;
+            }
+        );
     }
 
     public async Task<PagedResultDto<BookDetailDto>> SearchBooksAsync(BookSearchDto searchDto)
     {
-        var cacheKey = $"{BookSearchCacheKey}_{searchDto.SearchTerm ?? ""}_{searchDto.Price}_{searchDto.Limit}_{searchDto.Offset}";
-        
-        if (_memoryCache.TryGetValue(cacheKey, out PagedResultDto<BookDetailDto>? cachedResult))
-        {
-            return cachedResult!;
-        }
+        var cacheKey =
+            $"{BookSearchCacheKey}_{searchDto.SearchTerm ?? ""}_{searchDto.Price}_{searchDto.Limit}_{searchDto.Offset}";
 
-        var query = Context.Books
-            .AsNoTracking()
-            .Include(b => b.Image)
-            .Include(b => b.Authors)
-            .Include(b => b.Genres)
-            .Include(b => b.Publisher)
-            .Include(b => b.PrimaryGenre)
-            .AsQueryable();
+        return await _memoryCache.GetOrCreateAsync(
+            cacheKey,
+            CacheExpiration,
+            async () =>
+            {
+                var query = Context.Books
+                    .AsNoTracking()
+                    .WithBaseIncludes()
+                    .AsQueryable();
 
-        if (!string.IsNullOrEmpty(searchDto.SearchTerm))
-        {
-            var searchTerm = searchDto.SearchTerm.Trim().ToLower();
-            
-            query = query.Where(b => 
-                b.Title.ToLower().Contains(searchTerm) ||
-                // Search in author names (first or last name)
-                b.Authors.Any(a => (a.Name.ToLower() + " " + a.Surname.ToLower()).Contains(searchTerm) ||
-                                    a.Name.ToLower().Contains(searchTerm) ||
-                                    a.Surname.ToLower().Contains(searchTerm)) ||
-                (b.Publisher != null && b.Publisher.Name.ToLower().Contains(searchTerm)) ||
-                (b.PrimaryGenre != null && b.PrimaryGenre.Name.ToLower().Contains(searchTerm)) ||
-                b.Genres.Any(g => g.Name.ToLower().Contains(searchTerm))
-            );
-        }
+                if (!string.IsNullOrEmpty(searchDto.SearchTerm))
+                {
+                    var searchTerm = searchDto.SearchTerm.Trim().ToLower();
 
-        if (searchDto.Price.HasValue)
-        {
-            query = query.Where(b => b.Price == searchDto.Price.Value);
-        }
+                    query = query.Where(b =>
+                        b.Title.ToLower().Contains(searchTerm) ||
+                        b.Authors.Any(a => (a.Name.ToLower() + " " + a.Surname.ToLower()).Contains(searchTerm) ||
+                                           a.Name.ToLower().Contains(searchTerm) ||
+                                           a.Surname.ToLower().Contains(searchTerm)) ||
+                        (b.Publisher != null && b.Publisher.Name.ToLower().Contains(searchTerm)) ||
+                        (b.PrimaryGenre != null && b.PrimaryGenre.Name.ToLower().Contains(searchTerm)) ||
+                        b.Genres.Any(g => g.Name.ToLower().Contains(searchTerm))
+                    );
+                }
 
-        query = query.OrderBy(b => b.Title);
+                if (searchDto.Price.HasValue)
+                {
+                    query = query.Where(b => Math.Abs(b.Price - searchDto.Price.Value) <= 0.0001);
+                }
 
-        var result = await PageAsync(query, searchDto.Limit, searchDto.Offset, BookMapper.ToDetailDtoList);
-        
-        var cacheOptions = new MemoryCacheEntryOptions()
-            .SetSlidingExpiration(CacheExpiration);
-        
-        _memoryCache.Set(cacheKey, result, cacheOptions);
-        
-        return result;
+                query = query.OrderBy(b => b.Title);
+
+                return await PageAsync(query, searchDto.Limit, searchDto.Offset, BookMapper.ToDetailDtoList);
+            }
+        );
     }
+
     public async Task<BookDto> CreateAsync(BookRequestDto requestDto)
     {
         if (requestDto.GenreIds.Count == 0 || requestDto.AuthorIds.Count == 0)
         {
             throw new ArgumentException("You must provide at least one genre and author");
         }
+
         await ValidateRelatedEntitiesExistAsync(requestDto);
         if (requestDto.PublisherId == 0)
         {
@@ -130,6 +111,7 @@ public class BookService : BaseService<BookHubDbContext>, IBookService
         {
             requestDto.ImageId = null;
         }
+
         var book = BookMapper.CreateEntity(requestDto);
 
         await AssociateRelatedEntitiesAsync(book, requestDto);
@@ -138,13 +120,10 @@ public class BookService : BaseService<BookHubDbContext>, IBookService
         await SaveAsync();
 
         var createdBook = await Context.Books
-            .Include(b => b.Image)
-            .Include(b => b.Authors)
-            .Include(b => b.Genres)
-            .Include(b => b.Publisher)
+            .WithBaseIncludes()
             .FirstAsync(b => b.Id == book.Id);
 
-        InvalidateBookCache();
+        _memoryCache.InvalidateAllCache();
 
         return BookMapper.ToDto(createdBook);
     }
@@ -152,10 +131,7 @@ public class BookService : BaseService<BookHubDbContext>, IBookService
     public async Task<BookDto?> UpdateAsync(int id, BookRequestDto requestDto)
     {
         var book = await Context.Books
-            .Include(b => b.Image)
-            .Include(b => b.Authors)
-            .Include(b => b.Genres)
-            .Include(b => b.Publisher)
+            .WithBaseIncludes()
             .FirstOrDefaultAsync(b => b.Id == id);
 
         if (book == null)
@@ -174,7 +150,7 @@ public class BookService : BaseService<BookHubDbContext>, IBookService
 
         await SaveAsync();
 
-        InvalidateBookCache();
+        _memoryCache.InvalidateAllCache();
 
         return BookMapper.ToDto(book);
     }
@@ -192,7 +168,7 @@ public class BookService : BaseService<BookHubDbContext>, IBookService
 
             var invalidAuthorIds = requestDto.AuthorIds.Except(existingAuthorIds);
             var invalidAuthorList = invalidAuthorIds.ToList();
-            if (invalidAuthorList.Any())
+            if (invalidAuthorList.Count != 0)
             {
                 errors.Add($"Invalid Author IDs: {string.Join(", ", invalidAuthorList)}");
             }
@@ -208,7 +184,7 @@ public class BookService : BaseService<BookHubDbContext>, IBookService
 
             var invalidGenreIds = requestDto.GenreIds.Except(existingGenreIds);
             var invalidGenreList = invalidGenreIds.ToList();
-            if (invalidGenreList.Any())
+            if (invalidGenreList.Count != 0)
             {
                 errors.Add($"Invalid Genre IDs: {string.Join(", ", invalidGenreList)}");
             }
@@ -224,10 +200,7 @@ public class BookService : BaseService<BookHubDbContext>, IBookService
                 errors.Add($"Invalid Publisher ID: {requestDto.PublisherId}");
             }
         }
-      /*  else if (requestDto.PublisherId < 0)
-        {
-            errors.Add($"Publisher ID must be provided and greater than or equal to 0");
-        }*/
+
         if (requestDto.PrimaryGenreId > 0)
         {
             var primaryGenreExists = await Context.Genres
@@ -251,11 +224,6 @@ public class BookService : BaseService<BookHubDbContext>, IBookService
                 errors.Add($"Invalid Image ID: {requestDto.ImageId}");
             }
         }
-      /*  else if (requestDto.ImageId < 0)
-        {
-            errors.Add($"Image ID must be provided and greater than or equal to 0");
-
-        }*/
 
         if (errors.Count != 0)
         {
@@ -292,17 +260,9 @@ public class BookService : BaseService<BookHubDbContext>, IBookService
 
         Context.Books.Remove(book);
         await SaveAsync();
-        
-        InvalidateBookCache();
-        
-        return true;
-    }
 
-    private void InvalidateBookCache()
-    {
-        // Invalidate all book-related cache entries when data changes
-        _memoryCache.Remove(BookSearchCacheKey);
-        // Note: We rely on sliding expiration for detail cache entries
-        // They will expire automatically after 10 seconds of inactivity
+        _memoryCache.InvalidateAllCache();
+
+        return true;
     }
 }

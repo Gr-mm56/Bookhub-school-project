@@ -22,6 +22,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IImageService, ImageService>();
         
         services.AddScoped<ISearchFacade, SearchFacade>();
+        services.AddScoped<IBookManagementFacade, BookManagementFacade>();
 
         return services;
     }

@@ -1,7 +1,6 @@
 ﻿using BusinessLayer.Models.Genre.Requests;
 using BusinessLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.OutputCaching;
 using WebMVC.Areas.Admin.Mappers;
 using WebMVC.Areas.Admin.Models.Genre;
 
@@ -16,7 +15,6 @@ public class GenreController : AdminController
         _genreService = genreService;
     }
 
-    [OutputCache(Duration = 10)]
     public async Task<IActionResult> Index()
     {
         var genres = await _genreService.GetAllAsync(0, 0);
