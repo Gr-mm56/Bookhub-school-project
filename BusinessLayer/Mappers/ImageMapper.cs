@@ -13,7 +13,9 @@ public static class ImageMapper
         return new ImageDto
         {
             Id = image.Id,
-            FileUrl = image.FileUrl
+            FileUrl = image.FileUrl,
+            CreatedAt = image.CreatedAt,
+            UpdatedAt = image.UpdatedAt
         };
     }
 

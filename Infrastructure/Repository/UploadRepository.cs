@@ -40,11 +40,11 @@ public class UploadRepository: IUploadRepository
         return virtualPath;
     }
 
-    public async Task<bool> DeleteImageAsync(string virtualPath)
+    public Task<bool> DeleteImageAsync(string virtualPath)
     {
         if (string.IsNullOrWhiteSpace(virtualPath))
         {
-            return false;
+            return Task.FromResult(false);
         }
 
         try
@@ -55,15 +55,15 @@ public class UploadRepository: IUploadRepository
 
             if (!File.Exists(filePath))
             {
-                return false;
+                return Task.FromResult(false);
             }
 
             File.Delete(filePath);
-            return true;
+            return Task.FromResult(true);
         }
         catch
         {
-            return false;
+            return Task.FromResult(false);
         }
     }
 }

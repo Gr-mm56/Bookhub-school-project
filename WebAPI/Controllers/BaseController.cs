@@ -60,6 +60,10 @@ public abstract class BaseController<TEntityDto, TEntityDetailDto, TCreateDto, T
         try
         {
             var result = await Service.CreateAsync(dto);
+            if (result == null)
+            {
+                return BadRequest();
+            }
             return CreatedAtAction(nameof(GetById), new { id = ((dynamic)result).Id }, result);
         }
         catch (ArgumentException ex)

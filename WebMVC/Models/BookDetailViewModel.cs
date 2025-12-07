@@ -25,20 +25,20 @@ public class BookDetailViewModel
 public class AuthorViewModel
 {
     public int Id { get; set; }
-    public string Name { get; set; }
-    public string Surname { get; set; }
+    public required string Name { get; set; }
+    public required string Surname { get; set; }
 }
 
 public class GenreViewModel
 {
     public int Id { get; set; }
-    public string Name { get; set; }
+    public required string Name { get; set; }
 }
 
 public class PublisherViewModel
 {
     public int Id { get; set; }
-    public string Name { get; set; }
+    public required string Name { get; set; }
 }
 
 public class RatingViewModel
