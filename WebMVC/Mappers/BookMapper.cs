@@ -49,7 +49,7 @@ namespace WebMVC.Mappers
                     Id = g.Id, 
                     Name = g.Name 
                 }).ToList(),
-                Authors = bookDetailDto.Authors.Select(a => new AuthorViewModel 
+                Authors = bookDetailDto.Authors.Select(a => new AuthorDetailViewModel 
                 { 
                     Id = a.Id, 
                     Name = a.Name, 
