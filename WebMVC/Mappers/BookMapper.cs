@@ -69,6 +69,17 @@ namespace WebMVC.Mappers
                 }).ToList()
             };
         }
+
+        public static BookCardViewModel ToBookCardViewModel(BookDto bookDto)
+        {
+            return new BookCardViewModel
+            {
+                Id = bookDto.Id,
+                Title = bookDto.Title,
+                Price = bookDto.Price,
+                ImageUrl = bookDto.Image?.FileUrl
+            };
+        }
     }
 }
 

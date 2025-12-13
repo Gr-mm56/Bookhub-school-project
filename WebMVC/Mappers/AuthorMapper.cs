@@ -13,13 +13,7 @@ namespace WebMVC.Mappers
                 Name = authorDto.Name,
                 Surname = authorDto.Surname,
                 ImageUrl = authorDto.ProfilePhoto?.FileUrl,
-                Books = authorDto.Books?.Select(b => new BookCardViewModel
-                {
-                    Id = b.Id,
-                    Title = b.Title,
-                    Price = b.Price,
-                    ImageUrl = b.Image?.FileUrl
-                }).ToList() ?? []
+                Books = authorDto.Books?.Select(BookMapper.ToBookCardViewModel).ToList() ?? []
             };
         }
         public static AuthorCardViewModel ToAuthorCardViewModel(AuthorBooksDto authorDto)
