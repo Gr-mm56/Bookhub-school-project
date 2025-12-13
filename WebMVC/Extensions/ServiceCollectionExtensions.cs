@@ -20,7 +20,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IAuthorService, AuthorService>();
         services.AddScoped<IPublisherService, PublisherService>();
         services.AddScoped<IImageService, ImageService>();
-        
+
         services.AddScoped<ISearchFacade, SearchFacade>();
         services.AddScoped<IBookManagementFacade, BookManagementFacade>();
 
@@ -35,7 +35,7 @@ public static class ServiceCollectionExtensions
         var (storagePath, virtualBase) = ResolveStoragePath(configuration, environment);
 
         services.AddSingleton<IUploadRepository>(new UploadRepository(storagePath, virtualBase));
-        
+
         services.AddSingleton<IUploadService, FileSystemUploadService>();
 
         return services;

@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace BusinessLayer.Services.Interfaces;
+﻿namespace BusinessLayer.Services.Interfaces;
 
 public interface IUploadService
 {

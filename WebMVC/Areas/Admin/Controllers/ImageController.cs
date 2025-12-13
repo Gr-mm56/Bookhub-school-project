@@ -28,7 +28,7 @@ public class ImageController : AdminController
         var pagedResult = await _imageService.GetAllAsync(PageSize, offset);
 
         var viewModel = ImageViewModelMapper.ToListViewModel(pagedResult.Items.ToList());
-        
+
         ViewBag.CurrentPage = page;
         ViewBag.TotalPages = (int)Math.Ceiling((double)pagedResult.Total / PageSize);
         ViewBag.TotalCount = pagedResult.Total;
@@ -77,7 +77,7 @@ public class ImageController : AdminController
             await using (var fileStream = model.File.OpenReadStream())
             {
                 var virtualPath = await _uploadService.SaveImageAsync(fileStream, model.File.FileName);
-                
+
                 var imageRequestDto = new BusinessLayer.Models.Image.Requests.ImageRequestDto
                 {
                     FileUrl = virtualPath

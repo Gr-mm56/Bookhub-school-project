@@ -6,7 +6,7 @@ namespace BusinessLayer.Services.Implementations;
 public class FileSystemUploadService : IUploadService
 {
     private readonly IUploadRepository _uploadRepository;
-    
+
     public FileSystemUploadService(IUploadRepository uploadRepository)
     {
         _uploadRepository = uploadRepository ?? throw new ArgumentNullException(nameof(uploadRepository));

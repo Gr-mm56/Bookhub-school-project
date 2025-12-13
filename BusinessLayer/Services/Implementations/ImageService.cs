@@ -25,7 +25,7 @@ public class ImageService : BaseService<BookHubDbContext>, IImageService
     public async Task<PagedResultDto<ImageDto>> GetAllAsync(int limit = 20, int offset = 0)
     {
         var cacheKey = $"{ImageAllCacheKey}_{limit}_{offset}";
-        
+
         if (_memoryCache.TryGetValue(cacheKey, out PagedResultDto<ImageDto>? cachedResult))
         {
             return cachedResult!;
@@ -36,19 +36,19 @@ public class ImageService : BaseService<BookHubDbContext>, IImageService
             .OrderBy(i => i.Id);
 
         var result = await PageAsync(query, limit, offset, ImageMapper.ToDtoList);
-        
+
         var cacheOptions = new MemoryCacheEntryOptions()
             .SetSlidingExpiration(CacheExpiration);
-        
+
         _memoryCache.Set(cacheKey, result, cacheOptions);
-        
+
         return result;
     }
 
     public async Task<ImageDto?> GetByIdAsync(int id)
     {
         var cacheKey = $"{ImageDetailCacheKey}_{id}";
-        
+
         if (_memoryCache.TryGetValue(cacheKey, out ImageDto? cachedImage))
         {
             return cachedImage;
@@ -59,15 +59,15 @@ public class ImageService : BaseService<BookHubDbContext>, IImageService
             .FirstOrDefaultAsync(i => i.Id == id);
 
         var result = image != null ? ImageMapper.ToDto(image) : null;
-        
+
         if (result != null)
         {
             var cacheOptions = new MemoryCacheEntryOptions()
                 .SetSlidingExpiration(CacheExpiration);
-            
+
             _memoryCache.Set(cacheKey, result, cacheOptions);
         }
-        
+
         return result;
     }
 
@@ -131,10 +131,10 @@ public class ImageService : BaseService<BookHubDbContext>, IImageService
 
         Context.Images.Remove(image);
         await SaveAsync();
-        
+
         _memoryCache.InvalidateAllCache();
-        
+
         return true;
     }
-    
+
 }

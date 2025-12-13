@@ -1,6 +1,6 @@
-﻿using DataAccessLayer.Entities;
+﻿using Bogus;
+using DataAccessLayer.Entities;
 using Microsoft.EntityFrameworkCore;
-using Bogus;
 
 namespace DataAccessLayer.Context;
 
@@ -99,8 +99,8 @@ public static class DataInitializer
         var targetCount = Math.Min(8, maxBooks * maxUsers);
 
         var allPairs = (from bookId in Enumerable.Range(1, maxBooks)
-            from userId in Enumerable.Range(1, maxUsers)
-            select (BookId: bookId, UserId: userId)).ToList();
+                        from userId in Enumerable.Range(1, maxUsers)
+                        select (BookId: bookId, UserId: userId)).ToList();
 
         var randomizer = new Randomizer(BogusSeed);
         var shuffledPairs = randomizer.Shuffle(allPairs).Take(targetCount).ToList();
@@ -111,7 +111,8 @@ public static class DataInitializer
         return new Faker<Rating>().UseSeed(BogusSeed)
             .RuleFor(r => r.Id, _ => id++)
             .RuleFor(r => r.BookId, _ => shuffledPairs[pairIndex].BookId)
-            .RuleFor(r => r.UserId, _ => {
+            .RuleFor(r => r.UserId, _ =>
+            {
                 var u = shuffledPairs[pairIndex].UserId;
                 pairIndex++;
                 return u;
@@ -142,8 +143,8 @@ public static class DataInitializer
         const int maxCarts = 7;
 
         var allPairs = (from b in Enumerable.Range(1, maxBooks)
-            from c in Enumerable.Range(1, maxCarts)
-            select (BookId: b, CartId: c)).ToList();
+                        from c in Enumerable.Range(1, maxCarts)
+                        select (BookId: b, CartId: c)).ToList();
 
         var randomizer = new Randomizer(BogusSeed);
         var targetCount = Math.Min(10, allPairs.Count);
@@ -165,8 +166,8 @@ public static class DataInitializer
         const int maxUsers = 7;
         const int maxBooks = 25;
         var allPairs = (from u in Enumerable.Range(1, maxUsers)
-            from b in Enumerable.Range(1, maxBooks)
-            select (UserId: u, BookId: b)).ToList();
+                        from b in Enumerable.Range(1, maxBooks)
+                        select (UserId: u, BookId: b)).ToList();
 
         var randomizer = new Randomizer(BogusSeed);
         var targetCount = Math.Min(5, allPairs.Count);

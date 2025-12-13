@@ -79,7 +79,7 @@ public class BookManagementFacade : IBookManagementFacade
         var result = await _authorService.GetAllAsync(0, 0);
         return result.Items.ToList();
     }
-    
+
     public async Task<(List<GenreDto> Genres, List<ImageDto> Images, List<PublisherBooksDto> Publishers, List<AuthorBooksDto> Authors)> GetAllDropdownOptionsAsync()
     {
         var genresTask = _genreService.GetAllAsync(0, 0);

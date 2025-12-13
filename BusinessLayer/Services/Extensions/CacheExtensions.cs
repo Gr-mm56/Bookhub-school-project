@@ -22,7 +22,7 @@ public static class CacheExtensions
         if (value == null) return value!;
         var cacheOptions = new MemoryCacheEntryOptions()
             .SetSlidingExpiration(cacheExpiration);
-            
+
         cache.Set(cacheKey, value, cacheOptions);
 
         return value;

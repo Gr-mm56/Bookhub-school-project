@@ -132,7 +132,7 @@ public class AccountController : Controller
         // I hope for the purpose of this project, actual email does not need to be sent
         TempData["ResetToken"] = token;
         TempData["ResetEmail"] = model.Email;
-        
+
         return RedirectToAction(nameof(ForgotPasswordConfirmation));
     }
 

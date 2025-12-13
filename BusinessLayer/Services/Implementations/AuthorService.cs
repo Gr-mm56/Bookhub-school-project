@@ -26,11 +26,11 @@ public class AuthorService : BaseService<BookHubDbContext>, IAuthorService
     public async Task<PagedResultDto<AuthorBooksDto>> GetAllAsync(int limit = 20, int offset = 0)
     {
         var cacheKey = $"{AuthorAllCacheKey}_{limit}_{offset}";
-        
+
         return await _memoryCache.GetOrCreateAsync(
             cacheKey,
             CacheExpiration,
-            async () => 
+            async () =>
             {
                 var query = Context.Authors
                     .AsNoTracking()
@@ -50,11 +50,11 @@ public class AuthorService : BaseService<BookHubDbContext>, IAuthorService
     public async Task<AuthorBooksDto?> GetByIdAsync(int id)
     {
         var cacheKey = $"{AuthorDetailCacheKey}_{id}";
-        
+
         return await _memoryCache.GetOrCreateAsync(
             cacheKey,
             CacheExpiration,
-            async () => 
+            async () =>
             {
                 var author = await Context.Authors
                     .AsNoTracking()
@@ -204,10 +204,10 @@ public class AuthorService : BaseService<BookHubDbContext>, IAuthorService
 
         Context.Authors.Remove(author);
         await SaveAsync();
-        
+
         _memoryCache.InvalidateAllCache();
-        
+
         return true;
     }
-    
+
 }

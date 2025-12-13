@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace WebMVC.Areas.Admin.Models.Order;
+﻿namespace WebMVC.Areas.Admin.Models.Order;
 
 public class OrderDeleteViewModel
 {

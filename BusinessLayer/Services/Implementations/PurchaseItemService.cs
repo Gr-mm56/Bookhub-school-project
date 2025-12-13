@@ -12,7 +12,7 @@ namespace BusinessLayer.Services.Implementations;
 
 public class PurchaseItemService : BaseService<BookHubDbContext>, IPurchaseItemService
 {
-    public PurchaseItemService(BookHubDbContext context): base(context)
+    public PurchaseItemService(BookHubDbContext context) : base(context)
     {
     }
 

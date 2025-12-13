@@ -14,11 +14,11 @@ public class BookDetailViewModel
     public PublisherDetailViewModel? Publisher { get; set; }
     public List<RatingViewModel> Ratings { get; set; } = [];
     public bool IsSignedIn { get; set; }
-    
-    public double AverageRating => Ratings.Any() 
-        ? Math.Round(Ratings.Average(r => r.Stars), 1) 
+
+    public double AverageRating => Ratings.Any()
+        ? Math.Round(Ratings.Average(r => r.Stars), 1)
         : 0;
-    
+
     public int RatingCount => Ratings.Count;
 }
 

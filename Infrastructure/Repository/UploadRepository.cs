@@ -1,6 +1,6 @@
 ﻿namespace Infrastructure.Repository;
 
-public class UploadRepository: IUploadRepository
+public class UploadRepository : IUploadRepository
 {
     private readonly string _storagePath; // absolute path on disk
     private readonly string _virtualBasePath; // eg "/assets/uploads"

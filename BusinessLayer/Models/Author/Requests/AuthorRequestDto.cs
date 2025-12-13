@@ -1,5 +1,4 @@
-﻿using BusinessLayer.Models.Book.Responses;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace BusinessLayer.Models.Author.Requests;
 

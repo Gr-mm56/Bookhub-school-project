@@ -4,7 +4,7 @@ namespace WebMVC.Models;
 
 public class LoginViewModel
 {
-    [Required] 
+    [Required]
     [Display(Name = "Username")]
     public required string Username { get; set; }
 
@@ -12,6 +12,6 @@ public class LoginViewModel
     [DataType(DataType.Password)]
     public required string Password { get; set; }
 
-    [Display(Name = "Remember me?")] 
+    [Display(Name = "Remember me?")]
     public bool RememberMe { get; set; }
 }

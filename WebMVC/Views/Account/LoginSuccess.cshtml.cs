@@ -6,6 +6,6 @@ public class LoginSuccess : PageModel
 {
     public void OnGet()
     {
-        
+
     }
 }

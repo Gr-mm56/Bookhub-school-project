@@ -81,14 +81,14 @@ builder.Services.AddSession(options =>
 builder.Services.AddSingleton<IMongoClient>(_ =>
 {
     var connectionString = builder.Configuration.GetConnectionString("MongoDB");
-    
+
     if (string.IsNullOrEmpty(connectionString))
     {
         throw new InvalidOperationException(
             "MongoDB connection string is not configured. " +
             "Please set 'ConnectionStrings:MongoDB' in appsettings.json, environment variables, or Azure App Configuration.");
     }
-    
+
     return new MongoClient(connectionString);
 });
 

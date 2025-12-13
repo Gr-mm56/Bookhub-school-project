@@ -1,5 +1,4 @@
-﻿using BusinessLayer.Models.Image.Requests;
-using BusinessLayer.Models.Image.Responses;
+﻿using BusinessLayer.Models.Image.Responses;
 using WebMVC.Areas.Admin.Models.Image;
 
 namespace WebMVC.Areas.Admin.Mappers;

@@ -2,7 +2,6 @@ using BusinessLayer.Services.Interfaces;
 using DataAccessLayer.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.OutputCaching;
 using System.Diagnostics;
 using WebMVC.Mappers;
 using WebMVC.Models;

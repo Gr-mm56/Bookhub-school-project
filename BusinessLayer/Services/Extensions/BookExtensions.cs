@@ -7,7 +7,7 @@ public static class BookExtensions
 {
     public static IQueryable<Book> WithListIncludes(this IQueryable<Book> query)
         => query.Include(b => b.Image);
-    
+
     public static IQueryable<Book> WithDetailIncludes(this IQueryable<Book> query)
         => query
             .Include(b => b.Image)
