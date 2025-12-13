@@ -1,7 +1,7 @@
 ﻿using BusinessLayer.Mappers;
-using BusinessLayer.Models.Common;
 using BusinessLayer.Models.Cart.Requests;
 using BusinessLayer.Models.Cart.Responses;
+using BusinessLayer.Models.Common;
 using BusinessLayer.Models.PurchaseItem.Requests;
 using BusinessLayer.Services.Interfaces;
 using DataAccessLayer.Context;
@@ -12,7 +12,7 @@ namespace BusinessLayer.Services.Implementations;
 
 public class CartService : BaseService<BookHubDbContext>, ICartService
 {
-    public CartService(BookHubDbContext context): base(context)
+    public CartService(BookHubDbContext context) : base(context)
     {
     }
 
@@ -173,7 +173,8 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
             bool exists = await Context.PurchaseItems
                 .AnyAsync(pi => pi.CartId == cart.Id && pi.BookId == bookId);
 
-            if (exists) {
+            if (exists)
+            {
                 continue;
             }
 

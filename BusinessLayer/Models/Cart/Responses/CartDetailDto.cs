@@ -1,5 +1,4 @@
 ﻿using BusinessLayer.Models.PurchaseItem.Responses;
-using BusinessLayer.Models.User.Requests;
 using BusinessLayer.Models.User.Responses;
 
 namespace BusinessLayer.Models.Cart.Responses;

@@ -1,6 +1,4 @@
-﻿using Microsoft.VisualBasic;
-
-namespace WebMVC.Extensions;
+﻿namespace WebMVC.Extensions;
 
 public static class PaymentStatusExtension
 {

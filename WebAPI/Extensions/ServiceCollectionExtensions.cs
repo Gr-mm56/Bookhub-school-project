@@ -1,4 +1,4 @@
-﻿﻿using BusinessLayer.Services.Implementations;
+﻿using BusinessLayer.Services.Implementations;
 using BusinessLayer.Services.Interfaces;
 using Infrastructure.Repository;
 using Microsoft.Extensions.FileProviders;
@@ -20,7 +20,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IPublisherService, PublisherService>();
         services.AddScoped<IRatingService, RatingService>();
         services.AddScoped<IImageService, ImageService>();
-        
+
         services.AddScoped<IBookManagementFacade, BookManagementFacade>();
 
         return services;
@@ -35,7 +35,7 @@ public static class ServiceCollectionExtensions
 
         // Register the repository with the resolved paths
         services.AddSingleton<IUploadRepository>(new UploadRepository(storagePath, virtualBase));
-        
+
         // Register the upload service - it will receive IUploadRepository through DI
         services.AddSingleton<IUploadService, FileSystemUploadService>();
 

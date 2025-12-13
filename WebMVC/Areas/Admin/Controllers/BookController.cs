@@ -25,7 +25,7 @@ public class BookController : AdminController
         var (items, total) = await _bookManagementFacade.GetAllBooksAsync(PageSize, offset);
 
         var viewModel = BookViewModelMapper.ToListViewModel(items);
-        
+
         ViewBag.CurrentPage = page;
         ViewBag.TotalPages = (int)Math.Ceiling((double)total / PageSize);
         ViewBag.TotalCount = total;
@@ -92,7 +92,7 @@ public class BookController : AdminController
 
         var bookRequestDto = BookViewModelMapper.ToRequestDto(model.Book);
         var result = await _bookManagementFacade.UpdateBookAsync(id, bookRequestDto);
-        
+
         if (result == null)
         {
             return NotFound();

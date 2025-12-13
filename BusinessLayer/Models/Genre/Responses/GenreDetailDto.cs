@@ -1,5 +1,4 @@
 ﻿using BusinessLayer.Models.Book.Responses;
-using System.Collections.Generic;
 
 namespace BusinessLayer.Models.Genre.Responses;
 

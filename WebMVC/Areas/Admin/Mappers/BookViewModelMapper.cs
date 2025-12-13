@@ -72,7 +72,7 @@ public static class BookViewModelMapper
             AuthorIds = bookDetailDto.Authors.Select(a => a.Id).ToList()
         };
     }
-    
+
     // ...existing code...
     public static BookCreateEditViewModelWithOptions ToCreateEditViewModelWithOptions(
         BookCreateEditViewModel bookViewModel,

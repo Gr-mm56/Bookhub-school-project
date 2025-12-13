@@ -18,7 +18,7 @@ public class BookRequestDto
     [Required]
     [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than 0")]
     public required double Price { get; set; }
-    
+
     [Required]
     public required int PrimaryGenreId { get; set; }
 

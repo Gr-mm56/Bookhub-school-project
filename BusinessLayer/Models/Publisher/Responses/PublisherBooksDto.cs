@@ -1,5 +1,4 @@
 ﻿using BusinessLayer.Models.Book.Responses;
-using BusinessLayer.Models.Image.Responses;
 
 namespace BusinessLayer.Models.Publisher.Responses;
 

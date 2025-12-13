@@ -1,12 +1,12 @@
 ﻿using DataAccessLayer.Entities;
 using DataAccessLayer.Services;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace DataAccessLayer.Context;
 
-public class BookHubDbContext: IdentityDbContext<LocalIdentityUser>
+public class BookHubDbContext : IdentityDbContext<LocalIdentityUser>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuditLogService _auditLogService;
@@ -25,7 +25,7 @@ public class BookHubDbContext: IdentityDbContext<LocalIdentityUser>
     public DbSet<AuditLog> AuditLogs { get; set; }
 
     public BookHubDbContext(
-        DbContextOptions<BookHubDbContext> options, 
+        DbContextOptions<BookHubDbContext> options,
         IHttpContextAccessor httpContextAccessor,
         IAuditLogService auditLogService) : base(options)
     {
@@ -92,7 +92,7 @@ public class BookHubDbContext: IdentityDbContext<LocalIdentityUser>
             .HasOne(b => b.PrimaryGenre)
             .WithMany(g => g.PrimaryBooks)
             .HasForeignKey(b => b.PrimaryGenreId);
-        
+
         // Book 1 Image
         modelBuilder.Entity<Book>()
             .HasOne(b => b.Image)

@@ -57,7 +57,8 @@ public static class OrderViewModelMapper
         ICollection<UserDto> users,
         ICollection<PurchaseItemDetailDto> purchaseItems,
         ICollection<BookDto> books
-    ) {
+    )
+    {
         ArgumentNullException.ThrowIfNull(orderViewModel);
         ArgumentNullException.ThrowIfNull(users);
         ArgumentNullException.ThrowIfNull(purchaseItems);

@@ -2,7 +2,7 @@
 
 namespace DataAccessLayer.Entities;
 
-public class Genre: BaseEntity
+public class Genre : BaseEntity
 {
     [Required]
     [MaxLength(50)]

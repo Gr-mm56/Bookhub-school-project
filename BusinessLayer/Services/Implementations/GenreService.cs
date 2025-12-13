@@ -24,11 +24,11 @@ public class GenreService : BaseService<BookHubDbContext>, IGenreService
     public async Task<PagedResultDto<GenreDto>> GetAllAsync(int limit = 20, int offset = 0)
     {
         var cacheKey = $"{GenreAllCacheKey}_{limit}_{offset}";
-        
+
         return await _memoryCache.GetOrCreateAsync(
             cacheKey,
             CacheExpiration,
-            async () => 
+            async () =>
             {
                 var query = Context.Genres
                     .AsNoTracking()
@@ -42,11 +42,11 @@ public class GenreService : BaseService<BookHubDbContext>, IGenreService
     public async Task<GenreDetailDto?> GetByIdAsync(int id)
     {
         var cacheKey = $"genre_{id}";
-        
+
         return await _memoryCache.GetOrCreateAsync(
             cacheKey,
             CacheExpiration,
-            async () => 
+            async () =>
             {
                 var genre = await Context.Genres
                     .AsNoTracking()
@@ -62,11 +62,11 @@ public class GenreService : BaseService<BookHubDbContext>, IGenreService
     {
         var name = searchDto.Name.Trim();
         var cacheKey = $"genre_search_{name}_{searchDto.Limit}_{searchDto.Offset}";
-        
+
         return await _memoryCache.GetOrCreateAsync(
             cacheKey,
             CacheExpiration,
-            async () => 
+            async () =>
             {
                 var query = Context.Genres
                     .AsNoTracking()
@@ -116,9 +116,9 @@ public class GenreService : BaseService<BookHubDbContext>, IGenreService
 
         Context.Genres.Remove(genre);
         await SaveAsync();
-        
+
         _memoryCache.InvalidateAllCache();
-        
+
         return true;
     }
 }

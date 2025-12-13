@@ -10,7 +10,7 @@ namespace BusinessLayer.Services.Implementations;
 
 public class WishlistItemService : BaseService<BookHubDbContext>, IWishlistItemService
 {
-    public WishlistItemService(BookHubDbContext context): base(context)
+    public WishlistItemService(BookHubDbContext context) : base(context)
     {
     }
 

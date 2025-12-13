@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-using BusinessLayer.Models.Book.Responses;
+﻿using BusinessLayer.Models.Book.Responses;
 using BusinessLayer.Models.User.Responses;
+using System.ComponentModel.DataAnnotations;
 
 namespace BusinessLayer.Models.Rating.Responses;
 
@@ -14,9 +14,9 @@ public class RatingDetailDto
     public required BookDto Book { get; set; }
     [Required]
 
-     public required UserDto User { get; set; }
+    public required UserDto User { get; set; }
 
-     public DateTime CreatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }
 
-     public DateTime UpdatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
 }

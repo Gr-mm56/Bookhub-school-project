@@ -11,7 +11,7 @@ namespace BusinessLayer.Services.Implementations;
 
 public class UserService : BaseService<BookHubDbContext>, IUserService
 {
-    public UserService(BookHubDbContext context): base(context)
+    public UserService(BookHubDbContext context) : base(context)
     {
     }
 

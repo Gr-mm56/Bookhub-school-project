@@ -26,11 +26,11 @@ public class PublisherService : BaseService<BookHubDbContext>, IPublisherService
     public async Task<PagedResultDto<PublisherBooksDto>> GetAllAsync(int limit = 20, int offset = 0)
     {
         var cacheKey = $"{PublisherAllCacheKey}_{limit}_{offset}";
-        
+
         return await _memoryCache.GetOrCreateAsync(
             cacheKey,
             CacheExpiration,
-            async () => 
+            async () =>
             {
                 var query = Context.Publishers
                     .AsNoTracking()
@@ -38,9 +38,9 @@ public class PublisherService : BaseService<BookHubDbContext>, IPublisherService
                     .OrderBy(p => p.Name);
 
                 return await PageAsync<Publisher, PublisherBooksDto>(
-                    query, 
-                    limit, 
-                    offset, 
+                    query,
+                    limit,
+                    offset,
                     publishers => PublisherMapper.ToDetailDtoList(publishers)
                 );
             }
@@ -50,11 +50,11 @@ public class PublisherService : BaseService<BookHubDbContext>, IPublisherService
     public async Task<PublisherBooksDto?> GetByIdAsync(int id)
     {
         var cacheKey = $"{PublisherDetailCacheKey}_{id}";
-        
+
         return await _memoryCache.GetOrCreateAsync(
             cacheKey,
             CacheExpiration,
-            async () => 
+            async () =>
             {
                 var publisher = await Context.Publishers
                     .AsNoTracking()
@@ -166,15 +166,15 @@ public class PublisherService : BaseService<BookHubDbContext>, IPublisherService
         if (requestDto.BookIds.Any())
         {
             var currentBookIds = publisher.Books.Select(b => b.Id).ToList();
-            
+
             var newBookIds = requestDto.BookIds.Except(currentBookIds).ToList();
-            
+
             if (newBookIds.Any())
             {
                 var newBooks = await Context.Books
                     .Where(b => newBookIds.Contains(b.Id))
                     .ToListAsync();
-                
+
                 foreach (var book in newBooks)
                 {
                     publisher.Books.Add(book);
@@ -201,10 +201,10 @@ public class PublisherService : BaseService<BookHubDbContext>, IPublisherService
 
         Context.Publishers.Remove(publisher);
         await SaveAsync();
-        
+
         _memoryCache.InvalidateAllCache();
-        
+
         return true;
     }
-    
+
 }

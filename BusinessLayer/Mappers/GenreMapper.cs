@@ -44,7 +44,7 @@ public static class GenreMapper
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
             Books = new List<Book>(),
-            
+
         };
     }
 
