@@ -1,0 +1,20 @@
+@{
+    var formId = ViewBag.FormId as string ?? "form";
+    var submitBtnId = ViewBag.SubmitBtnId as string ?? "submitBtn";
+}
+
+<script>
+    $(document).ready(function() {
+        $('#@formId').on('submit', function(e) {
+            if (!$(this)[0].checkValidity()) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            $(this).addClass('was-validated');
+        });
+
+        $('#@submitBtnId').on('click', function() {
+            $('#@formId').addClass('was-validated');
+        });
+    });
+</script>

@@ -1,0 +1,15 @@
+@model WebMVC.Areas.Admin.Models.Publisher.PublisherCreateEditViewModelWithOptions
+
+<!-- Name -->
+<div class="col-md-6 mb-3">
+    <label asp-for="Publisher.Name" class="form-label">Name *</label>
+    <input asp-for="Publisher.Name" class="form-control" placeholder="Enter publisher name" />
+    <span asp-validation-for="Publisher.Name" class="text-danger small d-block mt-1"></span>
+</div>
+
+<!-- Address -->
+<div class="col-md-6 mb-3">
+    <label asp-for="Publisher.Address" class="form-label">Address *</label>
+    <input asp-for="Publisher.Address" class="form-control" placeholder="Enter publisher address" />
+    <span asp-validation-for="Publisher.Address" class="text-danger small d-block mt-1"></span>
+</div>
