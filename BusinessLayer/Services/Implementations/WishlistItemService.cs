@@ -4,7 +4,6 @@ using BusinessLayer.Models.WishlistItem.Requests;
 using BusinessLayer.Models.WishlistItem.Responses;
 using BusinessLayer.Services.Interfaces;
 using DataAccessLayer.Context;
-using DataAccessLayer.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLayer.Services.Implementations;
@@ -42,7 +41,7 @@ public class WishlistItemService : BaseService<BookHubDbContext>, IWishlistItemS
         // Validate that User and Book exist
         await ValidateRelatedEntitiesExistAsync(wishlistItemCreateDto);
 
-        WishlistItem wishlistItem = WishlistItemMapper.CreateDtoToEntity(wishlistItemCreateDto);
+        var wishlistItem = WishlistItemMapper.CreateDtoToEntity(wishlistItemCreateDto);
 
         await Context.WishlistItems.AddAsync(wishlistItem);
         await SaveAsync();
@@ -52,7 +51,7 @@ public class WishlistItemService : BaseService<BookHubDbContext>, IWishlistItemS
 
     public async Task<bool> DeleteAsync(int id)
     {
-        WishlistItem? wishlistItem = await Context.WishlistItems.FirstOrDefaultAsync(g => g.Id == id);
+        var wishlistItem = await Context.WishlistItems.FirstOrDefaultAsync(g => g.Id == id);
         if (wishlistItem == null)
         {
             return false;
@@ -88,7 +87,7 @@ public class WishlistItemService : BaseService<BookHubDbContext>, IWishlistItemS
             errors.Add($"Invalid Book ID: {wishlistItemDto.BookId}");
         }
 
-        if (errors.Any())
+        if (errors.Count != 0)
         {
             throw new ArgumentException($"Validation failed: {string.Join("; ", errors)}");
         }

@@ -2,6 +2,7 @@
 using BusinessLayer.Models.Common;
 using BusinessLayer.Models.PurchaseItem.Requests;
 using BusinessLayer.Models.PurchaseItem.Responses;
+using BusinessLayer.Services.Extensions;
 using BusinessLayer.Services.Interfaces;
 using DataAccessLayer.Context;
 using DataAccessLayer.Entities;
@@ -28,19 +29,17 @@ public class PurchaseItemService : BaseService<BookHubDbContext>, IPurchaseItemS
     {
         var query = Context.PurchaseItems
             .AsNoTracking()
-            .Include(p => p.Book)
-            .Include(p => p.Cart)
+            .WithDetailIncludes()
             .OrderBy(p => p.Id);
 
-        return await PageWithDetailsAsync(query, limit, offset, PurchaseItemMapper.ToDetailDtoList);
+        return await PageAsync(query, limit, offset, PurchaseItemMapper.ToDetailDtoList);
     }
 
     public async Task<PurchaseItemDetailDto?> GetByIdAsync(int id)
     {
         var purchaseItem = await Context.PurchaseItems
             .AsNoTracking()
-            .Include(p => p.Book)
-            .Include(p => p.Cart)
+            .WithDetailIncludes()
             .FirstOrDefaultAsync(p => p.Id == id);
 
         return purchaseItem != null ? PurchaseItemMapper.ToDetailDto(purchaseItem) : null;

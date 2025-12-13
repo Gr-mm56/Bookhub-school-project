@@ -27,6 +27,10 @@
                             </label>
                         </div>
 
+                        <div class="mb-3 text-end">
+                            <a asp-action="ForgotPassword" class="text-muted text-decoration-none small">Forgot your password?</a>
+                        </div>
+
                         @if (ViewData.ModelState[""] != null)
                         {
                             <div class="alert alert-danger alert-dismissible fade show" role="alert">

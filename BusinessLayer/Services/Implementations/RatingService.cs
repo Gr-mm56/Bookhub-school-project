@@ -28,7 +28,7 @@ public class RatingService : BaseService<BookHubDbContext>, IRatingService
         var rating = await Context.Ratings
             .AsNoTracking()
             .Include(r => r.Book)
-            .ThenInclude(b => b.Image)
+            .ThenInclude(b => b!.Image)
             .FirstOrDefaultAsync(r => r.Id == id);
 
         return rating != null ? RatingMapper.ToDetailDto(rating) : null;
@@ -142,7 +142,7 @@ public class RatingService : BaseService<BookHubDbContext>, IRatingService
             errors.Add($"Invalid Book ID: {requestDto.BookId}");
         }
 
-        if (errors.Any())
+        if (errors.Count != 0)
         {
             throw new ArgumentException($"Validation failed: {string.Join("; ", errors)}");
         }

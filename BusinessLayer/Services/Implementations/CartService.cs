@@ -203,7 +203,7 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
         }
     }
 
-    private async Task ValidateValues(int? orderId, double totalValue)
+    private Task ValidateValues(int? orderId, double totalValue)
     {
         // Validate values
         if (orderId is < 0)
@@ -215,5 +215,7 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
         {
             throw new ArgumentException($"Invalid Total Value: {totalValue} - Cannot be negative");
         }
+
+        return Task.CompletedTask;
     }
 }

@@ -11,7 +11,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddMemoryCache();
-builder.Services.AddOutputCache();
 
 builder.Services.AddDbContext<BookHubDbContext>(options =>
 {
@@ -90,7 +89,6 @@ app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseHttpsRedirection();
 app.UseRouting();
 
-app.UseOutputCache();
 
 app.UseAuthorization();
 

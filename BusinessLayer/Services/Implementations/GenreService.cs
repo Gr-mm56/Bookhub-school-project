@@ -1,7 +1,8 @@
-﻿﻿using BusinessLayer.Mappers;
+﻿using BusinessLayer.Mappers;
 using BusinessLayer.Models.Common;
 using BusinessLayer.Models.Genre.Requests;
 using BusinessLayer.Models.Genre.Responses;
+using BusinessLayer.Services.Extensions;
 using BusinessLayer.Services.Interfaces;
 using DataAccessLayer.Context;
 using Microsoft.EntityFrameworkCore;
@@ -24,51 +25,37 @@ public class GenreService : BaseService<BookHubDbContext>, IGenreService
     {
         var cacheKey = $"{GenreAllCacheKey}_{limit}_{offset}";
         
-        if (_memoryCache.TryGetValue(cacheKey, out PagedResultDto<GenreDto>? cachedResult))
-        {
-            return cachedResult!;
-        }
+        return await _memoryCache.GetOrCreateAsync(
+            cacheKey,
+            CacheExpiration,
+            async () => 
+            {
+                var query = Context.Genres
+                    .AsNoTracking()
+                    .OrderBy(g => g.Name);
 
-        var query = Context.Genres
-            .AsNoTracking()
-            .OrderBy(g => g.Name);
-
-        var result = await PageAsync(query, limit, offset, GenreMapper.ToDtoList);
-        
-        var cacheOptions = new MemoryCacheEntryOptions()
-            .SetSlidingExpiration(CacheExpiration);
-        
-        _memoryCache.Set(cacheKey, result, cacheOptions);
-        
-        return result;
+                return await PageAsync(query, limit, offset, GenreMapper.ToDtoList);
+            }
+        );
     }
 
     public async Task<GenreDetailDto?> GetByIdAsync(int id)
     {
         var cacheKey = $"genre_{id}";
         
-        if (_memoryCache.TryGetValue(cacheKey, out GenreDetailDto? cachedGenre))
-        {
-            return cachedGenre;
-        }
+        return await _memoryCache.GetOrCreateAsync(
+            cacheKey,
+            CacheExpiration,
+            async () => 
+            {
+                var genre = await Context.Genres
+                    .AsNoTracking()
+                    .WithDetailIncludes()
+                    .FirstOrDefaultAsync(g => g.Id == id);
 
-        var genre = await Context.Genres
-            .AsNoTracking()
-            .Include(g => g.Books)
-            .Include(g => g.PrimaryBooks)
-            .FirstOrDefaultAsync(g => g.Id == id);
-
-        var result = genre != null ? GenreMapper.ToDetailDto(genre) : null;
-        
-        if (result != null)
-        {
-            var cacheOptions = new MemoryCacheEntryOptions()
-                .SetSlidingExpiration(CacheExpiration);
-            
-            _memoryCache.Set(cacheKey, result, cacheOptions);
-        }
-        
-        return result;
+                return genre != null ? GenreMapper.ToDetailDto(genre) : null;
+            }
+        );
     }
 
     public async Task<PagedResultDto<GenreDto>> SearchGenresAsync(GenreSearchDto searchDto)
@@ -76,24 +63,19 @@ public class GenreService : BaseService<BookHubDbContext>, IGenreService
         var name = searchDto.Name.Trim();
         var cacheKey = $"genre_search_{name}_{searchDto.Limit}_{searchDto.Offset}";
         
-        if (_memoryCache.TryGetValue(cacheKey, out PagedResultDto<GenreDto>? cachedResult))
-        {
-            return cachedResult!;
-        }
+        return await _memoryCache.GetOrCreateAsync(
+            cacheKey,
+            CacheExpiration,
+            async () => 
+            {
+                var query = Context.Genres
+                    .AsNoTracking()
+                    .Where(g => g.Name.Contains(name))
+                    .OrderBy(g => g.Name);
 
-        var query = Context.Genres
-            .AsNoTracking()
-            .Where(g => g.Name.Contains(name))
-            .OrderBy(g => g.Name);
-
-        var result = await PageAsync(query, searchDto.Limit, searchDto.Offset, GenreMapper.ToDtoList);
-        
-        var cacheOptions = new MemoryCacheEntryOptions()
-            .SetSlidingExpiration(CacheExpiration);
-        
-        _memoryCache.Set(cacheKey, result, cacheOptions);
-        
-        return result;
+                return await PageAsync(query, searchDto.Limit, searchDto.Offset, GenreMapper.ToDtoList);
+            }
+        );
     }
 
     public async Task<GenreDto> CreateAsync(GenreRequestDto requestDto)
@@ -103,7 +85,7 @@ public class GenreService : BaseService<BookHubDbContext>, IGenreService
         await Context.Genres.AddAsync(genre);
         await SaveAsync();
 
-        InvalidateGenreCache();
+        _memoryCache.InvalidateAllCache();
 
         return GenreMapper.ToDto(genre);
     }
@@ -119,7 +101,7 @@ public class GenreService : BaseService<BookHubDbContext>, IGenreService
         GenreMapper.UpdateEntity(genre, requestDto);
         await SaveAsync();
 
-        InvalidateGenreCache();
+        _memoryCache.InvalidateAllCache();
 
         return GenreMapper.ToDto(genre);
     }
@@ -135,16 +117,8 @@ public class GenreService : BaseService<BookHubDbContext>, IGenreService
         Context.Genres.Remove(genre);
         await SaveAsync();
         
-        InvalidateGenreCache();
+        _memoryCache.InvalidateAllCache();
         
         return true;
-    }
-
-    private void InvalidateGenreCache()
-    {
-        // Remove genre cache entries when data changes
-        _memoryCache.Remove(GenreAllCacheKey);
-        // In a real scenario, you might want to track all cache keys and remove them
-        // For now, we're invalidating the main cache key which will force a fresh load
     }
 }
