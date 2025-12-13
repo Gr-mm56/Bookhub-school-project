@@ -9,6 +9,7 @@ namespace DataAccessLayer.Context;
 public class BookHubDbContext: IdentityDbContext<LocalIdentityUser>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly AuditLogService _auditLogService;
 
     public DbSet<Book> Books { get; set; }
     public DbSet<Rating> Ratings { get; set; }
@@ -23,16 +24,19 @@ public class BookHubDbContext: IdentityDbContext<LocalIdentityUser>
     public DbSet<Image> Images { get; set; }
     public DbSet<AuditLog> AuditLogs { get; set; }
 
-    public BookHubDbContext(DbContextOptions<BookHubDbContext> options, IHttpContextAccessor httpContextAccessor) : base(options)
+    public BookHubDbContext(
+        DbContextOptions<BookHubDbContext> options, 
+        IHttpContextAccessor httpContextAccessor,
+        AuditLogService auditLogService) : base(options)
     {
         _httpContextAccessor = httpContextAccessor;
+        _auditLogService = auditLogService;
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        var auditLogService = new AuditLogService(this);
         var currentUsername = _httpContextAccessor?.HttpContext?.User.Identity?.Name ?? "System";
-        var auditLogs = auditLogService.GenerateAuditLogs(currentUsername);
+        var auditLogs = _auditLogService.GenerateAuditLogs(currentUsername);
 
         foreach (var auditLog in auditLogs)
         {
