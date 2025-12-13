@@ -51,6 +51,17 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
         return cart != null ? CartMapper.ToDetailDto(cart) : null;
     }
 
+    public async Task<CartDetailDto?> GetCartByUserIdAsync(int id)
+    {
+        var cart = await Context.Carts
+            .AsNoTracking()
+            .Include(c => c.User)
+            .Include(c => c.PurchaseItems)
+            .FirstOrDefaultAsync(c => c.UserId == id);
+
+        return cart != null ? CartMapper.ToDetailDto(cart) : null;
+    }
+
     public async Task<CartDto> CreateAsync(CartCreateDto cartCreateDto)
     {
         // Validate that User exists

@@ -8,6 +8,8 @@ public interface ICartService : ICrudService<CartDto, CartDetailDto, CartCreateD
 {
     Task<PagedResultDto<CartDto>> GetAllOrdersAsync(int limit = 20, int offset = 0);
 
+    Task<CartDetailDto?> GetCartByUserIdAsync(int userId);
+
     Task<CartDto> CreateOrderAsync(OrderCreateDto orderCreateDto);
 
     Task<CartDto?> UpdateOrderAsync(int id, OrderUpdateDto orderUpdateDto);

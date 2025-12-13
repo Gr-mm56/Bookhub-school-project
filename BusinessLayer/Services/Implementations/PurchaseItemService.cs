@@ -78,6 +78,22 @@ public class PurchaseItemService : BaseService<BookHubDbContext>, IPurchaseItemS
         return true;
     }
 
+    public async Task<bool> DeleteByItemIdAsync(int bookId, int cartId)
+    {
+        PurchaseItem? purchaseItem = await Context.PurchaseItems
+            .FirstOrDefaultAsync(p => p.BookId == bookId && p.CartId == cartId);
+
+        if (purchaseItem == null)
+        {
+            return false;
+        }
+
+        Context.PurchaseItems.Remove(purchaseItem);
+        await SaveAsync();
+
+        return true;
+    }
+
     public async Task<PurchaseItemDto?> UpdateAsync(int id, PurchaseItemUpdateDto purchaseItemUpdateDto)
     {
         // Validate Count value
