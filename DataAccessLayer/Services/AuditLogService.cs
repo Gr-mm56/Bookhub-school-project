@@ -6,7 +6,7 @@ using System.Text.Json;
 
 namespace DataAccessLayer.Services;
 
-public class AuditLogService
+public class AuditLogService : IAuditLogService
 {
     private readonly BookHubDbContext _dbContext;
 

@@ -9,7 +9,7 @@ namespace DataAccessLayer.Context;
 public class BookHubDbContext: IdentityDbContext<LocalIdentityUser>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly AuditLogService _auditLogService;
+    private readonly IAuditLogService _auditLogService;
 
     public DbSet<Book> Books { get; set; }
     public DbSet<Rating> Ratings { get; set; }
@@ -27,7 +27,7 @@ public class BookHubDbContext: IdentityDbContext<LocalIdentityUser>
     public BookHubDbContext(
         DbContextOptions<BookHubDbContext> options, 
         IHttpContextAccessor httpContextAccessor,
-        AuditLogService auditLogService) : base(options)
+        IAuditLogService auditLogService) : base(options)
     {
         _httpContextAccessor = httpContextAccessor;
         _auditLogService = auditLogService;

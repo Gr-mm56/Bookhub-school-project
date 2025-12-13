@@ -2,6 +2,7 @@ using BusinessLayer.Services.Implementations;
 using BusinessLayer.Services.Interfaces;
 using DataAccessLayer.Context;
 using DataAccessLayer.Entities;
+using DataAccessLayer.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Middleware;
@@ -24,6 +25,7 @@ builder.Services.AddMemoryCache();
 builder.Services.AddOutputCache();
 
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IAuditLogService, AuditLogService>();
 builder.Services.AddDbContext<BookHubDbContext>(options =>
 {
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));

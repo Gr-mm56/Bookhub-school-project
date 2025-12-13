@@ -1,6 +1,7 @@
 using BusinessLayer.Services.Implementations;
 using BusinessLayer.Services.Interfaces;
 using DataAccessLayer.Context;
+using DataAccessLayer.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Middleware;
@@ -17,6 +18,7 @@ Log.Logger = new LoggerConfiguration()
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IAuditLogService, AuditLogService>();
 builder.Services.AddDbContext<BookHubDbContext>(options =>
 {
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
