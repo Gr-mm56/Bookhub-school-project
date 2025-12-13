@@ -1,4 +1,5 @@
 ﻿using DataAccessLayer.Context;
+using DataAccessLayer.Entities;
 using DataAccessLayer.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -23,7 +24,9 @@ public class MockedDbContext
     public static BookHubDbContext CreateFromOptions(DbContextOptions<BookHubDbContext> options)
     {
         var httpContextAccessor = Substitute.For<IHttpContextAccessor>();
-        var auditLogService = Substitute.For<IAuditLogService>();        
+        var auditLogService = Substitute.For<IAuditLogService>();
+        auditLogService.GenerateAuditLogs(Arg.Any<string>()).Returns(new List<AuditLog>());
+        
         var dbContextToMock = new BookHubDbContext(options, httpContextAccessor, auditLogService);
         PrepareData(dbContextToMock);
 
