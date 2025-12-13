@@ -1,14 +1,24 @@
 using BusinessLayer.Services.Implementations;
 using BusinessLayer.Services.Interfaces;
 using DataAccessLayer.Context;
+using DataAccessLayer.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using MongoDB.Driver;
 using Middleware;
+using MongoDB.Driver;
+using Serilog;
 using WebAPI.Extensions;
+
+// Configure Serilog
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .WriteTo.Console()
+    .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IAuditLogService, AuditLogService>();
 builder.Services.AddDbContext<BookHubDbContext>(options =>
 {
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
@@ -55,8 +65,15 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddSingleton<IMongoClient>(_ =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("MongoDB")
-                           ?? "mongodb://localhost:27017";
+    var connectionString = builder.Configuration.GetConnectionString("MongoDB");
+
+    if (string.IsNullOrEmpty(connectionString))
+    {
+        throw new InvalidOperationException(
+            "MongoDB connection string is not configured. " +
+            "Please set 'ConnectionStrings:MongoDB' in appsettings.json or environment variables.");
+    }
+
     return new MongoClient(connectionString);
 });
 
@@ -76,9 +93,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseMiddleware<RequestLoggingMiddleware>();
-app.UseMiddleware<RequestTimingMiddleware>();
 app.UseMiddleware<TokenAuthenticationMiddleware>();
-app.UseMiddleware<AuditLogMiddleware>();
 
 // Configure the HTTP request pipeline.
 

@@ -1,9 +1,20 @@
+using BusinessLayer.Services.Implementations;
+using BusinessLayer.Services.Interfaces;
 using DataAccessLayer.Context;
 using DataAccessLayer.Entities;
+using DataAccessLayer.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Middleware;
+using MongoDB.Driver;
+using Serilog;
 using WebMVC.Extensions;
+
+// Configure Serilog
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .WriteTo.Console()
+    .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +23,8 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddMemoryCache();
 
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IAuditLogService, AuditLogService>();
 builder.Services.AddDbContext<BookHubDbContext>(options =>
 {
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
@@ -64,6 +77,22 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
+
+builder.Services.AddSingleton<IMongoClient>(_ =>
+{
+    var connectionString = builder.Configuration.GetConnectionString("MongoDB");
+    
+    if (string.IsNullOrEmpty(connectionString))
+    {
+        throw new InvalidOperationException(
+            "MongoDB connection string is not configured. " +
+            "Please set 'ConnectionStrings:MongoDB' in appsettings.json, environment variables, or Azure App Configuration.");
+    }
+    
+    return new MongoClient(connectionString);
+});
+
+builder.Services.AddSingleton<ILogService, MongoLogService>();
 
 var app = builder.Build();
 

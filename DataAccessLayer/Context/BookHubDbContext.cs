@@ -1,11 +1,16 @@
 ﻿using DataAccessLayer.Entities;
+using DataAccessLayer.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
 
 namespace DataAccessLayer.Context;
 
 public class BookHubDbContext: IdentityDbContext<LocalIdentityUser>
 {
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IAuditLogService _auditLogService;
+
     public DbSet<Book> Books { get; set; }
     public DbSet<Rating> Ratings { get; set; }
     public DbSet<Genre> Genres { get; set; }
@@ -19,9 +24,26 @@ public class BookHubDbContext: IdentityDbContext<LocalIdentityUser>
     public DbSet<Image> Images { get; set; }
     public DbSet<AuditLog> AuditLogs { get; set; }
 
-    public BookHubDbContext(DbContextOptions<BookHubDbContext> options) : base(options)
+    public BookHubDbContext(
+        DbContextOptions<BookHubDbContext> options, 
+        IHttpContextAccessor httpContextAccessor,
+        IAuditLogService auditLogService) : base(options)
     {
+        _httpContextAccessor = httpContextAccessor;
+        _auditLogService = auditLogService;
+    }
 
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        var currentUsername = _httpContextAccessor?.HttpContext?.User.Identity?.Name ?? "System";
+        var auditLogs = _auditLogService.GenerateAuditLogs(ChangeTracker.Entries(), currentUsername, AuditLogs);
+
+        foreach (var auditLog in auditLogs)
+        {
+            AuditLogs.Add(auditLog);
+        }
+
+        return await base.SaveChangesAsync(cancellationToken);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
