@@ -36,7 +36,7 @@ public static class CartMapper
             TotalValue = cart.TotalValue,
             OrderId = cart.OrderId,
             OrderDate = cart.OrderDate,
-            PurchaseItems = cart.PurchaseItems?.Select(PurchaseItemMapper.ToDto).ToList() ?? new List<PurchaseItemDto>(),
+            PurchaseItems = cart.PurchaseItems?.Select(PurchaseItemMapper.ToDetailDto).ToList() ?? new List<PurchaseItemDetailDto>(),
             PaymentStatus = cart.PaymentStatus,
             CreatedAt = cart.CreatedAt,
             UpdatedAt = cart.UpdatedAt,

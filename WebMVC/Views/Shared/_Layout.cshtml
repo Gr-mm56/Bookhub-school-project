@@ -46,6 +46,15 @@
                             <a asp-area="" class="nav-link text-dark">Hello @UserManager.GetUserName(User)!</a>
                         </li>
                         <li>
+                            <form asp-area="" asp-controller="Order" asp-action="Cart" method="get">
+                                <input type="hidden" name="returnUrl" value="/"/>
+
+                                <button type="submit" class="nav-link btn btn-link text-dark">
+                                    My Cart
+                                </button>
+                            </form>
+                        </li>
+                        <li>
                             <form asp-area="" asp-controller="Account" asp-action="Logout" method="post">
                                 <input type="hidden" name="returnUrl" value="/"/>
 

@@ -6,9 +6,9 @@ namespace WebMVC.Mappers;
 
 public static class CartMapper
 {
-    public static List<CartViewModel> ToCartViewModels(IEnumerable<CartDetailDto> cartDetailDtos)
+    public static List<CartViewModel> ToCartViewModels(IEnumerable<CartDetailDto> carts)
     {
-        return cartDetailDtos.Select(ToCartViewModel).ToList();
+        return carts.Select(ToCartViewModel).ToList();
     }
 
     public static CartViewModel ToCartViewModel(CartDetailDto cart)
@@ -16,6 +16,8 @@ public static class CartMapper
         return new CartViewModel
         {
             Id = cart.Id,
+            User = cart.User,
+            PaymentStatus = cart.PaymentStatus,
             PurchaseItems = cart.PurchaseItems?
                 .OfType<PurchaseItemDetailDto>()
                 .Select(pi => new CartItemViewModel
@@ -25,7 +27,8 @@ public static class CartMapper
                     Price = pi.Book.Price,
                     Quantity = pi.Count
                 })
-                .ToList() ?? new List<CartItemViewModel>()
+                .ToList()
+            ?? new List<CartItemViewModel>()
         };
     }
 }

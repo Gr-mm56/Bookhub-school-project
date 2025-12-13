@@ -56,8 +56,9 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
         var cart = await Context.Carts
             .AsNoTracking()
             .Include(c => c.User)
-            .Include(c => c.PurchaseItems)
-            .FirstOrDefaultAsync(c => c.UserId == id);
+            .Include(c => c.PurchaseItems!)
+                .ThenInclude(p => p.Book)
+            .FirstOrDefaultAsync(c => c.UserId == id && c.OrderId == null);
 
         return cart != null ? CartMapper.ToDetailDto(cart) : null;
     }
