@@ -36,7 +36,7 @@ public class BookHubDbContext: IdentityDbContext<LocalIdentityUser>
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         var currentUsername = _httpContextAccessor?.HttpContext?.User.Identity?.Name ?? "System";
-        var auditLogs = _auditLogService.GenerateAuditLogs(currentUsername);
+        var auditLogs = _auditLogService.GenerateAuditLogs(ChangeTracker.Entries(), currentUsername, AuditLogs);
 
         foreach (var auditLog in auditLogs)
         {

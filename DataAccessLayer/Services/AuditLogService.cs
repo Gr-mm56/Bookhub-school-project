@@ -1,5 +1,4 @@
-﻿using DataAccessLayer.Context;
-using DataAccessLayer.Entities;
+﻿using DataAccessLayer.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Text.Json;
@@ -8,18 +7,15 @@ namespace DataAccessLayer.Services;
 
 public class AuditLogService : IAuditLogService
 {
-    private readonly BookHubDbContext _dbContext;
-
-    public AuditLogService(BookHubDbContext dbContext)
+    public AuditLogService()
     {
-        _dbContext = dbContext;
     }
 
-    public List<AuditLog> GenerateAuditLogs(string currentUsername)
+    public List<AuditLog> GenerateAuditLogs(IEnumerable<EntityEntry> entries, string currentUsername, DbSet<AuditLog> auditLogs)
     {
-        var auditLogs = new List<AuditLog>();
+        var logs = new List<AuditLog>();
 
-        foreach (var entry in _dbContext.ChangeTracker.Entries()
+        foreach (var entry in entries
                  .Where(e => e.Entity is not AuditLog && e.State is not EntityState.Unchanged and not EntityState.Detached))
         {
             var entityId = ExtractEntityId(entry);
@@ -37,7 +33,7 @@ public class AuditLogService : IAuditLogService
             };
 
             var modificationDetails = ExtractModificationDetails(entry, action);
-            var editCount = GetPreviousEditCount(entityId, action);
+            var editCount = GetPreviousEditCount(auditLogs, entityId, action);
             if (action == "PUT")
             {
                 editCount += 1;
@@ -54,10 +50,10 @@ public class AuditLogService : IAuditLogService
                 EditCount = editCount
             };
 
-            auditLogs.Add(auditLog);
+            logs.Add(auditLog);
         }
 
-        return auditLogs;
+        return logs;
     }
 
     private static int ExtractEntityId(EntityEntry entry)
@@ -104,16 +100,15 @@ public class AuditLogService : IAuditLogService
             return string.Empty;
         }
     }
-
-    private int GetPreviousEditCount(int entityId, string action)
+    private int GetPreviousEditCount(DbSet<AuditLog> auditLogs, int entityId, string action)
     {
         if (action != "PUT")
         {
             return 0;
         }
 
-        var lastAuditEntry = _dbContext.AuditLogs
-            .Where(log => log.EntityId == entityId && 
+        var lastAuditEntry = auditLogs
+            .Where(log => log.EntityId == entityId &&
                         log.Action == "PUT")
             .FirstOrDefault();
 

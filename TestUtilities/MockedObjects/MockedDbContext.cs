@@ -25,8 +25,11 @@ public class MockedDbContext
     {
         var httpContextAccessor = Substitute.For<IHttpContextAccessor>();
         var auditLogService = Substitute.For<IAuditLogService>();
-        auditLogService.GenerateAuditLogs(Arg.Any<string>()).Returns(new List<AuditLog>());
-        
+        auditLogService.GenerateAuditLogs(Arg.Any<IEnumerable<Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry>>(),
+            Arg.Any<string>(),
+            Arg.Any<DbSet<AuditLog>>())
+            .Returns(new List<AuditLog>());
+
         var dbContextToMock = new BookHubDbContext(options, httpContextAccessor, auditLogService);
         PrepareData(dbContextToMock);
 
