@@ -1,0 +1,14 @@
+@model WebMVC.Areas.Admin.Models.Author.AuthorCreateEditViewModelWithOptions
+
+<!-- Books Multiselect -->
+<div class="mb-3">
+    <label asp-for="Author.BookIds" class="form-label">Books *</label>
+    <select asp-for="Author.BookIds" class="form-select" multiple="multiple" style="height: 150px;">
+        @foreach (var book in Model.Books)
+        {
+            <option value="@book.Id">@book.Title</option>
+        }
+    </select>
+    <small class="text-muted d-block mt-1">Hold Ctrl (Cmd on Mac) to select multiple books</small>
+    <span asp-validation-for="Author.BookIds" class="text-danger small d-block mt-1"></span>
+</div>

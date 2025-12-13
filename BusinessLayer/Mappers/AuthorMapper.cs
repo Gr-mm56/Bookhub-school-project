@@ -16,6 +16,8 @@ public static class AuthorMapper
             Name = author.Name,
             Surname = author.Surname,
             ProfilePhoto = author.ProfilePhoto != null ? ImageMapper.ToDto(author.ProfilePhoto) : null,
+            CreatedAt = author.CreatedAt,
+            UpdatedAt = author.UpdatedAt
         };
     }
 
@@ -30,6 +32,8 @@ public static class AuthorMapper
             Surname = author.Surname,
             ProfilePhoto = author.ProfilePhoto != null ? ImageMapper.ToDto(author.ProfilePhoto) : null,
             Books = author.Books.Select(BookMapper.ToDto).ToList() ?? [],
+            CreatedAt = author.CreatedAt,
+            UpdatedAt = author.UpdatedAt
         };
     }
 
