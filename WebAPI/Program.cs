@@ -63,8 +63,15 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddSingleton<IMongoClient>(_ =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("MongoDB")
-                           ?? "mongodb://localhost:27017";
+    var connectionString = builder.Configuration.GetConnectionString("MongoDB");
+
+    if (string.IsNullOrEmpty(connectionString))
+    {
+        throw new InvalidOperationException(
+            "MongoDB connection string is not configured. " +
+            "Please set 'ConnectionStrings:MongoDB' in appsettings.json or environment variables.");
+    }
+
     return new MongoClient(connectionString);
 });
 
