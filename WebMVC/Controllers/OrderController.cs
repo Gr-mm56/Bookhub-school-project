@@ -77,6 +77,24 @@ public class OrderController : Controller
                 return RedirectToAction("Cart");
             }
 
+            // Check if the book is already in the cart
+            var cartBooks = await _purchaseItemService.GetAllDetailsByCartIdAsync(cart.Id);
+            var existingItem = cartBooks.FirstOrDefault(pi => pi.BookId == bookId);
+
+            if (existingItem != null)
+            {
+                var updateDto = new PurchaseItemUpdateDto()
+                {
+                    Count = existingItem.Count + quantity
+                };
+
+                await _purchaseItemService.UpdateAsync(existingItem.Id, updateDto);
+
+                TempData["Success"] = "Quantity updated in cart!";
+                return RedirectToAction("Cart");
+            }
+
+            // Book not in cart, create new purchase item
             var purchaseItemDto = new PurchaseItemCreateDto
             {
                 CartId = cart.Id,
@@ -93,6 +111,48 @@ public class OrderController : Controller
         {
             _logger.LogError(ex, "Error adding to cart");
             TempData["Error"] = "Failed to add item to cart.";
+            return RedirectToAction("Cart");
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> UpdateQuantity(int bookId, int quantity)
+    {
+        try
+        {
+            var userId = await ValidateLoginAndGetUserId();
+            var cart = await _cartService.GetCartByUserIdAsync(userId);
+
+            if (cart == null)
+            {
+                TempData["Error"] = "Cart not found.";
+                return RedirectToAction("Cart");
+            }
+
+            // Get cart items
+            var cartItems = await _purchaseItemService.GetAllDetailsByCartIdAsync(cart.Id);
+            var item = cartItems.FirstOrDefault(pi => pi.BookId == bookId);
+
+            if (item != null) {
+                var updateDto = new PurchaseItemUpdateDto
+                {
+                    Count = quantity
+                };
+
+                await _purchaseItemService.UpdateAsync(item.Id, updateDto);
+
+                TempData["Success"] = "Quantity updated!";
+            }
+            else {
+                TempData["Error"] = "Book not found in cart.";
+            }
+
+            return RedirectToAction("Cart");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating cart quantity");
+            TempData["Error"] = "Failed to update quantity.";
             return RedirectToAction("Cart");
         }
     }

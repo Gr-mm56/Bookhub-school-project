@@ -35,6 +35,18 @@ public class PurchaseItemService : BaseService<BookHubDbContext>, IPurchaseItemS
         return await PageAsync(query, limit, offset, PurchaseItemMapper.ToDetailDtoList);
     }
 
+    public async Task<List<PurchaseItemDetailDto>> GetAllDetailsByCartIdAsync(int cartId)
+    {
+        var query = Context.PurchaseItems
+            .AsNoTracking()
+            .WithDetailIncludes()
+            .Where(p => p.CartId == cartId);
+
+        var purchaseItems = await query.ToListAsync();
+
+        return PurchaseItemMapper.ToDetailDtoList(purchaseItems).ToList();
+    }
+
     public async Task<PurchaseItemDetailDto?> GetByIdAsync(int id)
     {
         var purchaseItem = await Context.PurchaseItems

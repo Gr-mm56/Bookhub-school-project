@@ -20,28 +20,38 @@
                             <div class="row align-items-center">
 
                                 <div class="col-md-2 text-center">
-                                    <strong>$@item.Price.ToString("F2")</strong>
+                                    <strong>@item.Title</strong>
                                 </div>
 
                                 <div class="col-md-2 text-center">
-                                    <span>@item.Quantity</span>
+                                    <form asp-action="UpdateQuantity" asp-controller="Order" method="post" class="d-flex align-items-center justify-content-center gap-1">
+                                        <input type="hidden" name="bookId" value="@item.BookId" />
+
+                                        <input type="number" name="quantity" value="@item.Quantity" min="1" class="form-control form-control-sm" style="width:60px;" />
+
+                                        <button type="submit" class="btn btn-sm btn-outline-secondary">Update</button>
+                                    </form>
+                                </div>
+
+                                <div class="col-md-2 text-center">
+                                    <strong>$@item.Price.ToString("F2")</strong>
                                 </div>
 
                                 <div class="col-md-2 text-end">
                                     <strong class="text-primary">
                                         $@item.Subtotal.ToString("F2")
                                     </strong>
-                                    <br />
+                                </div>
+                                <div class="col-md-2 text-end">
                                     <form asp-action="RemoveFromCart"
                                           asp-controller="Order"
                                           method="post">
-                                        <input type="hidden" name="bookId" value="@item.BookId" />
+                                        <input type="hidden" name="bookId" value="@item.BookId"/>
                                         <button class="btn btn-sm btn-link text-danger">
                                             Remove
                                         </button>
                                     </form>
                                 </div>
-
                             </div>
                         </div>
                     </div>
