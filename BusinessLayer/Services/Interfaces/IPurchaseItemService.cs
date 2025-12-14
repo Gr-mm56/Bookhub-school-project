@@ -8,4 +8,8 @@ public interface IPurchaseItemService
     : ICrudService<PurchaseItemDto, PurchaseItemDetailDto, PurchaseItemCreateDto, PurchaseItemUpdateDto>
 {
     Task<PagedResultDto<PurchaseItemDetailDto>> GetAllDetailsAsync(int limit = 20, int offset = 0);
+
+    Task<List<PurchaseItemDetailDto>> GetAllDetailsByCartIdAsync(int cartId);
+
+    Task<bool> DeleteByItemIdAsync(int bookId, int cartId);
 }

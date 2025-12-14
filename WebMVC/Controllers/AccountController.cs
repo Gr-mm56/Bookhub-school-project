@@ -1,4 +1,6 @@
-﻿using DataAccessLayer.Context;
+﻿using BusinessLayer.Models.Cart.Requests;
+using BusinessLayer.Services.Interfaces;
+using DataAccessLayer.Context;
 using DataAccessLayer.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -10,11 +12,16 @@ public class AccountController : Controller
 {
     private readonly UserManager<LocalIdentityUser> _userManager;
     private readonly SignInManager<LocalIdentityUser> _signInManager;
+    private readonly ICartService _cartService;
 
-    public AccountController(UserManager<LocalIdentityUser> userManager, SignInManager<LocalIdentityUser> signInManager)
-    {
+    public AccountController(
+        UserManager<LocalIdentityUser> userManager,
+        SignInManager<LocalIdentityUser> signInManager,
+        ICartService cartService
+    ) {
         _userManager = userManager;
         _signInManager = signInManager;
+        _cartService = cartService;
     }
 
     [HttpGet]
@@ -36,7 +43,7 @@ public class AccountController : Controller
         {
             UserName = model.Username,
             Email = model.Email,
-            User = new User()
+            User = new User
             {
                 Name = model.Name,
                 Surname = model.Surname,
@@ -46,7 +53,9 @@ public class AccountController : Controller
                 CreatedAt = DateTime.Now
             }
         };
+
         var result = await _userManager.CreateAsync(user, model.Password);
+
         if (result.Succeeded)
         {
             await _userManager.AddToRoleAsync(user, RoleInitializer.UserRole);
@@ -57,6 +66,19 @@ public class AccountController : Controller
             }
 
             await _signInManager.SignInAsync(user, isPersistent: false);
+
+            var userId = user.User.Id;
+
+            // create default empty cart for user
+            CartCreateDto cartDto = new CartCreateDto
+            {
+                UserId = userId,
+                TotalValue = 0,
+                PaymentStatus = 0,
+            };
+
+            await _cartService.CreateAsync(cartDto);
+
             return RedirectToAction(nameof(Login), nameof(AccountController).Replace("Controller", ""));
         }
 

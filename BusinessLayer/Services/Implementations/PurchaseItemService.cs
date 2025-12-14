@@ -35,6 +35,18 @@ public class PurchaseItemService : BaseService<BookHubDbContext>, IPurchaseItemS
         return await PageAsync(query, limit, offset, PurchaseItemMapper.ToDetailDtoList);
     }
 
+    public async Task<List<PurchaseItemDetailDto>> GetAllDetailsByCartIdAsync(int cartId)
+    {
+        var query = Context.PurchaseItems
+            .AsNoTracking()
+            .WithDetailIncludes()
+            .Where(p => p.CartId == cartId);
+
+        var purchaseItems = await query.ToListAsync();
+
+        return PurchaseItemMapper.ToDetailDtoList(purchaseItems).ToList();
+    }
+
     public async Task<PurchaseItemDetailDto?> GetByIdAsync(int id)
     {
         var purchaseItem = await Context.PurchaseItems
@@ -67,6 +79,22 @@ public class PurchaseItemService : BaseService<BookHubDbContext>, IPurchaseItemS
     public async Task<bool> DeleteAsync(int id)
     {
         PurchaseItem? purchaseItem = await Context.PurchaseItems.FirstOrDefaultAsync(p => p.Id == id);
+        if (purchaseItem == null)
+        {
+            return false;
+        }
+
+        Context.PurchaseItems.Remove(purchaseItem);
+        await SaveAsync();
+
+        return true;
+    }
+
+    public async Task<bool> DeleteByItemIdAsync(int bookId, int cartId)
+    {
+        PurchaseItem? purchaseItem = await Context.PurchaseItems
+            .FirstOrDefaultAsync(p => p.BookId == bookId && p.CartId == cartId);
+
         if (purchaseItem == null)
         {
             return false;

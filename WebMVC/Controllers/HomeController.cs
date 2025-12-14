@@ -23,8 +23,8 @@ namespace WebMVC.Controllers
             IAuthorService authorService,
             IBookService bookService,
             IPublisherService publisherService,
-            SignInManager<LocalIdentityUser> signInManager)
-        {
+            SignInManager<LocalIdentityUser> signInManager
+        ) {
             _logger = logger;
             _searchFacade = searchFacade;
             _authorService = authorService;

@@ -37,6 +37,14 @@ public class UserService : BaseService<BookHubDbContext>, IUserService
         return user != null ? UserMapper.ToDetailDto(user) : null;
     }
 
+    public async Task<UserDto?> GetUserAddress(int userId)
+    {
+        var user = await Context.Users
+            .FirstOrDefaultAsync(u => u.Id == userId);
+
+        return user != null ? UserMapper.ToDto(user) : null;
+    }
+
     public async Task<UserDto> CreateAsync(UserCreateDto userCreateDto)
     {
         // Validate that Image exists
@@ -83,6 +91,20 @@ public class UserService : BaseService<BookHubDbContext>, IUserService
         await SaveAsync();
 
         return UserMapper.ToDto(user);
+    }
+
+    public async Task<bool> UpdateFromOrderAsync(int userId, UserOrderUpdateDto userDto)
+    {
+        var user = await Context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        if (user == null)
+        {
+            return false;
+        }
+
+        UserMapper.UpdateEntityFromAdmin(user, userDto);
+        await SaveAsync();
+
+        return true;
     }
 
     private async Task ValidateImage(int imageId)

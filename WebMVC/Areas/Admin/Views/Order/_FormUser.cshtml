@@ -3,7 +3,7 @@
 <!-- Users -->
 <div class="col-md-6 mb-3">
     <label asp-for="Order.UserId" class="form-label">User</label>
-    <select asp-for="Order.UserId" class="form-select">
+    <select asp-for="Order.UserId" class="form-select" id="userSelect">
         <option value="">-- Select User * --</option>
         @foreach (var user in Model.Users)
         {

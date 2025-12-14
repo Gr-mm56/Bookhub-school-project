@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccessLayer.Migrations
 {
     [DbContext(typeof(BookHubDbContext))]
-    [Migration("20251130191856_milestoneMigration")]
-    partial class milestoneMigration
+    [Migration("20251214150518_M3-Migration")]
+    partial class M3Migration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -28,6 +28,7 @@ namespace DataAccessLayer.Migrations
 
                     b.Property<string>("Action")
                         .IsRequired()
+                        .HasMaxLength(500)
                         .HasColumnType("TEXT");
 
                     b.Property<int>("EditCount")
@@ -38,10 +39,12 @@ namespace DataAccessLayer.Migrations
 
                     b.Property<string>("EntityName")
                         .IsRequired()
+                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ModificationDetails")
                         .IsRequired()
+                        .HasMaxLength(2000)
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("ModifiedAt")
@@ -49,6 +52,7 @@ namespace DataAccessLayer.Migrations
 
                     b.Property<string>("Username")
                         .IsRequired()
+                        .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -529,6 +533,9 @@ namespace DataAccessLayer.Migrations
                     b.Property<int?>("OrderId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("PaymentStatus")
+                        .HasColumnType("INTEGER");
+
                     b.Property<double>("TotalValue")
                         .HasColumnType("REAL");
 
@@ -549,8 +556,7 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 1,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            OrderDate = new DateTime(2025, 2, 17, 16, 51, 5, 965, DateTimeKind.Unspecified).AddTicks(8834),
-                            OrderId = 1729,
+                            PaymentStatus = 1,
                             TotalValue = 292.50999999999999,
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UserId = 1
@@ -559,9 +565,10 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 2,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            OrderDate = new DateTime(2025, 7, 26, 8, 45, 7, 378, DateTimeKind.Unspecified).AddTicks(9460),
-                            OrderId = 1535,
-                            TotalValue = 231.18000000000001,
+                            OrderDate = new DateTime(2024, 11, 28, 23, 40, 23, 892, DateTimeKind.Unspecified).AddTicks(4379),
+                            OrderId = 1000,
+                            PaymentStatus = 0,
+                            TotalValue = 199.21000000000001,
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UserId = 2
                         },
@@ -569,9 +576,10 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 3,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            OrderDate = new DateTime(2024, 5, 25, 10, 39, 3, 278, DateTimeKind.Unspecified).AddTicks(2620),
-                            OrderId = 1631,
-                            TotalValue = 204.75999999999999,
+                            OrderDate = new DateTime(2025, 1, 28, 6, 13, 39, 512, DateTimeKind.Unspecified).AddTicks(1616),
+                            OrderId = 1001,
+                            PaymentStatus = 0,
+                            TotalValue = 275.62,
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UserId = 3
                         },
@@ -579,9 +587,10 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 4,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            OrderDate = new DateTime(2025, 4, 2, 20, 45, 33, 659, DateTimeKind.Unspecified).AddTicks(5317),
-                            OrderId = 1674,
-                            TotalValue = 212.91,
+                            OrderDate = new DateTime(2025, 2, 23, 13, 9, 33, 729, DateTimeKind.Unspecified).AddTicks(7070),
+                            OrderId = 1002,
+                            PaymentStatus = 0,
+                            TotalValue = 70.040000000000006,
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UserId = 4
                         },
@@ -589,9 +598,10 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 5,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            OrderDate = new DateTime(2024, 3, 12, 4, 38, 58, 477, DateTimeKind.Unspecified).AddTicks(5940),
-                            OrderId = 1898,
-                            TotalValue = 30.940000000000001,
+                            OrderDate = new DateTime(2025, 7, 13, 0, 11, 5, 430, DateTimeKind.Unspecified).AddTicks(1468),
+                            OrderId = 1003,
+                            PaymentStatus = 1,
+                            TotalValue = 220.47999999999999,
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UserId = 5
                         },
@@ -599,7 +609,8 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 6,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            TotalValue = 138.91999999999999,
+                            PaymentStatus = 1,
+                            TotalValue = 34.280000000000001,
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UserId = 6
                         },
@@ -607,8 +618,7 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 7,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            OrderDate = new DateTime(2024, 3, 31, 21, 33, 41, 734, DateTimeKind.Unspecified).AddTicks(7149),
-                            OrderId = 1644,
+                            PaymentStatus = 1,
                             TotalValue = 73.489999999999995,
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UserId = 7
@@ -761,6 +771,7 @@ namespace DataAccessLayer.Migrations
 
                     b.Property<string>("FileUrl")
                         .IsRequired()
+                        .HasMaxLength(300)
                         .HasColumnType("TEXT");
 
                     b.Property<int?>("PublisherId")

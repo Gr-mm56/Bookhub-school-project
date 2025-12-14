@@ -13,6 +13,12 @@ public class UserOption
 {
     public int Id { get; set; }
     public required string Name { get; set; }
+
+    public string Country { get; set; }
+
+    public string City { get; set; }
+
+    public string Street { get; set; }
 }
 
 public class PurchaseItemOption

@@ -7,5 +7,5 @@ public class CartDetailDto : CartDto
 {
     public UserDto User { get; set; }
 
-    public ICollection<PurchaseItemDto>? PurchaseItems { get; set; } = new List<PurchaseItemDto>();
+    public ICollection<PurchaseItemDetailDto>? PurchaseItems { get; set; } = new List<PurchaseItemDetailDto>();
 }

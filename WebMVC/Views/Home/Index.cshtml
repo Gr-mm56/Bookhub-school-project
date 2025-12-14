@@ -8,11 +8,11 @@
     <div class="row mb-5">
         <div class="col-md-8 offset-md-2">
             <form method="get" action="@Url.Action("Index", "Home")" class="input-group input-group-lg">
-                <input 
-                    type="text" 
-                    name="searchTerm" 
-                    class="form-control" 
-                    placeholder="Search for books, authors, publishers, or genres..." 
+                <input
+                    type="text"
+                    name="searchTerm"
+                    class="form-control"
+                    placeholder="Search for books, authors, publishers, or genres..."
                     value="@Model.SearchQuery"
                     aria-label="Search books" />
                 <button class="btn btn-primary" type="submit">
@@ -65,9 +65,9 @@
                                 <div class="position-relative" style="height: 250px; overflow: hidden; background-color: #f5f5f5;">
                                     @if (!string.IsNullOrEmpty(book.ImageUrl))
                                     {
-                                        <img 
-                                            src="/@book.ImageUrl" 
-                                            class="card-img-top" 
+                                        <img
+                                            src="/@book.ImageUrl"
+                                            class="card-img-top"
                                             alt="@book.Title"
                                             style="width: 100%; height: 100%; object-fit: cover;" />
                                     }
@@ -84,22 +84,34 @@
                                 <!-- Card Body -->
                                 <div class="card-body d-flex flex-column">
                                     <h5 class="card-title text-truncate text-dark" title="@book.Title">@book.Title</h5>
-                                    
+
                                     @if (!string.IsNullOrEmpty(book.FirstAuthorName))
                                     {
                                         <p class="card-text text-muted small text-truncate" title="@book.FirstAuthorName">
                                             by @book.FirstAuthorName
                                         </p>
                                     }
-                                    
+
                                     <div class="mt-auto">
                                         <div class="d-flex justify-content-between align-items-center gap-2">
                                             <span class="h5 mb-0 text-primary">$@book.Price.ToString("F2")</span>
+
                                             @if (Model.IsSignedIn)
                                             {
-                                                <button class="btn btn-sm btn-outline-primary" type="button" onclick="event.preventDefault();">
-                                                    <i class="bi bi-cart-plus"></i> Add to Cart
-                                                </button>
+                                                <form asp-controller="Order" asp-action="AddToCart" method="post" class="mb-0">
+                                                    <input type="hidden" name="bookId" value="@book.Id" />
+                                                    <input type="hidden" name="quantity" value="1" />
+
+                                                    <button type="submit" class="btn btn-sm btn-outline-primary">
+                                                        <i class="bi bi-cart-plus"></i> Add to Cart
+                                                    </button>
+                                                </form>
+                                            }
+                                            else
+                                            {
+                                                <p class="text-muted mb-0">
+                                                    <a href="@Url.Action("Login", "Account")" class="text-decoration-none">Sign in</a> to add items to your cart.
+                                                </p>
                                             }
                                         </div>
                                     </div>
@@ -401,4 +413,3 @@
         padding: 1rem;
     }
 </style>
-
