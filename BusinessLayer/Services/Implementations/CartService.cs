@@ -79,7 +79,7 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
         return CartMapper.ToDto(cart);
     }
 
-    public async Task<CartDto> CreateOrderAsync(OrderCreateDto orderCreateDto)
+    public async Task<CartDto> CreateOrderAsync(OrderCreateDto orderCreateDto, int? cartId = null)
     {
         // Validate that User exists
         await ValidateRelatedEntitiesExistAsync(orderCreateDto.UserId);
@@ -87,7 +87,23 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
         // Validate other values
         await ValidateValues(orderCreateDto.OrderId, orderCreateDto.TotalValue);
 
-        Cart cart = CartMapper.CreateOrderDtoToEntity(orderCreateDto);
+        Cart cart;
+
+        if (cartId == null)
+        {
+            cart = CartMapper.CreateOrderDtoToEntity(orderCreateDto);
+        }
+        else
+        {
+            var cartDetailDto = await GetByIdAsync(cartId ?? 0);
+
+            if (cartDetailDto == null)
+            {
+                throw new InvalidOperationException($"Cart with ID {cartId} not found, but should exist already.");
+            }
+
+            cart = CartMapper.DetailDtoToEntity(cartDetailDto);
+        }
 
         // Create new order ID
         var lastOrderId = Context.Carts

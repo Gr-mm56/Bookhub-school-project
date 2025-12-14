@@ -3,6 +3,7 @@ using DataAccessLayer.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using BusinessLayer.Models.Cart.Requests;
 using BusinessLayer.Models.PurchaseItem.Requests;
 using BusinessLayer.Models.PurchaseItem.Responses;
 using Microsoft.EntityFrameworkCore;
@@ -250,7 +251,48 @@ public class OrderController : Controller
 
     public async Task<IActionResult> Checkout()
     {
+        var userId = await ValidateLoginAndGetUserId();
+        var cart = await _cartService.GetCartByUserIdAsync(userId);
 
+        if (cart == null)
+        {
+            return RedirectToAction("Cart");
+        }
+
+        return View();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Checkout(int paymentMethod)
+    {
+        var userId = await ValidateLoginAndGetUserId();
+        var cart = await _cartService.GetCartByUserIdAsync(userId);
+
+        if (cart == null)
+        {
+            return RedirectToAction("Cart");
+        }
+
+        if (paymentMethod <= 0)
+        {
+            TempData["GiftCardError"] = "Please select payment option.";
+            return RedirectToAction("Checkout");
+        }
+
+        //update cart payment method + create order
+
+        var orderCreateDto = new OrderCreateDto()
+        {
+            UserId = cart.UserId,
+            TotalValue = cart.TotalValue,
+            BookIds = cart.PurchaseItems!.Select(pi => pi.BookId).ToList(),
+            PaymentStatus = cart.PaymentStatus,
+        };
+
+        await _cartService.CreateOrderAsync(orderCreateDto, cart.Id);
+
+
+        return RedirectToAction("OrderCreated", new { orderId = orderCreateDto.OrderId });
     }
 
     // [HttpPost]
@@ -258,6 +300,11 @@ public class OrderController : Controller
     // {
     //
     // }
+
+    public async Task<IActionResult> OrderCreated(int orderId)
+    {
+        return View(orderId);
+    }
 
     private async Task<int> ValidateLoginAndGetUserId()
     {

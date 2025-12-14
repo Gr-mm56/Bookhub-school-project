@@ -59,6 +59,22 @@ public static class CartMapper
         };
     }
 
+    public static Cart DetailDtoToEntity(CartDetailDto cartDetailDto)
+    {
+        ArgumentNullException.ThrowIfNull(cartDetailDto);
+
+        return new Cart
+        {
+            UserId = cartDetailDto.UserId,
+            TotalValue = cartDetailDto.TotalValue,
+            OrderId = cartDetailDto.OrderId,
+            OrderDate = cartDetailDto.OrderDate,
+            PaymentStatus = cartDetailDto.PaymentStatus,
+            CreatedAt = DateTime.Now,
+            UpdatedAt = DateTime.Now,
+        };
+    }
+
     public static void UpdateEntity(Cart cart, CartUpdateDto updateDto)
     {
         ArgumentNullException.ThrowIfNull(cart);

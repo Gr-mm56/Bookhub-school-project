@@ -100,9 +100,17 @@
                             </div>
                         }
 
+                        @{
+                            var checkoutClass = "btn btn-primary w-100 mt-3";
+                            if (!items.Any())
+                            {
+                                checkoutClass += " disabled";
+                            }
+                        }
+
                         <a asp-action="Checkout"
                            asp-controller="Order"
-                           class="btn btn-primary w-100 mt-3">
+                           class="@checkoutClass">
                             Proceed to Checkout
                         </a>
                     </div>
