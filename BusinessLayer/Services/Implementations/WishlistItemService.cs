@@ -36,6 +36,17 @@ public class WishlistItemService : BaseService<BookHubDbContext>, IWishlistItemS
         return wishlistItem != null ? WishlistItemMapper.ToDetailDto(wishlistItem) : null;
     }
 
+    public async Task<List<WishlistItemDetailDto>> GetWishlistByUserIdAsync(int userId)
+    {
+        var wishlistItems = await Context.WishlistItems
+            .AsNoTracking()
+            .Include(w => w.Book)
+            .Where(w => w.UserId == userId)
+            .ToListAsync();
+
+        return WishlistItemMapper.ToDetailDtoList(wishlistItems).ToList();;
+    }
+
     public async Task<WishlistItemDetailDto> CreateAsync(WishlistItemCreateDto wishlistItemCreateDto)
     {
         // Validate that User and Book exist

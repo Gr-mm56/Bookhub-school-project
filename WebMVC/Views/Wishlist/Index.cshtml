@@ -1,0 +1,57 @@
+﻿@model WebMVC.Models.WishlistViewModel
+
+@{
+    ViewData["Title"] = "My Wishlist";
+    var items = Model?.WishlistItems ?? new List<WebMVC.Models.WishlistItemViewModel>();
+}
+
+<div class="container py-5">
+    <h1 class="mb-4">My Wishlist</h1>
+
+    @if (items.Any())
+    {
+        <div class="row">
+            <!-- Wishlist Items -->
+            <div class="col-lg-8">
+                @foreach (var item in items)
+                {
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-6">
+                                    <strong>@item.Title</strong>
+                                </div>
+
+                                <div class="col-md-2 text-center">
+                                    <strong>$@item.Price.ToString("F2")</strong>
+                                </div>
+
+                                <div class="col-md-4 text-end">
+                                    <form asp-action="RemoveFromWishlist"
+                                          asp-controller="Home"
+                                          method="post">
+                                        <input type="hidden" name="bookId" value="@item.BookId"/>
+                                        <button class="btn btn-sm btn-link text-danger">
+                                            Remove
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <h3>Your wishlist is empty</h3>
+            <a asp-controller="Home"
+               asp-action="Index"
+               class="btn btn-primary mt-3">
+                Browse Books
+            </a>
+        </div>
+    }
+</div>
