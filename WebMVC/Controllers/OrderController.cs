@@ -294,7 +294,7 @@ public class OrderController : Controller
             PaymentStatus = 1,
         };
 
-        await _cartService.CreateOrderAsync(orderCreateDto, cart.Id);
+        var orderAsCartDto = await _cartService.CreateOrderAsync(orderCreateDto, cart.Id);
 
         // Create new cart for user
         CartCreateDto cartDto = new CartCreateDto
@@ -306,7 +306,7 @@ public class OrderController : Controller
 
         await _cartService.CreateAsync(cartDto);
 
-        return RedirectToAction("OrderCreated", new { orderId = orderCreateDto.OrderId });
+        return RedirectToAction("OrderCreated", new { orderId = orderAsCartDto.OrderId });
     }
 
     public async Task<IActionResult> OrderCreated(int orderId)

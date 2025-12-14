@@ -129,7 +129,7 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
 
         await SaveAsync();
 
-        // Add purchased items from admin
+        // Add purchased items from admin, purchase items from FE cart are already saved
         if (cartId == null)
         {
             foreach (var bookId in orderCreateDto.BookIds)
@@ -147,25 +147,6 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
                 await SaveAsync();
             }
         }
-        else
-        {
-            //
-            foreach (var bookId in orderCreateDto.BookIds)
-            {
-                var purchaseItemDto = new PurchaseItemCreateDto
-                {
-                    CartId = cart.Id,
-                    BookId = bookId,
-                    Count = orderCreateDto.Count
-                };
-
-                var purchaseItem = PurchaseItemMapper.CreateDtoToEntity(purchaseItemDto);
-
-                await Context.PurchaseItems.AddAsync(purchaseItem);
-                await SaveAsync();
-            }
-        }
-
 
         return CartMapper.ToDto(cart);
     }
