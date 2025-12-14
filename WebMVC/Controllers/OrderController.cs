@@ -18,6 +18,7 @@ public class OrderController : Controller
     private readonly ILogger<OrderController> _logger;
     private readonly ICartService _cartService;
     private readonly IPurchaseItemService _purchaseItemService;
+    private readonly IWishlistItemService _wishlistItemService;
     private SignInManager<LocalIdentityUser> _signInManager;
     private UserManager<LocalIdentityUser> _userManager;
 
@@ -25,12 +26,14 @@ public class OrderController : Controller
         ILogger<OrderController> logger,
         ICartService cartService,
         IPurchaseItemService purchaseItemService,
+        IWishlistItemService wishlistItemService,
         SignInManager<LocalIdentityUser> signInManager,
         UserManager<LocalIdentityUser> userManager
     ) {
         _logger = logger;
         _cartService = cartService;
         _purchaseItemService = purchaseItemService;
+        _wishlistItemService = wishlistItemService;
         _signInManager = signInManager;
         _userManager = userManager;
     }
@@ -87,7 +90,7 @@ public class OrderController : Controller
 
             if (existingItem != null)
             {
-                var updateDto = new PurchaseItemUpdateDto()
+                var updateDto = new PurchaseItemUpdateDto
                 {
                     Count = existingItem.Count + quantity
                 };
@@ -98,7 +101,7 @@ public class OrderController : Controller
                 return RedirectToAction("Cart");
             }
 
-            // Book not in cart, create new purchase item
+            // Book is not in cart, create new purchase item
             var purchaseItemDto = new PurchaseItemCreateDto
             {
                 CartId = cart.Id,
@@ -109,6 +112,62 @@ public class OrderController : Controller
             await _purchaseItemService.CreateAsync(purchaseItemDto);
 
             TempData["Success"] = "Item added to cart successfully!";
+            return RedirectToAction("Cart");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error adding to cart");
+            TempData["Error"] = "Failed to add item to cart.";
+            return RedirectToAction("Cart");
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> AddFromWishlist(int bookId)
+    {
+        try
+        {
+            var userId = await ValidateLoginAndGetUserId();
+            var cart = await _cartService.GetCartByUserIdAsync(userId);
+
+            if (cart == null)
+            {
+                _logger.LogWarning("Cart not found for user {UserId}", userId);
+                return RedirectToAction("Cart");
+            }
+
+            var cartBooks = await _purchaseItemService.GetAllDetailsByCartIdAsync(cart.Id);
+            var existingItem = cartBooks.FirstOrDefault(pi => pi.BookId == bookId);
+
+            // If item is already there increase count
+            if (existingItem != null)
+            {
+                var updateDto = new PurchaseItemUpdateDto
+                {
+                    Count = existingItem.Count + 1
+                };
+
+                await _purchaseItemService.UpdateAsync(existingItem.Id, updateDto);
+
+                TempData["Success"] = "Quantity updated in cart!";
+                return RedirectToAction("Cart");
+            }
+
+            // Book is not in cart, create new purchase item
+            var purchaseItemDto = new PurchaseItemCreateDto
+            {
+                CartId = cart.Id,
+                Count = 1,
+                BookId = bookId,
+            };
+
+            await _purchaseItemService.CreateAsync(purchaseItemDto);
+
+            TempData["Success"] = "Item added to cart successfully!";
+
+            // Remove this item from user wishlist
+            await _wishlistItemService.DeleteByUserBookIdAsync(userId, bookId);
+
             return RedirectToAction("Cart");
         }
         catch (Exception ex)
@@ -283,7 +342,7 @@ public class OrderController : Controller
         }
 
         // Update cart payment method (Completed) + create order
-        var orderCreateDto = new OrderCreateDto()
+        var orderCreateDto = new OrderCreateDto
         {
             UserId = cart.UserId,
             TotalValue = cart.TotalValue,

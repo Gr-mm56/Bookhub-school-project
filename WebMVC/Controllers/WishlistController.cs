@@ -1,4 +1,5 @@
-﻿using BusinessLayer.Services.Interfaces;
+﻿using BusinessLayer.Models.WishlistItem.Requests;
+using BusinessLayer.Services.Interfaces;
 using DataAccessLayer.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -30,42 +31,75 @@ public class WishlistController : Controller
 
     public async Task<IActionResult> Index()
     {
-        var userId = await ValidateLoginAndGetUserId();
-        var wishlist = await _wishlistItemService.GetWishlistByUserIdAsync(userId);
-
-        if (!wishlist.Any())
+        try
         {
+            var userId = await ValidateLoginAndGetUserId();
+            var wishlistItems = await _wishlistItemService.GetWishlistByUserIdAsync(userId);
+
+            var viewModel = new WishlistViewModel
+            {
+                WishlistItems = WishlistMapper.ToWishlistViewModels(wishlistItems)
+            };
+
+            return View(viewModel);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error loading wishlist");
             return View(new WishlistViewModel());
         }
-
-        var viewModel = WishlistMapper.ToWishlistViewModels(wishlist);
-
-        return View(viewModel);
     }
 
-    // [HttpPost]
-    // public async Task<IActionResult> AddToWishlist()
-    // {
-    //     var userId = await ValidateLoginAndGetUserId();
-    //     var wishlist = await _wishlistItemService.GetWishlistByUserIdAsync(userId);
-    //
-    //     if (!wishlist.Any())
-    //     {
-    //         return View(new WishlistViewModel());
-    //     }
-    // }
-    //
-    // [HttpPost]
-    // public async Task<IActionResult> RemoveFromWishlist()
-    // {
-    //     var userId = await ValidateLoginAndGetUserId();
-    //     var wishlist = await _wishlistItemService.GetWishlistByUserIdAsync(userId);
-    //
-    //     if (!wishlist.Any())
-    //     {
-    //         return View(new WishlistViewModel());
-    //     }
-    // }
+    [HttpPost]
+    public async Task<IActionResult> AddToWishlist(int bookId)
+    {
+        try
+        {
+            var userId = await ValidateLoginAndGetUserId();
+
+            // Check if the book is already in the wishlist
+            var wishlistItems = await _wishlistItemService.GetWishlistByUserIdAsync(userId);
+            var existingItem = wishlistItems.FirstOrDefault(pi => pi.BookId == bookId);
+
+            if (existingItem != null)
+            {
+                TempData["Success"] = "Book is already in your wishlist!";
+                return RedirectToAction("Index");
+            }
+
+            // Book is not in wishlist, create new wishlist item
+            var wishlistItemDto = new WishlistItemCreateDto
+            {
+                UserId = userId,
+                BookId = bookId,
+            };
+
+            await _wishlistItemService.CreateAsync(wishlistItemDto);
+
+            TempData["Success"] = "Item added to wishlist successfully!";
+            return RedirectToAction("Index");
+        } catch (Exception ex) {
+            _logger.LogError(ex, "Error loading wishlist");
+            return View("Index");
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> RemoveFromWishlist(int bookId)
+    {
+        try {
+            var userId = await ValidateLoginAndGetUserId();
+
+            await _wishlistItemService.DeleteByUserBookIdAsync(userId, bookId);
+
+            TempData["Success"] = "Item removed from wishlist.";
+            return RedirectToAction("Index");
+
+        } catch (Exception ex) {
+            _logger.LogError(ex, "Error loading wishlist");
+            return View("Index");
+        }
+    }
 
     private async Task<int> ValidateLoginAndGetUserId()
     {
