@@ -31,6 +31,10 @@
 
                         @await Html.PartialAsync("_FormMultiselects", Model)
 
+                        <div class="row">
+                            @await Html.PartialAsync("_FormAddressFields", Model)
+                        </div>
+
                         <div class="d-flex justify-content-between mt-4">
                             <a asp-action="Index" class="btn btn-secondary">
                                 <i class="bi bi-arrow-left"></i> Back to List
@@ -53,4 +57,44 @@
         ViewBag.SubmitBtnId = "submitBtn";
     }
     @await Html.PartialAsync("_FormValidationScript")
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const userSelect = document.getElementById("userSelect");
+
+            if (!userSelect) return;
+
+            userSelect.addEventListener("change", async function () {
+                const userId = this.value;
+
+                if (!userId) {
+                    document.getElementById("Order_Country").value = "";
+                    document.getElementById("Order_City").value = "";
+                    document.getElementById("Order_Street").value = "";
+                    return;
+                }
+
+                try {
+                    const response = await fetch(
+                        `/Admin/Order/GetUserAddress?userId=${userId}`
+                    );
+
+                    if (!response.ok)
+                        throw new Error("User not found");
+
+                    const user = await response.json();
+
+                    document.getElementById("Order_Country").value = user.country ?? "";
+                    document.getElementById("Order_City").value = user.city ?? "";
+                    document.getElementById("Order_Street").value = user.street ?? "";
+
+                } catch (e) {
+                    console.error(e);
+                    alert("Failed to load user address");
+                }
+            });
+
+        });
+    </script>
 }

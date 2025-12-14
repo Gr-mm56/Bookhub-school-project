@@ -18,4 +18,10 @@ public class OrderCreateEditViewModel
 
     [MinLength(1, ErrorMessage = "At least one book must be selected")]
     public List<int> BookIds { get; set; } = [];
+
+    public string Country { get; set; } = "";
+
+    public string City { get; set; } = "";
+
+    public string Street { get; set; } = "";
 }

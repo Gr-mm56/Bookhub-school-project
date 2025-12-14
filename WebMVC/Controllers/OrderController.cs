@@ -18,7 +18,6 @@ public class OrderController : Controller
     private readonly ILogger<OrderController> _logger;
     private readonly ICartService _cartService;
     private readonly IPurchaseItemService _purchaseItemService;
-    private readonly IWishlistItemService _wishlistItemService;
     private SignInManager<LocalIdentityUser> _signInManager;
     private UserManager<LocalIdentityUser> _userManager;
 
@@ -26,14 +25,12 @@ public class OrderController : Controller
         ILogger<OrderController> logger,
         ICartService cartService,
         IPurchaseItemService purchaseItemService,
-        IWishlistItemService wishlistItemService,
         SignInManager<LocalIdentityUser> signInManager,
         UserManager<LocalIdentityUser> userManager
     ) {
         _logger = logger;
         _cartService = cartService;
         _purchaseItemService = purchaseItemService;
-        _wishlistItemService = wishlistItemService;
         _signInManager = signInManager;
         _userManager = userManager;
     }

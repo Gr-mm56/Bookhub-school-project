@@ -2,6 +2,7 @@
 using BusinessLayer.Models.Cart.Requests;
 using BusinessLayer.Models.Cart.Responses;
 using BusinessLayer.Models.PurchaseItem.Responses;
+using BusinessLayer.Models.User.Requests;
 using BusinessLayer.Models.User.Responses;
 using WebMVC.Areas.Admin.Models.Order;
 
@@ -72,6 +73,9 @@ public static class OrderViewModelMapper
                 {
                     Id = u.Id,
                     Name = u.Name + " " + u.Surname,
+                    Country = u.Country,
+                    City = u.City,
+                    Street = u.Street,
                 })
                 .OrderBy(u => u.Id)
                 .ToList(),
@@ -99,6 +103,9 @@ public static class OrderViewModelMapper
             OrderDate = viewModel.OrderDate,
             PaymentStatus = viewModel.PaymentStatus,
             UserId = viewModel.UserId,
+            Country = viewModel.Country,
+            City = viewModel.City,
+            Street = viewModel.Street,
             BookIds = viewModel.BookIds,
         };
     }
@@ -117,6 +124,16 @@ public static class OrderViewModelMapper
             CreatedAt = orderDetailDto.CreatedAt,
             UpdatedAt = orderDetailDto.UpdatedAt,
             PurchaseItemsCount = orderDetailDto.PurchaseItems?.Count ?? 0
+        };
+    }
+
+    public static UserOrderUpdateDto ExtractUserToDto(OrderCreateEditViewModel order)
+    {
+        return new UserOrderUpdateDto
+        {
+            Country = order.Country,
+            City = order.City,
+            Street = order.Street,
         };
     }
 }

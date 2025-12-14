@@ -83,6 +83,17 @@ public static class UserMapper
         user.UpdatedAt = DateTime.Now;
     }
 
+    public static void UpdateEntityFromAdmin(User user, UserOrderUpdateDto updateDto)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+        ArgumentNullException.ThrowIfNull(updateDto);
+
+        user.Street = updateDto.Street;
+        user.City = updateDto.City;
+        user.Country = updateDto.Country;
+        user.UpdatedAt = DateTime.Now;
+    }
+
     public static IEnumerable<UserDto> ToDtoList(IEnumerable<User> users)
     {
         return users.Select(ToDto);

@@ -86,10 +86,19 @@ public class OrderController : AdminController
             return NotFound();
         }
 
+        var user = await _userService.GetByIdAsync(order.UserId);
+        if (user == null)
+        {
+            return NotFound();
+        }
+
         var orderViewModel = new OrderCreateEditViewModel
         {
             UserId = order.UserId,
             TotalValue = order.TotalValue,
+            Country = user.Country,
+            City = user.City,
+            Street = user.Street,
             OrderDate = order.OrderDate,
             PaymentStatus = order.PaymentStatus,
             BookIds = order.PurchaseItems?.Select(p => p.BookId).ToList() ?? new List<int>()
@@ -114,9 +123,12 @@ public class OrderController : AdminController
         }
 
         var orderRequestDto = OrderViewModelMapper.ToUpdateDto(model.Order);
-        var result = await _cartService.UpdateOrderAsync(id, orderRequestDto);
+        var userRequestDto = OrderViewModelMapper.ExtractUserToDto(model.Order);
 
-        if (result == null)
+        var result = await _cartService.UpdateOrderAsync(id, orderRequestDto);
+        var userResult = await _userService.UpdateFromOrderAsync(orderRequestDto.UserId, userRequestDto);
+
+        if (result == null || !userResult)
         {
             return NotFound();
         }
@@ -124,6 +136,19 @@ public class OrderController : AdminController
         TempData["SuccessMessage"] = "Order updated successfully!";
 
         return RedirectToAction(nameof(Index));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetUserAddress(int userId)
+    {
+        var user = await _userService.GetUserAddress(userId);
+
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        return Json(user);
     }
 
     public async Task<IActionResult> Delete(int id)
