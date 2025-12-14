@@ -55,6 +55,15 @@
                             </form>
                         </li>
                         <li>
+                            <form asp-area="" asp-controller="Wishlist" asp-action="Index" method="get">
+                                <input type="hidden" name="returnUrl" value="/"/>
+
+                                <button type="submit" class="nav-link btn btn-link text-dark">
+                                    My Wishlist
+                                </button>
+                            </form>
+                        </li>
+                        <li>
                             <form asp-area="" asp-controller="Account" asp-action="Logout" method="post">
                                 <input type="hidden" name="returnUrl" value="/"/>
 

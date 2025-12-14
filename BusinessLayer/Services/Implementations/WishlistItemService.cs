@@ -36,6 +36,18 @@ public class WishlistItemService : BaseService<BookHubDbContext>, IWishlistItemS
         return wishlistItem != null ? WishlistItemMapper.ToDetailDto(wishlistItem) : null;
     }
 
+    public async Task<List<WishlistItemDetailDto>> GetWishlistByUserIdAsync(int userId)
+    {
+        var wishlistItems = await Context.WishlistItems
+            .AsNoTracking()
+            .Include(w => w.Book)
+            .Include(w => w.User)
+            .Where(w => w.UserId == userId)
+            .ToListAsync();
+
+        return WishlistItemMapper.ToDetailDtoList(wishlistItems).ToList();;
+    }
+
     public async Task<WishlistItemDetailDto> CreateAsync(WishlistItemCreateDto wishlistItemCreateDto)
     {
         // Validate that User and Book exist
@@ -46,12 +58,32 @@ public class WishlistItemService : BaseService<BookHubDbContext>, IWishlistItemS
         await Context.WishlistItems.AddAsync(wishlistItem);
         await SaveAsync();
 
+        wishlistItem = await Context.WishlistItems
+            .Include(w => w.Book)
+            .FirstOrDefaultAsync(w => w.Id == wishlistItem.Id);
+
         return WishlistItemMapper.ToDetailDto(wishlistItem);
     }
 
     public async Task<bool> DeleteAsync(int id)
     {
-        var wishlistItem = await Context.WishlistItems.FirstOrDefaultAsync(g => g.Id == id);
+        var wishlistItem = await Context.WishlistItems.FirstOrDefaultAsync(w => w.Id == id);
+        if (wishlistItem == null)
+        {
+            return false;
+        }
+
+        Context.WishlistItems.Remove(wishlistItem);
+        await SaveAsync();
+
+        return true;
+    }
+
+    public async Task<bool> DeleteByUserBookIdAsync(int userId, int bookId)
+    {
+        var wishlistItem = await Context.WishlistItems
+            .FirstOrDefaultAsync(w => w.UserId == userId && w.BookId == bookId);
+
         if (wishlistItem == null)
         {
             return false;

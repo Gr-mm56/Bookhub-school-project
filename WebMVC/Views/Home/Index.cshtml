@@ -98,6 +98,13 @@
 
                                             @if (Model.IsSignedIn)
                                             {
+                                                <form asp-controller="Wishlist" asp-action="AddToWishlist" method="post" class="mb-0">
+                                                    <input type="hidden" name="bookId" value="@book.Id" />
+
+                                                    <button type="submit" class="btn btn-sm btn-outline-primary">
+                                                        <i class="bi bi-heart"></i> Add to Wishlist
+                                                    </button>
+                                                </form>
                                                 <form asp-controller="Order" asp-action="AddToCart" method="post" class="mb-0">
                                                     <input type="hidden" name="bookId" value="@book.Id" />
                                                     <input type="hidden" name="quantity" value="1" />
