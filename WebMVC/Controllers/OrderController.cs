@@ -184,6 +184,81 @@ public class OrderController : Controller
         }
     }
 
+    [HttpPost]
+    public async Task<IActionResult> ApplyGiftCard(string code)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(code))
+            {
+                TempData["GiftCardError"] = "Gift card code is required.";
+                return RedirectToAction("Cart");
+            }
+
+            var userId = await ValidateLoginAndGetUserId();
+            var cart = await _cartService.GetCartByUserIdAsync(userId);
+
+            if (cart == null)
+            {
+                TempData["GiftCardError"] = "Cart not found.";
+                return RedirectToAction("Cart");
+            }
+
+            /* TODO just uncomment
+            if (cart.GiftCardId != null)
+            {
+                TempData["GiftCardError"] = "Gift Card Code was already applied.";
+                return RedirectToAction("Cart");
+            }
+            */
+
+            /* TODO – get gift card from DB
+            var giftCard = await _giftCardService.GetByCodeAsync(code);
+
+            if (giftCard == null || !giftCard.IsActive)
+            {
+                TempData["GiftCardError"] = "Invalid or expired gift card.";
+                return RedirectToAction("Cart");
+            }
+
+            var cartTotal = cart.TotalValue;
+            var discount = giftCard.Value;
+
+            // Validate if discount isn't too big comparing to the cart total value
+            if (discount <= 0 || discount >= cartTotal)
+            {
+                TempData["GiftCardError"] =
+                    "Gift card value must be smaller than cart total.";
+                return RedirectToAction("Cart");
+            }
+
+            */
+
+            // apply discount TODO
+            // await _cartService.ApplyGiftCardAsync(cart.Id, discount);
+
+            TempData["GiftCardSuccess"] = "Gift card applied successfully!";
+            return RedirectToAction("Cart");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error applying gift card");
+            TempData["GiftCardError"] = "Failed to apply gift card.";
+            return RedirectToAction("Cart");
+        }
+    }
+
+    public async Task<IActionResult> Checkout()
+    {
+
+    }
+
+    // [HttpPost]
+    // public async Task<IActionResult> Submit()
+    // {
+    //
+    // }
+
     private async Task<int> ValidateLoginAndGetUserId()
     {
         try

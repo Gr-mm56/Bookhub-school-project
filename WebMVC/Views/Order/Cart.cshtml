@@ -64,10 +64,41 @@
                     <div class="card-body">
                         <h4>Order Summary</h4>
                         <hr />
-                        <div class="d-flex justify-content-between">
-                            <span>Total</span>
-                            <strong>$@Model.TotalValue.ToString("F2")</strong>
-                        </div>
+
+                        @if (Model.GiftCardDiscount > 0)
+                        {
+                            <div class="d-flex justify-content-between">
+                                <span>Original price</span>
+                                <span>
+                                    $@((Model.TotalValue + Model.GiftCardDiscount).ToString("F2"))
+                                </span>
+                            </div>
+
+                            <div class="d-flex justify-content-between text-danger">
+                                <span>Discount</span>
+                                <span>
+                                    - $@Model.GiftCardDiscount.ToString("F2")
+                                </span>
+                            </div>
+
+                            <hr />
+
+                            <div class="d-flex justify-content-between fw-bold">
+                                <span>Total</span>
+                                <span>
+                                    $@Model.TotalValue.ToString("F2")
+                                </span>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="d-flex justify-content-between fw-bold">
+                                <span>Total</span>
+                                <span>
+                                    $@Model.TotalValue.ToString("F2")
+                                </span>
+                            </div>
+                        }
 
                         <a asp-action="Checkout"
                            asp-controller="Order"
@@ -90,4 +121,41 @@
             </a>
         </div>
     }
+</div>
+<div class="container py-3">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Gift Card</h5>
+
+                    <form asp-action="ApplyGiftCard" asp-controller="Order" method="post" class="d-flex gap-2">
+                        <input type="text"
+                               name="code"
+                               class="form-control"
+                               placeholder="Enter gift card code"
+                               required />
+
+                        <button type="submit" class="btn btn-outline-primary">
+                            Apply
+                        </button>
+                    </form>
+
+                    @if (TempData["GiftCardError"] != null)
+                    {
+                        <div class="text-danger mt-2">
+                            @TempData["GiftCardError"]
+                        </div>
+                    }
+
+                    @if (TempData["GiftCardSuccess"] != null)
+                    {
+                        <div class="text-success mt-2">
+                            @TempData["GiftCardSuccess"]
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
