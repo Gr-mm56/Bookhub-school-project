@@ -52,7 +52,7 @@ public class OrderController : Controller
 
             var viewModel = CartMapper.ToCartViewModel(cart);
 
-            // On view of cart update TotalValue in DB too
+            // Update TotalValue in DB, it is only counted in ViewModel
             var updateDto = new CartUpdateDto
             {
                 TotalValue = viewModel.TotalValue,
@@ -84,7 +84,6 @@ public class OrderController : Controller
                 return RedirectToAction("Cart");
             }
 
-            // Check if the book is already in the cart
             var cartBooks = await _purchaseItemService.GetAllDetailsByCartIdAsync(cart.Id);
             var existingItem = cartBooks.FirstOrDefault(pi => pi.BookId == bookId);
 
@@ -101,7 +100,6 @@ public class OrderController : Controller
                 return RedirectToAction("Cart");
             }
 
-            // Book is not in cart, create new purchase item
             var purchaseItemDto = new PurchaseItemCreateDto
             {
                 CartId = cart.Id,
@@ -139,7 +137,6 @@ public class OrderController : Controller
             var cartBooks = await _purchaseItemService.GetAllDetailsByCartIdAsync(cart.Id);
             var existingItem = cartBooks.FirstOrDefault(pi => pi.BookId == bookId);
 
-            // If item is already there increase count
             if (existingItem != null)
             {
                 var updateDto = new PurchaseItemUpdateDto
@@ -153,7 +150,6 @@ public class OrderController : Controller
                 return RedirectToAction("Cart");
             }
 
-            // Book is not in cart, create new purchase item
             var purchaseItemDto = new PurchaseItemCreateDto
             {
                 CartId = cart.Id,
@@ -165,7 +161,6 @@ public class OrderController : Controller
 
             TempData["Success"] = "Item added to cart successfully!";
 
-            // Remove this item from user wishlist
             await _wishlistItemService.DeleteByUserBookIdAsync(userId, bookId);
 
             return RedirectToAction("Cart");
@@ -192,7 +187,6 @@ public class OrderController : Controller
                 return RedirectToAction("Cart");
             }
 
-            // Get cart items
             var cartItems = await _purchaseItemService.GetAllDetailsByCartIdAsync(cart.Id);
             var item = cartItems.FirstOrDefault(pi => pi.BookId == bookId);
 
@@ -341,7 +335,6 @@ public class OrderController : Controller
             return RedirectToAction("Checkout");
         }
 
-        // Update cart payment method (Completed) + create order
         var orderCreateDto = new OrderCreateDto
         {
             UserId = cart.UserId,

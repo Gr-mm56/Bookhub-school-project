@@ -56,8 +56,6 @@ public class WishlistController : Controller
         try
         {
             var userId = await ValidateLoginAndGetUserId();
-
-            // Check if the book is already in the wishlist
             var wishlistItems = await _wishlistItemService.GetWishlistByUserIdAsync(userId);
             var existingItem = wishlistItems.FirstOrDefault(pi => pi.BookId == bookId);
 
@@ -67,7 +65,6 @@ public class WishlistController : Controller
                 return RedirectToAction("Index");
             }
 
-            // Book is not in wishlist, create new wishlist item
             var wishlistItemDto = new WishlistItemCreateDto
             {
                 UserId = userId,
