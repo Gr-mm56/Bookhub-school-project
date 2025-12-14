@@ -45,7 +45,8 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
         var cart = await Context.Carts
             .AsNoTracking()
             .Include(c => c.User)
-            .Include(c => c.PurchaseItems)
+            .Include(c => c.PurchaseItems!)
+                .ThenInclude(p => p.Book)
             .FirstOrDefaultAsync(c => c.Id == id);
 
         return cart != null ? CartMapper.ToDetailDto(cart) : null;
@@ -112,24 +113,59 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
 
         cart.OrderId = lastOrderId + 1;
 
-        await Context.Carts.AddAsync(cart);
+        if (cartId == null)
+        {
+            await Context.Carts.AddAsync(cart);
+        }
+        else
+        {
+            // Order from FE after payment
+            cart.PaymentStatus = 1;
+
+            // Update existing order
+            var updateDto = CartMapper.CartToUpdateDto(cart);
+            await UpdateAsync(cartId ?? 0, updateDto);
+        }
+
         await SaveAsync();
 
         // Add purchased items from admin
-        foreach (var bookId in orderCreateDto.BookIds)
+        if (cartId == null)
         {
-            var purchaseItemDto = new PurchaseItemCreateDto
+            foreach (var bookId in orderCreateDto.BookIds)
             {
-                CartId = cart.Id,
-                BookId = bookId,
-                Count = 1,
-            };
+                var purchaseItemDto = new PurchaseItemCreateDto
+                {
+                    CartId = cart.Id,
+                    BookId = bookId,
+                    Count = 1,
+                };
 
-            var purchaseItem = PurchaseItemMapper.CreateDtoToEntity(purchaseItemDto);
+                var purchaseItem = PurchaseItemMapper.CreateDtoToEntity(purchaseItemDto);
 
-            await Context.PurchaseItems.AddAsync(purchaseItem);
-            await SaveAsync();
+                await Context.PurchaseItems.AddAsync(purchaseItem);
+                await SaveAsync();
+            }
         }
+        else
+        {
+            //
+            foreach (var bookId in orderCreateDto.BookIds)
+            {
+                var purchaseItemDto = new PurchaseItemCreateDto
+                {
+                    CartId = cart.Id,
+                    BookId = bookId,
+                    Count = orderCreateDto.Count
+                };
+
+                var purchaseItem = PurchaseItemMapper.CreateDtoToEntity(purchaseItemDto);
+
+                await Context.PurchaseItems.AddAsync(purchaseItem);
+                await SaveAsync();
+            }
+        }
+
 
         return CartMapper.ToDto(cart);
     }

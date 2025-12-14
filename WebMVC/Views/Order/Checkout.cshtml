@@ -1,7 +1,7 @@
 ﻿@model WebMVC.Models.CartViewModel
 
 @{
-    ViewData["Title"] = "Checkout";
+ViewData["Title"] = "Checkout";
 }
 
 <div class="container py-5">
@@ -9,35 +9,46 @@
 
     <!-- Delivery address info -->
     <div class="alert alert-info mb-4">
-        Delivery address from your profile will be used.
+        Delivery address from your registration will be used.
     </div>
 
-    <form asp-action="Checkout" asp-controller="Order" method="post">
+    <form asp-action="Submit" asp-controller="Order" method="post">
         <h4 class="mb-3">Payment method</h4>
 
         <div class="form-check mb-2">
-            <input class="form-check-input" type="radio" name="paymentMethod" value="1" />
+            <input class="form-check-input" type="radio" name="paymentMethod" value="1" onchange="enableSubmit()" />
             <label class="form-check-label">
                 Credit / Debit Card
             </label>
         </div>
 
         <div class="form-check mb-2">
-            <input class="form-check-input" type="radio" name="paymentMethod" value="2" />
+            <input class="form-check-input" type="radio" name="paymentMethod" value="2" onchange="enableSubmit()" />
             <label class="form-check-label">
                 PayPal
             </label>
         </div>
 
         <div class="form-check mb-4">
-            <input class="form-check-input" type="radio" name="paymentMethod" value="3" />
+            <input class="form-check-input" type="radio" name="paymentMethod" value="3" onchange="enableSubmit()" />
             <label class="form-check-label">
                 Cash on Delivery
             </label>
         </div>
 
-        <button type="submit" class="btn btn-success btn-lg w-100">
-            Submit Order
-        </button>
+        <div class="d-flex justify-content-center">
+            <button type="submit" id="submitBtn" class="btn btn-secondary btn-lg" style="width: 250px;" disabled>
+                Submit Order
+            </button>
+        </div>
     </form>
 </div>
+
+<script>
+    function enableSubmit() {
+        var btn = document.getElementById('submitBtn');
+        btn.disabled = false;
+        btn.classList.remove('btn-secondary');
+        btn.classList.add('btn-success');
+    }
+</script>

@@ -17,7 +17,6 @@ public class OrderController : Controller
 {
     private readonly ILogger<OrderController> _logger;
     private readonly ICartService _cartService;
-    private readonly IUserService _userService;
     private readonly IPurchaseItemService _purchaseItemService;
     private readonly IWishlistItemService _wishlistItemService;
     private SignInManager<LocalIdentityUser> _signInManager;
@@ -26,7 +25,6 @@ public class OrderController : Controller
     public OrderController(
         ILogger<OrderController> logger,
         ICartService cartService,
-        IUserService userService,
         IPurchaseItemService purchaseItemService,
         IWishlistItemService wishlistItemService,
         SignInManager<LocalIdentityUser> signInManager,
@@ -34,7 +32,6 @@ public class OrderController : Controller
     ) {
         _logger = logger;
         _cartService = cartService;
-        _userService = userService;
         _purchaseItemService = purchaseItemService;
         _wishlistItemService = wishlistItemService;
         _signInManager = signInManager;
@@ -54,6 +51,15 @@ public class OrderController : Controller
             }
 
             var viewModel = CartMapper.ToCartViewModel(cart);
+
+            // On view of cart update TotalValue in DB too
+            var updateDto = new CartUpdateDto
+            {
+                TotalValue = viewModel.TotalValue,
+                PaymentStatus = viewModel.PaymentStatus,
+            };
+
+            await _cartService.UpdateAsync(cart.Id, updateDto);
 
             return View(viewModel);
         }
@@ -263,7 +269,7 @@ public class OrderController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Checkout(int paymentMethod)
+    public async Task<IActionResult> Submit(int paymentMethod)
     {
         var userId = await ValidateLoginAndGetUserId();
         var cart = await _cartService.GetCartByUserIdAsync(userId);
@@ -279,27 +285,29 @@ public class OrderController : Controller
             return RedirectToAction("Checkout");
         }
 
-        //update cart payment method + create order
-
+        // Update cart payment method (Completed) + create order
         var orderCreateDto = new OrderCreateDto()
         {
             UserId = cart.UserId,
             TotalValue = cart.TotalValue,
             BookIds = cart.PurchaseItems!.Select(pi => pi.BookId).ToList(),
-            PaymentStatus = cart.PaymentStatus,
+            PaymentStatus = 1,
         };
 
         await _cartService.CreateOrderAsync(orderCreateDto, cart.Id);
 
+        // Create new cart for user
+        CartCreateDto cartDto = new CartCreateDto
+        {
+            UserId = userId,
+            TotalValue = 0,
+            PaymentStatus = 0,
+        };
+
+        await _cartService.CreateAsync(cartDto);
 
         return RedirectToAction("OrderCreated", new { orderId = orderCreateDto.OrderId });
     }
-
-    // [HttpPost]
-    // public async Task<IActionResult> Submit()
-    // {
-    //
-    // }
 
     public async Task<IActionResult> OrderCreated(int orderId)
     {

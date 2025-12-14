@@ -65,6 +65,7 @@ public static class CartMapper
 
         return new Cart
         {
+            Id = cartDetailDto.Id,
             UserId = cartDetailDto.UserId,
             TotalValue = cartDetailDto.TotalValue,
             OrderId = cartDetailDto.OrderId,
@@ -113,6 +114,17 @@ public static class CartMapper
         order.OrderDate = updateDto.OrderDate;
         order.PaymentStatus = updateDto.PaymentStatus;
         order.UpdatedAt = DateTime.Now;
+    }
+
+    public static CartUpdateDto CartToUpdateDto(Cart cart)
+    {
+        return new CartUpdateDto
+        {
+            TotalValue = cart.TotalValue,
+            OrderId = cart.OrderId,
+            PaymentStatus = cart.PaymentStatus,
+            OrderDate = DateTime.Now,
+        };
     }
 
     public static IEnumerable<CartDto> ToDtoList(IEnumerable<Cart> carts)

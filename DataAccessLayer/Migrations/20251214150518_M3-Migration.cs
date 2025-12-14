@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -7,7 +8,7 @@
 namespace DataAccessLayer.Migrations
 {
     /// <inheritdoc />
-    public partial class milestoneMigration : Migration
+    public partial class M3Migration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -32,12 +33,12 @@ namespace DataAccessLayer.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Username = table.Column<string>(type: "TEXT", nullable: false),
-                    EntityName = table.Column<string>(type: "TEXT", nullable: false),
+                    Username = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
+                    EntityName = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     EntityId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Action = table.Column<string>(type: "TEXT", nullable: false),
+                    Action = table.Column<string>(type: "TEXT", maxLength: 500, nullable: false),
                     ModifiedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    ModificationDetails = table.Column<string>(type: "TEXT", nullable: false),
+                    ModificationDetails = table.Column<string>(type: "TEXT", maxLength: 2000, nullable: false),
                     EditCount = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
@@ -276,6 +277,7 @@ namespace DataAccessLayer.Migrations
                     TotalValue = table.Column<double>(type: "REAL", nullable: false),
                     OrderId = table.Column<int>(type: "INTEGER", nullable: true),
                     OrderDate = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    PaymentStatus = table.Column<int>(type: "INTEGER", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
@@ -319,7 +321,7 @@ namespace DataAccessLayer.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    FileUrl = table.Column<string>(type: "TEXT", nullable: false),
+                    FileUrl = table.Column<string>(type: "TEXT", maxLength: 300, nullable: false),
                     PublisherId = table.Column<int>(type: "INTEGER", nullable: true),
                     AuthorId = table.Column<int>(type: "INTEGER", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
@@ -510,16 +512,16 @@ namespace DataAccessLayer.Migrations
 
             migrationBuilder.InsertData(
                 table: "Carts",
-                columns: new[] { "Id", "CreatedAt", "OrderDate", "OrderId", "TotalValue", "UpdatedAt", "UserId" },
+                columns: new[] { "Id", "CreatedAt", "OrderDate", "OrderId", "PaymentStatus", "TotalValue", "UpdatedAt", "UserId" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2025, 2, 17, 16, 51, 5, 965, DateTimeKind.Unspecified).AddTicks(8834), 1729, 292.50999999999999, new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified), 1 },
-                    { 2, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2025, 7, 26, 8, 45, 7, 378, DateTimeKind.Unspecified).AddTicks(9460), 1535, 231.18000000000001, new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified), 2 },
-                    { 3, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2024, 5, 25, 10, 39, 3, 278, DateTimeKind.Unspecified).AddTicks(2620), 1631, 204.75999999999999, new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified), 3 },
-                    { 4, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2025, 4, 2, 20, 45, 33, 659, DateTimeKind.Unspecified).AddTicks(5317), 1674, 212.91, new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified), 4 },
-                    { 5, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2024, 3, 12, 4, 38, 58, 477, DateTimeKind.Unspecified).AddTicks(5940), 1898, 30.940000000000001, new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified), 5 },
-                    { 6, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, 138.91999999999999, new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified), 6 },
-                    { 7, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2024, 3, 31, 21, 33, 41, 734, DateTimeKind.Unspecified).AddTicks(7149), 1644, 73.489999999999995, new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified), 7 }
+                    { 1, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, 1, 292.50999999999999, new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified), 1 },
+                    { 2, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2024, 11, 28, 23, 40, 23, 892, DateTimeKind.Unspecified).AddTicks(4379), 1000, 0, 199.21000000000001, new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified), 2 },
+                    { 3, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2025, 1, 28, 6, 13, 39, 512, DateTimeKind.Unspecified).AddTicks(1616), 1001, 0, 275.62, new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified), 3 },
+                    { 4, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2025, 2, 23, 13, 9, 33, 729, DateTimeKind.Unspecified).AddTicks(7070), 1002, 0, 70.040000000000006, new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified), 4 },
+                    { 5, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2025, 7, 13, 0, 11, 5, 430, DateTimeKind.Unspecified).AddTicks(1468), 1003, 1, 220.47999999999999, new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified), 5 },
+                    { 6, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, 1, 34.280000000000001, new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified), 6 },
+                    { 7, new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, 1, 73.489999999999995, new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified), 7 }
                 });
 
             migrationBuilder.InsertData(

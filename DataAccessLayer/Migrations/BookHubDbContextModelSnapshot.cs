@@ -15,7 +15,7 @@ namespace DataAccessLayer.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "9.0.9");
+            modelBuilder.HasAnnotation("ProductVersion", "9.0.11");
 
             modelBuilder.Entity("DataAccessLayer.Entities.AuditLog", b =>
                 {
@@ -562,8 +562,8 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 2,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            OrderDate = new DateTime(2025, 7, 26, 8, 45, 7, 378, DateTimeKind.Unspecified).AddTicks(9460),
-                            OrderId = 1535,
+                            OrderDate = new DateTime(2024, 11, 28, 23, 40, 23, 892, DateTimeKind.Unspecified).AddTicks(4379),
+                            OrderId = 1000,
                             PaymentStatus = 0,
                             TotalValue = 199.21000000000001,
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -573,8 +573,10 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 3,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            PaymentStatus = 1,
-                            TotalValue = 204.75999999999999,
+                            OrderDate = new DateTime(2025, 1, 28, 6, 13, 39, 512, DateTimeKind.Unspecified).AddTicks(1616),
+                            OrderId = 1001,
+                            PaymentStatus = 0,
+                            TotalValue = 275.62,
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UserId = 3
                         },
@@ -582,8 +584,8 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 4,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            OrderDate = new DateTime(2025, 4, 2, 20, 45, 33, 659, DateTimeKind.Unspecified).AddTicks(5317),
-                            OrderId = 1674,
+                            OrderDate = new DateTime(2025, 2, 23, 13, 9, 33, 729, DateTimeKind.Unspecified).AddTicks(7070),
+                            OrderId = 1002,
                             PaymentStatus = 0,
                             TotalValue = 70.040000000000006,
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -593,8 +595,10 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 5,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            OrderDate = new DateTime(2025, 7, 13, 0, 11, 5, 430, DateTimeKind.Unspecified).AddTicks(1468),
+                            OrderId = 1003,
                             PaymentStatus = 1,
-                            TotalValue = 30.940000000000001,
+                            TotalValue = 220.47999999999999,
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UserId = 5
                         },
