@@ -3,6 +3,8 @@ using BusinessLayer.Models.Author.Responses;
 using BusinessLayer.Models.Book.Responses;
 using BusinessLayer.Models.Image.Responses;
 using WebMVC.Areas.Admin.Models.Author;
+using WebMVC.Areas.Admin.Models.Book;
+using WebMVC.Areas.Admin.Models.Image;
 
 namespace WebMVC.Areas.Admin.Mappers;
 

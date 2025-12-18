@@ -4,7 +4,11 @@ using BusinessLayer.Models.Book.Responses;
 using BusinessLayer.Models.Genre.Responses;
 using BusinessLayer.Models.Image.Responses;
 using BusinessLayer.Models.Publisher.Responses;
+using WebMVC.Areas.Admin.Models.Author;
 using WebMVC.Areas.Admin.Models.Book;
+using WebMVC.Areas.Admin.Models.Genre;
+using WebMVC.Areas.Admin.Models.Image;
+using WebMVC.Areas.Admin.Models.Publisher;
 
 namespace WebMVC.Areas.Admin.Mappers;
 
