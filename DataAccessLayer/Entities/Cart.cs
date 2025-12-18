@@ -26,4 +26,9 @@ public class Cart : BaseEntity
 
     // 0 - pending, 1 - completed
     public int PaymentStatus { get; set; } = 0;
+
+    public int? AppliedGiftCardCouponId { get; set; }
+
+    [ForeignKey(nameof(AppliedGiftCardCouponId))]
+    public virtual GiftCardCoupon? AppliedGiftCardCoupon { get; set; }
 }

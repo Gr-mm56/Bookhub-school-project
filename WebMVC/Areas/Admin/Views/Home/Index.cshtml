@@ -108,6 +108,23 @@
                 </div>
             </div>
         </div>
+
+        <!-- Gift Cards Management -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm border-purple">
+                <div class="card-body text-center">
+                    <i class="bi bi-gift fs-1 text-purple mb-3" style="display: block;"></i>
+                    <h5 class="card-title">Gift Cards</h5>
+                    <p class="card-text text-muted">Create and manage gift card coupons</p>
+                </div>
+                <div class="card-footer bg-white border-top">
+                    <a asp-area="Admin" asp-controller="GiftCard" asp-action="Index" class="btn btn-purple w-100">
+                        <i class="bi bi-arrow-right"></i> Manage Gift Cards
+                    </a>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 
@@ -124,5 +141,25 @@
     .card .btn:disabled {
         opacity: 0.6;
         cursor: not-allowed;
+    }
+
+    .border-purple {
+        border-color: #6f42c1 !important;
+    }
+
+    .text-purple {
+        color: #6f42c1 !important;
+    }
+
+    .btn-purple {
+        background-color: #6f42c1;
+        border-color: #6f42c1;
+        color: white;
+    }
+
+    .btn-purple:hover {
+        background-color: #5a32a3;
+        border-color: #5a32a3;
+        color: white;
     }
 </style>

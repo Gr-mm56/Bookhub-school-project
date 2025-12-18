@@ -2,12 +2,9 @@
 using DataAccessLayer.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
 using BusinessLayer.Models.Cart.Requests;
 using BusinessLayer.Models.PurchaseItem.Requests;
-using BusinessLayer.Models.PurchaseItem.Responses;
 using Microsoft.EntityFrameworkCore;
-using WebMVC.Areas.Admin.Mappers;
 using WebMVC.Mappers;
 using WebMVC.Models;
 
@@ -19,6 +16,7 @@ public class OrderController : Controller
     private readonly ICartService _cartService;
     private readonly IPurchaseItemService _purchaseItemService;
     private readonly IWishlistItemService _wishlistItemService;
+    private readonly IGiftCardCouponService _giftCardCouponService;
     private SignInManager<LocalIdentityUser> _signInManager;
     private UserManager<LocalIdentityUser> _userManager;
 
@@ -27,6 +25,7 @@ public class OrderController : Controller
         ICartService cartService,
         IPurchaseItemService purchaseItemService,
         IWishlistItemService wishlistItemService,
+        IGiftCardCouponService giftCardCouponService,
         SignInManager<LocalIdentityUser> signInManager,
         UserManager<LocalIdentityUser> userManager
     ) {
@@ -34,6 +33,7 @@ public class OrderController : Controller
         _cartService = cartService;
         _purchaseItemService = purchaseItemService;
         _wishlistItemService = wishlistItemService;
+        _giftCardCouponService = giftCardCouponService;
         _signInManager = signInManager;
         _userManager = userManager;
     }
@@ -57,6 +57,7 @@ public class OrderController : Controller
             {
                 TotalValue = viewModel.TotalValue,
                 PaymentStatus = viewModel.PaymentStatus,
+                AppliedGiftCardCouponId = cart.AppliedGiftCardCouponId
             };
 
             await _cartService.UpdateAsync(cart.Id, updateDto);
@@ -66,7 +67,7 @@ public class OrderController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error loading cart");
-            return View(new List<CartViewModel>());
+            return View(new CartViewModel());
         }
     }
 
@@ -81,6 +82,7 @@ public class OrderController : Controller
             if (cart == null)
             {
                 _logger.LogWarning("Cart not found for user {UserId}", userId);
+                TempData["Error"] = "Cart not found. Please try again.";
                 return RedirectToAction("Cart");
             }
 
@@ -114,7 +116,7 @@ public class OrderController : Controller
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error adding to cart");
+            _logger.LogError(ex, "Error adding to cart. BookId: {BookId}, Quantity: {Quantity}", bookId, quantity);
             TempData["Error"] = "Failed to add item to cart.";
             return RedirectToAction("Cart");
         }
@@ -131,6 +133,7 @@ public class OrderController : Controller
             if (cart == null)
             {
                 _logger.LogWarning("Cart not found for user {UserId}", userId);
+                TempData["Error"] = "Cart not found. Please try again.";
                 return RedirectToAction("Cart");
             }
 
@@ -147,19 +150,20 @@ public class OrderController : Controller
                 await _purchaseItemService.UpdateAsync(existingItem.Id, updateDto);
 
                 TempData["Success"] = "Quantity updated in cart!";
-                return RedirectToAction("Cart");
             }
-
-            var purchaseItemDto = new PurchaseItemCreateDto
+            else
             {
-                CartId = cart.Id,
-                Count = 1,
-                BookId = bookId,
-            };
+                var purchaseItemDto = new PurchaseItemCreateDto
+                {
+                    CartId = cart.Id,
+                    Count = 1,
+                    BookId = bookId,
+                };
 
-            await _purchaseItemService.CreateAsync(purchaseItemDto);
+                await _purchaseItemService.CreateAsync(purchaseItemDto);
 
-            TempData["Success"] = "Item added to cart successfully!";
+                TempData["Success"] = "Item added to cart successfully!";
+            }
 
             await _wishlistItemService.DeleteByUserBookIdAsync(userId, bookId);
 
@@ -167,7 +171,7 @@ public class OrderController : Controller
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error adding to cart");
+            _logger.LogError(ex, "Error adding from wishlist. BookId: {BookId}", bookId);
             TempData["Error"] = "Failed to add item to cart.";
             return RedirectToAction("Cart");
         }
@@ -190,7 +194,8 @@ public class OrderController : Controller
             var cartItems = await _purchaseItemService.GetAllDetailsByCartIdAsync(cart.Id);
             var item = cartItems.FirstOrDefault(pi => pi.BookId == bookId);
 
-            if (item != null) {
+            if (item != null)
+            {
                 var updateDto = new PurchaseItemUpdateDto
                 {
                     Count = quantity
@@ -200,7 +205,8 @@ public class OrderController : Controller
 
                 TempData["Success"] = "Quantity updated!";
             }
-            else {
+            else
+            {
                 TempData["Error"] = "Book not found in cart.";
             }
 
@@ -261,46 +267,77 @@ public class OrderController : Controller
                 return RedirectToAction("Cart");
             }
 
-            /* TODO just uncomment
-            if (cart.GiftCardId != null)
+            // Check if gift card already applied
+            if (cart.AppliedGiftCardCouponId != null)
             {
-                TempData["GiftCardError"] = "Gift Card Code was already applied.";
-                return RedirectToAction("Cart");
-            }
-            */
-
-            /* TODO – get gift card from DB
-            var giftCard = await _giftCardService.GetByCodeAsync(code);
-
-            if (giftCard == null || !giftCard.IsActive)
-            {
-                TempData["GiftCardError"] = "Invalid or expired gift card.";
+                TempData["GiftCardError"] = "A gift card has already been applied to this cart.";
                 return RedirectToAction("Cart");
             }
 
-            var cartTotal = cart.TotalValue;
-            var discount = giftCard.Value;
+            var coupon = await _giftCardCouponService.ValidateAndGetCouponAsync(code);
 
-            // Validate if discount isn't too big comparing to the cart total value
-            if (discount <= 0 || discount >= cartTotal)
+            if (coupon == null)
             {
-                TempData["GiftCardError"] =
-                    "Gift card value must be smaller than cart total.";
+                TempData["GiftCardError"] = "Invalid gift card code.";
                 return RedirectToAction("Cart");
             }
 
-            */
+            var updateDto = new CartUpdateDto
+            {
+                TotalValue = cart.TotalValue,
+                PaymentStatus = cart.PaymentStatus,
+                AppliedGiftCardCouponId = coupon.Id
+            };
 
-            // apply discount TODO
-            // await _cartService.ApplyGiftCardAsync(cart.Id, discount);
+            await _cartService.UpdateAsync(cart.Id, updateDto);
 
-            TempData["GiftCardSuccess"] = "Gift card applied successfully!";
+            TempData["GiftCardSuccess"] = $"Gift card applied successfully! You saved ${coupon.GiftCard?.PriceReduction:N2}";
+            return RedirectToAction("Cart");
+        }
+        catch (InvalidOperationException ex)
+        {
+            _logger.LogError(ex, "Error applying gift card");
+            TempData["GiftCardError"] = ex.Message;
             return RedirectToAction("Cart");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error applying gift card");
             TempData["GiftCardError"] = "Failed to apply gift card.";
+            return RedirectToAction("Cart");
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> RemoveGiftCard()
+    {
+        try
+        {
+            var userId = await ValidateLoginAndGetUserId();
+            var cart = await _cartService.GetCartByUserIdAsync(userId);
+
+            if (cart == null)
+            {
+                TempData["Error"] = "Cart not found.";
+                return RedirectToAction("Cart");
+            }
+
+            var updateDto = new CartUpdateDto
+            {
+                TotalValue = cart.TotalValue,
+                PaymentStatus = cart.PaymentStatus,
+                AppliedGiftCardCouponId = null
+            };
+
+            await _cartService.UpdateAsync(cart.Id, updateDto);
+
+            TempData["Success"] = "Gift card removed from cart.";
+            return RedirectToAction("Cart");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error removing gift card");
+            TempData["Error"] = "Failed to remove gift card.";
             return RedirectToAction("Cart");
         }
     }
@@ -331,7 +368,7 @@ public class OrderController : Controller
 
         if (paymentMethod <= 0)
         {
-            TempData["GiftCardError"] = "Please select payment option.";
+            TempData["Error"] = "Please select payment option.";
             return RedirectToAction("Checkout");
         }
 
@@ -344,6 +381,21 @@ public class OrderController : Controller
         };
 
         var orderAsCartDto = await _cartService.CreateOrderAsync(orderCreateDto, cart.Id);
+
+        // Mark gift card coupon as used AFTER order is created
+        if (cart.AppliedGiftCardCouponId.HasValue)
+        {
+            try
+            {
+                await _giftCardCouponService.MarkAsUsedAsync(
+                    cart.AppliedGiftCardCouponId.Value, 
+                    cart.Id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to mark gift card coupon as used");
+            }
+        }
 
         // Create new cart for user
         CartCreateDto cartDto = new CartCreateDto
@@ -383,7 +435,7 @@ public class OrderController : Controller
 
             return identityUser.UserId;
         }
-        catch (Exception e)
+        catch
         {
             return -1;
         }
