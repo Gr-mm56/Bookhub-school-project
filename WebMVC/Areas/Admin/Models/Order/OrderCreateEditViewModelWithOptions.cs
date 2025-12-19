@@ -24,8 +24,12 @@ public class UserOption
 public class PurchaseItemOption
 {
     public int Id { get; set; }
+
     public required int BookId { get; set; }
+
     public required string BookTitle { get; set; }
+
     public required double BookPrice { get; set; }
+
     public required int Count { get; set; }
 }

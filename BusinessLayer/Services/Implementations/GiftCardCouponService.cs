@@ -67,17 +67,17 @@ public class GiftCardCouponService : BaseService<BookHubDbContext>, IGiftCardCou
     private static void ValidateCouponValidity(GiftCardCoupon coupon)
     {
         var now = DateTime.UtcNow;
-        
+
         if (now < coupon.GiftCard.ValidFrom)
         {
             throw new InvalidOperationException(
-                $"This coupon is not yet valid. It will be valid from {coupon.GiftCard.ValidFrom:yyyy-MM-dd}.");
+                $"This coupon is not yet valid. It will be valid from {coupon.GiftCard.ValidFrom:dd-mm-yyyy}.");
         }
 
         if (now > coupon.GiftCard.ValidTo)
         {
             throw new InvalidOperationException(
-                $"This coupon has expired. It was valid until {coupon.GiftCard.ValidTo:yyyy-MM-dd}.");
+                $"This coupon has expired. It was valid until {coupon.GiftCard.ValidTo:dd-mm-yyyy}.");
         }
     }
 }

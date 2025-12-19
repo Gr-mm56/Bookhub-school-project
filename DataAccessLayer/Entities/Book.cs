@@ -22,15 +22,19 @@ public class Book : BaseEntity
 
     [Required]
     public required int PrimaryGenreId { get; set; }
+
     [ForeignKey(nameof(PrimaryGenreId))]
     public virtual Genre? PrimaryGenre { get; set; }
 
     public virtual ICollection<Genre> Genres { get; set; } = new List<Genre>();
+
     public virtual ICollection<Rating> Ratings { get; set; } = new List<Rating>();
+
     public virtual ICollection<Author> Authors { get; set; } = new List<Author>();
 
     [ForeignKey(nameof(PublisherId))]
     public virtual Publisher? Publisher { get; set; }
+
     public int? PublisherId { get; set; }
 
     [ForeignKey(nameof(ImageId))]

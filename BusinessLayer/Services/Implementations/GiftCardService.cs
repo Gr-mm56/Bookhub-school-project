@@ -56,7 +56,7 @@ public class GiftCardService : BaseService<BookHubDbContext>, IGiftCardService
 
         await SaveAsync();
 
-        return await GetByIdAsync(giftCard.Id) 
+        return await GetByIdAsync(giftCard.Id)
             ?? throw new InvalidOperationException("Failed to retrieve created gift card.");
     }
 
@@ -143,7 +143,7 @@ public class GiftCardService : BaseService<BookHubDbContext>, IGiftCardService
     private static string GenerateCouponCode()
     {
         // Format: GIFT-XXXX-XXXX-XXXX
-        Span<char> buffer = stackalloc char[19]; // GIFT-XXXX-XXXX-XXXX
+        Span<char> buffer = stackalloc char[19];
         int pos = 0;
 
         // Add prefix

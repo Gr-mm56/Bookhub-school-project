@@ -9,5 +9,6 @@ public class Genre : BaseEntity
     public required string Name { get; set; }
 
     public virtual ICollection<Book> Books { get; set; } = new List<Book>();
+
     public virtual ICollection<Book> PrimaryBooks { get; set; } = new List<Book>();
 }

@@ -8,5 +8,6 @@ public class PublisherCreateEditViewModelWithOptions
     public required PublisherCreateEditViewModel Publisher { get; set; }
 
     public List<ImageOption> Images { get; set; } = [];
+
     public List<BookOption> Books { get; set; } = [];
 }

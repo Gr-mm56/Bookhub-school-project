@@ -8,5 +8,6 @@ public class AuthorCreateEditViewModelWithOptions
     public required AuthorCreateEditViewModel Author { get; set; }
 
     public List<ImageOption> Images { get; set; } = [];
+
     public List<BookOption> Books { get; set; } = [];
 }
