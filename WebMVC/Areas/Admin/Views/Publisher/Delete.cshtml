@@ -1,0 +1,85 @@
+@model WebMVC.Areas.Admin.Models.Publisher.PublisherDeleteViewModel
+
+@{
+    ViewBag.Title = "Delete Publisher";
+    Layout = "_Layout";
+    var bookCount = ViewBag.BookCount as int? ?? 0;
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h3>Delete Publisher</h3>
+                </div>
+                <div class="card-body">
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <strong>Error!</strong> @TempData["ErrorMessage"]
+                        </div>
+                    }
+
+                    @if (bookCount > 0)
+                    {
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <strong>Cannot delete publisher!</strong> This publisher has @bookCount book(s) associated. Please remove the publisher from all books before deleting.
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <strong>Warning!</strong> Are you sure you want to delete this publisher?
+                        </div>
+                    }
+
+                    <dl class="row">
+                        <dt class="col-sm-4">ID:</dt>
+                        <dd class="col-sm-8">@Model.Id</dd>
+
+                        <dt class="col-sm-4">Name:</dt>
+                        <dd class="col-sm-8">@Model.Name</dd>
+
+                        <dt class="col-sm-4">Address:</dt>
+                        <dd class="col-sm-8">@Model.Address</dd>
+
+                        <dt class="col-sm-4">Created At:</dt>
+                        <dd class="col-sm-8">@Model.CreatedAt.ToString("dd-MM-yyyy")</dd>
+
+                        <dt class="col-sm-4">Updated:</dt>
+                        <dd class="col-sm-8">@Model.UpdatedAt.ToString("dd-MM-yyyy")</dd>
+
+                        @if (bookCount > 0)
+                        {
+                            <dt class="col-sm-4">Associated Books:</dt>
+                            <dd class="col-sm-8"><span class="badge bg-danger">@bookCount</span></dd>
+                        }
+                    </dl>
+
+                    @if (bookCount == 0)
+                    {
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i>
+                            This action cannot be undone. Please make sure you want to delete this publisher permanently.
+                        </div>
+                    }
+
+                    <form asp-action="Delete" asp-route-id="@Model.Id" method="post">
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-danger" disabled="@(bookCount > 0)" title="@(bookCount > 0 ? "Cannot delete publisher with associated books" : "")">
+                                <i class="bi bi-trash"></i> Confirm Delete
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

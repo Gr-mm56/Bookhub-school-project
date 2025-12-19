@@ -16,6 +16,8 @@ public static class PublisherMapper
             Name = publisher.Name,
             Address = publisher.Address,
             ProfilePhoto = publisher.ProfilePhoto != null ? ImageMapper.ToDto(publisher.ProfilePhoto) : null,
+            CreatedAt = publisher.CreatedAt,
+            UpdatedAt = publisher.UpdatedAt
         };
     }
 
@@ -30,6 +32,8 @@ public static class PublisherMapper
             Address = publisher.Address,
             ProfilePhoto = publisher.ProfilePhoto != null ? ImageMapper.ToDto(publisher.ProfilePhoto) : null,
             Books = publisher.Books.Select(BookMapper.ToDto).ToList() ?? [],
+            CreatedAt = publisher.CreatedAt,
+            UpdatedAt = publisher.UpdatedAt
         };
     }
 
