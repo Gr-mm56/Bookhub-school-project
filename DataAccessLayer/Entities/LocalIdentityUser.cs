@@ -9,5 +9,4 @@ public class LocalIdentityUser : IdentityUser
 
     [ForeignKey("UserId")]
     public virtual User? User { get; set; }
-
 }

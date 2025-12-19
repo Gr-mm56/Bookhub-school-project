@@ -1,0 +1,75 @@
+@model WebMVC.Areas.Admin.Models.GiftCard.GiftCardCreateEditViewModel
+
+@{
+    ViewBag.Title = "Create Gift Card";
+    Layout = "_Layout";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Create New Gift Card</h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" method="post" novalidate>
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="PriceReduction" class="form-label"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input asp-for="PriceReduction" class="form-control" type="number" step="0.01" min="0.01" placeholder="0.00" />
+                                </div>
+                                <span asp-validation-for="PriceReduction" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="NumberOfCoupons" class="form-label"></label>
+                                <input asp-for="NumberOfCoupons" class="form-control" type="number" min="1" max="1000" placeholder="10" />
+                                <span asp-validation-for="NumberOfCoupons" class="text-danger small"></span>
+                                <small class="form-text text-muted">
+                                    <i class="bi bi-info-circle"></i> Coupon codes will be automatically generated
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ValidFrom" class="form-label"></label>
+                                <input asp-for="ValidFrom" class="form-control" type="date" />
+                                <span asp-validation-for="ValidFrom" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ValidTo" class="form-label"></label>
+                                <input asp-for="ValidTo" class="form-control" type="date" />
+                                <span asp-validation-for="ValidTo" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="bi bi-lightbulb"></i>
+                            <strong>Note:</strong> Coupon codes will be generated in format <code>GIFT-XXXX-XXXX-XXXX</code>. Each code can be used only once and will inherit the validity period from this gift card.
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Back to List
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save"></i> Create Gift Card
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

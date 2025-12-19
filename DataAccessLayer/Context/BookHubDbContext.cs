@@ -23,6 +23,8 @@ public class BookHubDbContext : IdentityDbContext<LocalIdentityUser>
     public DbSet<Publisher> Publishers { get; set; }
     public DbSet<Image> Images { get; set; }
     public DbSet<AuditLog> AuditLogs { get; set; }
+    public DbSet<GiftCard> GiftCards { get; set; }
+    public DbSet<GiftCardCoupon> GiftCardCoupons { get; set; }
 
     public BookHubDbContext(
         DbContextOptions<BookHubDbContext> options,
@@ -82,11 +84,34 @@ public class BookHubDbContext : IdentityDbContext<LocalIdentityUser>
                      !(fk.PrincipalEntityType.ClrType == typeof(Book) && fk.DeclaringEntityType.ClrType == typeof(RelBookAuthor)) &&
                      !(fk.PrincipalEntityType.ClrType == typeof(Author) && fk.DeclaringEntityType.ClrType == typeof(RelBookAuthor)) &&
                      !(fk.PrincipalEntityType.ClrType == typeof(Book) && fk.DeclaringEntityType.ClrType == typeof(RelBookGenre)) &&
-                     !(fk.PrincipalEntityType.ClrType == typeof(Genre) && fk.DeclaringEntityType.ClrType == typeof(RelBookGenre))
+                     !(fk.PrincipalEntityType.ClrType == typeof(Genre) && fk.DeclaringEntityType.ClrType == typeof(RelBookGenre)) &&
+                     !(fk.PrincipalEntityType.ClrType == typeof(GiftCard) && fk.DeclaringEntityType.ClrType == typeof(GiftCardCoupon))
                      ))
         {
             relationship.DeleteBehavior = DeleteBehavior.Restrict;
         }
+
+        // GiftCard -> GiftCardCoupon
+        modelBuilder.Entity<GiftCard>()
+            .HasMany(gc => gc.Coupons)
+            .WithOne(c => c.GiftCard)
+            .HasForeignKey(c => c.GiftCardId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // GiftCardCoupon -> Cart (UsedInOrder)
+        modelBuilder.Entity<GiftCardCoupon>()
+            .HasOne(c => c.UsedInOrder)
+            .WithMany()
+            .HasForeignKey(c => c.UsedInOrderId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Cart -> GiftCardCoupon (AppliedGiftCardCoupon)
+        modelBuilder.Entity<Cart>()
+            .HasOne(c => c.AppliedGiftCardCoupon)
+            .WithMany()
+            .HasForeignKey(c => c.AppliedGiftCardCouponId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         // Book 1 PrimaryGenre
         modelBuilder.Entity<Book>()
             .HasOne(b => b.PrimaryGenre)
@@ -151,7 +176,7 @@ public class BookHubDbContext : IdentityDbContext<LocalIdentityUser>
             .WithMany()
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Book -> PurchaseItem - On Delete Cascade
+        // Book -> WishlistItem - On Delete Cascade
         modelBuilder.Entity<WishlistItem>()
             .HasOne(p => p.Book)
             .WithMany()
@@ -185,6 +210,12 @@ public class BookHubDbContext : IdentityDbContext<LocalIdentityUser>
         modelBuilder.Entity<Publisher>()
             .HasIndex(p => p.Name)
             .HasDatabaseName("idx_publisher_name");
+
+        // GiftCardCoupon index for code searches
+        modelBuilder.Entity<GiftCardCoupon>()
+            .HasIndex(c => c.Code)
+            .IsUnique()
+            .HasDatabaseName("idx_giftcardcoupon_code");
 
         modelBuilder.Seed();
     }

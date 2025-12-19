@@ -10,7 +10,10 @@ public class BookCreateEditViewModelWithOptions
     public required BookCreateEditViewModel Book { get; set; }
 
     public List<GenreOption> Genres { get; set; } = [];
+
     public List<ImageOption> Images { get; set; } = [];
+
     public List<PublisherOption> Publishers { get; set; } = [];
+
     public List<AuthorOption> Authors { get; set; } = [];
 }

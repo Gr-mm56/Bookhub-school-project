@@ -10,7 +10,7 @@ namespace WebMVC.Areas.Admin.Mappers;
 
 public static class OrderViewModelMapper
 {
-    public static OrderViewModel ToListViewModel(ICollection<CartDto> orderDtos)
+    public static OrderViewModel ToListViewModel(ICollection<CartDetailDto> orderDtos)
     {
         ArgumentNullException.ThrowIfNull(orderDtos);
 

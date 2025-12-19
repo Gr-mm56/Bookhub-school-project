@@ -15,8 +15,8 @@
 
             let isValid = true;
 
-            const totalValue = parseFloat(totalValueInput.value);
-            if (!totalValueInput.value || isNaN(totalValue) || totalValue < 0) {
+            const totalValue = parseFloat(totalValueInput);
+            if (!totalValueInput || isNaN(totalValue) || totalValue < 0) {
                 isValid = false;
             }
 

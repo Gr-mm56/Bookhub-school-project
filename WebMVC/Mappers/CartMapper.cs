@@ -13,11 +13,25 @@ public static class CartMapper
 
     public static CartViewModel ToCartViewModel(CartDetailDto cart)
     {
+        var giftCardDiscount = 0.0;
+        string? appliedCouponCode = null;
+        int? appliedGiftCardCouponId = null;
+
+        if (cart.AppliedGiftCardCoupon != null)
+        {
+            giftCardDiscount = cart.AppliedGiftCardCoupon.GiftCard?.PriceReduction ?? 0;
+            appliedCouponCode = cart.AppliedGiftCardCoupon.Code;
+            appliedGiftCardCouponId = cart.AppliedGiftCardCouponId;
+        }
+
         return new CartViewModel
         {
             Id = cart.Id,
             User = cart.User,
             PaymentStatus = cart.PaymentStatus,
+            GiftCardDiscount = giftCardDiscount,
+            AppliedCouponCode = appliedCouponCode,
+            AppliedGiftCardCouponId = appliedGiftCardCouponId,
             PurchaseItems = cart.PurchaseItems?
                 .OfType<PurchaseItemDetailDto>()
                 .Select(pi => new CartItemViewModel

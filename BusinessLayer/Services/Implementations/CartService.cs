@@ -28,16 +28,19 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
     /**
      * Get Carts that had orderId filled, those are actual orders
      */
-    public async Task<PagedResultDto<CartDto>> GetAllOrdersAsync(int limit = 20, int offset = 0)
+    public async Task<PagedResultDto<CartDetailDto>> GetAllOrdersAsync(int limit = 20, int offset = 0)
     {
         var query = Context.Carts
             .AsNoTracking()
             .Include(c => c.User)
-            .Include(c => c.PurchaseItems)
+            .Include(c => c.PurchaseItems!)
+                .ThenInclude(pi => pi.Book)
+            .Include(c => c.AppliedGiftCardCoupon!)
+                .ThenInclude(gc => gc.GiftCard)
             .Where(c => c.OrderId != null)
             .OrderBy(c => c.OrderDate);
 
-        return await PageAsync(query, limit, offset, CartMapper.ToDtoList);
+        return await PageAsync(query, limit, offset, CartMapper.ToDetailDtoList);
     }
 
     public async Task<CartDetailDto?> GetByIdAsync(int id)
@@ -47,6 +50,8 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
             .Include(c => c.User)
             .Include(c => c.PurchaseItems!)
                 .ThenInclude(p => p.Book)
+            .Include(c => c.AppliedGiftCardCoupon!)
+                .ThenInclude(gc => gc.GiftCard)
             .FirstOrDefaultAsync(c => c.Id == id);
 
         return cart != null ? CartMapper.ToDetailDto(cart) : null;
@@ -59,6 +64,8 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
             .Include(c => c.User)
             .Include(c => c.PurchaseItems!)
                 .ThenInclude(p => p.Book)
+            .Include(c => c.AppliedGiftCardCoupon!)
+                .ThenInclude(gc => gc.GiftCard)
             .FirstOrDefaultAsync(c => c.UserId == id && c.OrderId == null);
 
         return cart != null ? CartMapper.ToDetailDto(cart) : null;
@@ -249,9 +256,8 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
         }
     }
 
-    private Task ValidateValues(int? orderId, double totalValue)
+    private static Task ValidateValues(int? orderId, double totalValue)
     {
-        // Validate values
         if (orderId is < 0)
         {
             throw new ArgumentException($"Invalid Order ID: {orderId} - Cannot be negative");

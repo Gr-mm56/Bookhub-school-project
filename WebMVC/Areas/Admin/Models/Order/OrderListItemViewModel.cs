@@ -12,7 +12,12 @@ public class OrderListItemViewModel
 
     public int PaymentStatus { get; set; }
 
+    public string? AppliedGiftCardCode { get; set; }
+
+    public double GiftCardDiscount { get; set; }
+
     public DateTime CreatedAt { get; set; }
 
     public DateTime UpdatedAt { get; set; }
+
 }

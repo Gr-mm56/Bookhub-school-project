@@ -6,7 +6,7 @@ namespace BusinessLayer.Services.Interfaces;
 
 public interface ICartService : ICrudService<CartDto, CartDetailDto, CartCreateDto, CartUpdateDto>
 {
-    Task<PagedResultDto<CartDto>> GetAllOrdersAsync(int limit = 20, int offset = 0);
+    Task<PagedResultDto<CartDetailDto>> GetAllOrdersAsync(int limit = 20, int offset = 0);
 
     Task<CartDetailDto?> GetCartByUserIdAsync(int userId);
 

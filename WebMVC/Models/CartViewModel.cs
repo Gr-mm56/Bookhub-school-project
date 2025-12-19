@@ -15,6 +15,10 @@ namespace WebMVC.Models
 
         public double GiftCardDiscount { get; set; }
 
+        public string? AppliedCouponCode { get; set; }
+
+        public int? AppliedGiftCardCouponId { get; set; }
+
         public int PaymentStatus { get; set; }
     }
 }

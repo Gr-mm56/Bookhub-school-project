@@ -521,6 +521,9 @@ namespace DataAccessLayer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("AppliedGiftCardCouponId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
@@ -543,6 +546,8 @@ namespace DataAccessLayer.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AppliedGiftCardCouponId");
 
                     b.HasIndex("UserId");
 
@@ -752,6 +757,68 @@ namespace DataAccessLayer.Migrations
                             Name = "Self-Help",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Entities.GiftCard", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<double>("PriceReduction")
+                        .HasColumnType("REAL");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("ValidFrom")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("ValidTo")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("GiftCards");
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Entities.GiftCardCoupon", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("GiftCardId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("UsedInOrderId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique()
+                        .HasDatabaseName("idx_giftcardcoupon_code");
+
+                    b.HasIndex("GiftCardId");
+
+                    b.HasIndex("UsedInOrderId");
+
+                    b.ToTable("GiftCardCoupons");
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.Image", b =>
@@ -2091,13 +2158,38 @@ namespace DataAccessLayer.Migrations
 
             modelBuilder.Entity("DataAccessLayer.Entities.Cart", b =>
                 {
+                    b.HasOne("DataAccessLayer.Entities.GiftCardCoupon", "AppliedGiftCardCoupon")
+                        .WithMany()
+                        .HasForeignKey("AppliedGiftCardCouponId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("DataAccessLayer.Entities.User", "User")
                         .WithMany("Carts")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("AppliedGiftCardCoupon");
+
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Entities.GiftCardCoupon", b =>
+                {
+                    b.HasOne("DataAccessLayer.Entities.GiftCard", "GiftCard")
+                        .WithMany("Coupons")
+                        .HasForeignKey("GiftCardId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DataAccessLayer.Entities.Cart", "UsedInOrder")
+                        .WithMany()
+                        .HasForeignKey("UsedInOrderId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("GiftCard");
+
+                    b.Navigation("UsedInOrder");
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.Image", b =>
@@ -2305,6 +2397,11 @@ namespace DataAccessLayer.Migrations
             modelBuilder.Entity("DataAccessLayer.Entities.Genre", b =>
                 {
                     b.Navigation("PrimaryBooks");
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Entities.GiftCard", b =>
+                {
+                    b.Navigation("Coupons");
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.Image", b =>

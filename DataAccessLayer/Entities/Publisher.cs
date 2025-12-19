@@ -18,5 +18,4 @@ public class Publisher : BaseEntity
     public virtual Image? ProfilePhoto { get; set; }
 
     public int? ProfilePhotoId { get; set; }
-
 }
