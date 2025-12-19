@@ -33,7 +33,8 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
         var query = Context.Carts
             .AsNoTracking()
             .Include(c => c.User)
-            .Include(c => c.PurchaseItems)
+            .Include(c => c.PurchaseItems!)
+                .ThenInclude(pi => pi.Book)
             .Include(c => c.AppliedGiftCardCoupon!)
                 .ThenInclude(gc => gc.GiftCard)
             .Where(c => c.OrderId != null)
