@@ -282,6 +282,16 @@ public class OrderController : Controller
                 return RedirectToAction("Cart");
             }
 
+            // Calculate cart subtotal
+            var cartSubtotal = cart.PurchaseItems?.Sum(pi => pi.Book?.Price * pi.Count ?? 0) ?? 0;
+
+            // Validate that gift card value doesn't exceed cart subtotal
+            if (coupon.GiftCard?.PriceReduction > cartSubtotal)
+            {
+                TempData["GiftCardError"] = $"Gift card value (${coupon.GiftCard?.PriceReduction:N2}) exceeds cart subtotal (${cartSubtotal:N2}). Please add more items to your cart.";
+                return RedirectToAction("Cart");
+            }
+
             var updateDto = new CartUpdateDto
             {
                 TotalValue = cart.TotalValue,
