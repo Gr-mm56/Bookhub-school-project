@@ -27,6 +27,7 @@ public class RatingService : BaseService<BookHubDbContext>, IRatingService
     {
         var rating = await Context.Ratings
             .AsNoTracking()
+            .Include(r=> r.User)
             .Include(r => r.Book)
             .ThenInclude(b => b!.Image)
             .FirstOrDefaultAsync(r => r.Id == id);
