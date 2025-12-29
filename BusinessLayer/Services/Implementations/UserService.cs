@@ -113,7 +113,7 @@ public class UserService : BaseService<BookHubDbContext>, IUserService
         var imageExists = await Context.Users.AnyAsync(i => i.Id == imageId);
         if (!imageExists)
         {
-            throw new ArgumentException($"Invalid User ID: {imageId}");
+            throw new ArgumentException($"Invalid Image ID: {imageId}");
         }
     }
 }
