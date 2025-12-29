@@ -60,6 +60,7 @@ public class WishlistItemService : BaseService<BookHubDbContext>, IWishlistItemS
 
         wishlistItem = await Context.WishlistItems
             .Include(w => w.Book)
+            .Include(w => w.User)
             .FirstOrDefaultAsync(w => w.Id == wishlistItem.Id);
 
         return WishlistItemMapper.ToDetailDto(wishlistItem);
