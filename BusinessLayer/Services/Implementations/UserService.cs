@@ -110,7 +110,7 @@ public class UserService : BaseService<BookHubDbContext>, IUserService
     private async Task ValidateImage(int imageId)
     {
         // Validate that Image exists
-        var imageExists = await Context.Users.AnyAsync(i => i.Id == imageId);
+        var imageExists = await Context.Images.AnyAsync(i => i.Id == imageId);
         if (!imageExists)
         {
             throw new ArgumentException($"Invalid Image ID: {imageId}");
