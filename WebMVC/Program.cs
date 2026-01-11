@@ -2,30 +2,36 @@ using BusinessLayer.Services.Implementations;
 using BusinessLayer.Services.Interfaces;
 using DataAccessLayer.Context;
 using DataAccessLayer.Entities;
+using DataAccessLayer.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Middleware;
+using MongoDB.Driver;
+using Serilog;
+using WebMVC.Extensions;
+
+// Configure Serilog
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .WriteTo.Console()
+    .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddMemoryCache();
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IAuditLogService, AuditLogService>();
 builder.Services.AddDbContext<BookHubDbContext>(options =>
 {
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
-builder.Services.AddScoped<IRatingService, RatingService>();
-builder.Services.AddScoped<IGenreService, GenreService>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<ICartService, CartService>();
-builder.Services.AddScoped<IPurchaseItemService, PurchaseItemService>();
-builder.Services.AddScoped<IWishlistItemService, WishlistItemService>();
-builder.Services.AddScoped<IBookService, BookService>();
-builder.Services.AddScoped<IAuthorService, AuthorService>();
-builder.Services.AddScoped<IPublisherService, PublisherService>();
-builder.Services.AddScoped<IImageService, ImageService>();
+builder.Services.AddBusinessServices();
+builder.Services.AddUploadService(builder.Configuration, builder.Environment);
 
 // Disclaimer: Identity code was copied from Seminar
 // Add Identity
@@ -56,7 +62,7 @@ builder.Services.ConfigureApplicationCookie(options =>
     // When a user attempts to access a resource that requires authentication and they are not authenticated,
     // they will be redirected to this path.
     options.LoginPath = "/Account/Login";
-    
+
     options.ExpireTimeSpan = TimeSpan.FromMinutes(60); // Cookie expiration time
     options.SlidingExpiration = true;
     options.Cookie.HttpOnly = true;
@@ -71,6 +77,22 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
+
+builder.Services.AddSingleton<IMongoClient>(_ =>
+{
+    var connectionString = builder.Configuration.GetConnectionString("MongoDB");
+
+    if (string.IsNullOrEmpty(connectionString))
+    {
+        throw new InvalidOperationException(
+            "MongoDB connection string is not configured. " +
+            "Please set 'ConnectionStrings:MongoDB' in appsettings.json, environment variables, or Azure App Configuration.");
+    }
+
+    return new MongoClient(connectionString);
+});
+
+builder.Services.AddSingleton<ILogService, MongoLogService>();
 
 var app = builder.Build();
 
@@ -88,14 +110,22 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+app.ConfigureStaticFileServing(app.Configuration, app.Environment);
+
 app.UseMiddleware<RequestLoggingMiddleware>();
 
 app.UseHttpsRedirection();
 app.UseRouting();
 
+
 app.UseAuthorization();
 
 app.MapStaticAssets();
+
+app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
     name: "default",

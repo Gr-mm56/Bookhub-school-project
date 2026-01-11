@@ -11,4 +11,8 @@ public class CartUpdateDto
     public int? OrderId { get; set; }
 
     public DateTime? OrderDate { get; set; }
+
+    public int PaymentStatus { get; set; }
+
+    public int? AppliedGiftCardCouponId { get; set; }
 }

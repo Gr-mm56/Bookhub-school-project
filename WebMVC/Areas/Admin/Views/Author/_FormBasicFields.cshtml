@@ -1,0 +1,15 @@
+@model WebMVC.Areas.Admin.Models.Author.AuthorCreateEditViewModelWithOptions
+
+<!-- Name -->
+<div class="col-md-6 mb-3">
+    <label asp-for="Author.Name" class="form-label">Name *</label>
+    <input asp-for="Author.Name" class="form-control" placeholder="Enter author's first name" />
+    <span asp-validation-for="Author.Name" class="text-danger small d-block mt-1"></span>
+</div>
+
+<!-- Surname -->
+<div class="col-md-6 mb-3">
+    <label asp-for="Author.Surname" class="form-label">Surname *</label>
+    <input asp-for="Author.Surname" class="form-control" placeholder="Enter author's last name" />
+    <span asp-validation-for="Author.Surname" class="text-danger small d-block mt-1"></span>
+</div>

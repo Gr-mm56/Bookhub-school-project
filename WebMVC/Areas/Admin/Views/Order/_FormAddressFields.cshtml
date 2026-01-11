@@ -1,0 +1,26 @@
+﻿@model WebMVC.Areas.Admin.Models.Order.OrderCreateEditViewModelWithOptions
+
+<div class="col-12 mb-3">
+    <h5 class="fw-bold">User Delivery Address</h5>
+</div>
+
+<!-- Country -->
+<div class="col-md-4 mb-3">
+    <label asp-for="Order.Country" class="form-label">Country *</label>
+    <input asp-for="Order.Country" class="form-control" id="Order_Country" placeholder="Enter user address country name" />
+    <span asp-validation-for="Order.Country" class="text-danger small d-block mt-1"></span>
+</div>
+
+<!-- City -->
+<div class="col-md-4 mb-3">
+    <label asp-for="Order.City" class="form-label">City *</label>
+    <input asp-for="Order.City" class="form-control" id="Order_City" placeholder="Enter user address city name" />
+    <span asp-validation-for="Order.City" class="text-danger small d-block mt-1"></span>
+</div>
+
+<!-- Street -->
+<div class="col-md-4 mb-3">
+    <label asp-for="Order.Street" class="form-label">Street *</label>
+    <input asp-for="Order.Street" class="form-control" id="Order_Street" placeholder="Enter user address street name with number" />
+    <span asp-validation-for="Order.Street" class="text-danger small d-block mt-1"></span>
+</div>

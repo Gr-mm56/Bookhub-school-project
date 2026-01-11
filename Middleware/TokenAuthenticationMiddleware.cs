@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 
 namespace Middleware;
+
 public class TokenAuthenticationMiddleware
 {
     private readonly RequestDelegate _next;
@@ -18,14 +19,22 @@ public class TokenAuthenticationMiddleware
     {
         string token = context.Request.Headers.Authorization;
 
+        if (string.IsNullOrEmpty(token))
+        {
+            _logger.LogWarning("Unauthorized: Token is missing");
+            context.Response.StatusCode = 401;
+            await context.Response.WriteAsJsonAsync(new { message = "Unauthorized user - token is missing" });
+            return;
+        }
+
         if (!token.Contains(HardcodedToken))
         {
-            _logger.LogWarning("Unsuccessful authorization");
+            _logger.LogWarning("Unsuccessful authorization - invalid token");
             context.Response.StatusCode = 403;
+            await context.Response.WriteAsJsonAsync(new { message = "Forbidden - invalid token" });
+            return;
         }
-        else
-        {
-            await _next(context);
-        }
+
+        await _next(context);
     }
 }

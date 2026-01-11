@@ -1,0 +1,28 @@
+﻿@model WebMVC.Areas.Admin.Models.Book.BookCreateEditViewModelWithOptions
+
+<!-- Image -->
+<div class="col-md-6 mb-3">
+    <label asp-for="Book.ImageId" class="form-label">Image</label>
+    <select asp-for="Book.ImageId" class="form-select">
+        <option value="">-- Select Image (Optional) --</option>
+        @foreach (var image in Model.Images)
+        {
+            <option value="@image.Id">@image.FileName</option>
+        }
+    </select>
+    <span asp-validation-for="Book.ImageId" class="text-danger small d-block mt-1"></span>
+</div>
+
+<!-- Publisher -->
+<div class="col-md-6 mb-3">
+    <label asp-for="Book.PublisherId" class="form-label">Publisher</label>
+    <select asp-for="Book.PublisherId" class="form-select">
+        <option value="">-- Select Publisher (Optional) --</option>
+        @foreach (var publisher in Model.Publishers)
+        {
+            <option value="@publisher.Id">@publisher.Name</option>
+        }
+    </select>
+    <span asp-validation-for="Book.PublisherId" class="text-danger small d-block mt-1"></span>
+</div>
+

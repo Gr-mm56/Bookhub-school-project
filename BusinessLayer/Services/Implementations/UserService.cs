@@ -11,7 +11,7 @@ namespace BusinessLayer.Services.Implementations;
 
 public class UserService : BaseService<BookHubDbContext>, IUserService
 {
-    public UserService(BookHubDbContext context): base(context)
+    public UserService(BookHubDbContext context) : base(context)
     {
     }
 
@@ -37,6 +37,14 @@ public class UserService : BaseService<BookHubDbContext>, IUserService
         return user != null ? UserMapper.ToDetailDto(user) : null;
     }
 
+    public async Task<UserDto?> GetUserAddress(int userId)
+    {
+        var user = await Context.Users
+            .FirstOrDefaultAsync(u => u.Id == userId);
+
+        return user != null ? UserMapper.ToDto(user) : null;
+    }
+
     public async Task<UserDto> CreateAsync(UserCreateDto userCreateDto)
     {
         // Validate that Image exists
@@ -55,7 +63,7 @@ public class UserService : BaseService<BookHubDbContext>, IUserService
 
     public async Task<bool> DeleteAsync(int id)
     {
-        User? user = await Context.Users.FirstOrDefaultAsync(g => g.Id == id);
+        User? user = await Context.Users.FirstOrDefaultAsync(u => u.Id == id);
         if (user == null)
         {
             return false;
@@ -73,7 +81,7 @@ public class UserService : BaseService<BookHubDbContext>, IUserService
             await ValidateImage(userUpdateDto.ProfilePhotoId.Value);
         }
 
-        User? user = await Context.Users.FirstOrDefaultAsync(u => u.Id == id);
+        var user = await Context.Users.FirstOrDefaultAsync(u => u.Id == id);
         if (user == null)
         {
             return null;
@@ -85,13 +93,27 @@ public class UserService : BaseService<BookHubDbContext>, IUserService
         return UserMapper.ToDto(user);
     }
 
+    public async Task<bool> UpdateFromOrderAsync(int userId, UserOrderUpdateDto userDto)
+    {
+        var user = await Context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        if (user == null)
+        {
+            return false;
+        }
+
+        UserMapper.UpdateEntityFromAdmin(user, userDto);
+        await SaveAsync();
+
+        return true;
+    }
+
     private async Task ValidateImage(int imageId)
     {
         // Validate that Image exists
-        var imageExists = await Context.Users.AnyAsync(u => u.Id == imageId);
+        var imageExists = await Context.Images.AnyAsync(i => i.Id == imageId);
         if (!imageExists)
         {
-            throw new ArgumentException($"Invalid User ID: {imageId}");
+            throw new ArgumentException($"Invalid Image ID: {imageId}");
         }
     }
 }

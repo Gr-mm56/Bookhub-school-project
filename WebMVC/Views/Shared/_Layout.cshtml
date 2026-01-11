@@ -10,6 +10,7 @@
     <title>@ViewData["Title"] - WebMVC</title>
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css"/>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
     <link rel="stylesheet" href="~/WebMVC.styles.css" asp-append-version="true"/>
 </head>
@@ -33,8 +34,34 @@
                     </li>
                     @if (SignInManager.IsSignedIn(User))
                     {
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a asp-area="Admin" asp-controller="Home" asp-action="Index" class="nav-link text-dark">
+                                    <i class="bi bi-gear"></i> Admin
+                                </a>
+                            </li>
+                        }
                         <li>
                             <a asp-area="" class="nav-link text-dark">Hello @UserManager.GetUserName(User)!</a>
+                        </li>
+                        <li>
+                            <form asp-area="" asp-controller="Order" asp-action="Cart" method="get">
+                                <input type="hidden" name="returnUrl" value="/"/>
+
+                                <button type="submit" class="nav-link btn btn-link text-dark">
+                                    My Cart
+                                </button>
+                            </form>
+                        </li>
+                        <li>
+                            <form asp-area="" asp-controller="Wishlist" asp-action="Index" method="get">
+                                <input type="hidden" name="returnUrl" value="/"/>
+
+                                <button type="submit" class="nav-link btn btn-link text-dark">
+                                    My Wishlist
+                                </button>
+                            </form>
                         </li>
                         <li>
                             <form asp-area="" asp-controller="Account" asp-action="Logout" method="post">

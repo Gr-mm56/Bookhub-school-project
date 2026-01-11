@@ -1,0 +1,125 @@
+@model WebMVC.Areas.Admin.Models.GiftCard.GiftCardDeleteViewModel
+
+@{
+    ViewBag.Title = "Delete Gift Card";
+    Layout = "_Layout";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h3>Delete Gift Card</h3>
+                </div>
+                <div class="card-body">
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <strong>Error!</strong> @TempData["ErrorMessage"]
+                        </div>
+                    }
+
+                    @if (Model.UsedCoupons > 0)
+                    {
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <strong>Cannot delete gift card!</strong> This gift card has @Model.UsedCoupons coupon(s) that have been used in orders. Please note that used coupons cannot be deleted.
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <strong>Warning!</strong> Are you sure you want to delete this gift card?
+                        </div>
+                    }
+
+                    <dl class="row">
+                        <dt class="col-sm-4">ID:</dt>
+                        <dd class="col-sm-8">@Model.Id</dd>
+
+                        <dt class="col-sm-4">Price Reduction:</dt>
+                        <dd class="col-sm-8"><strong>$@Model.PriceReduction.ToString("N2")</strong></dd>
+
+                        <dt class="col-sm-4">Valid Period:</dt>
+                        <dd class="col-sm-8">
+                            @Model.ValidFrom.ToString("dd-MM-yyyy") - @Model.ValidTo.ToString("dd-MM-yyyy")
+                        </dd>
+
+                        <dt class="col-sm-4">Total Coupons:</dt>
+                        <dd class="col-sm-8"><span class="badge bg-info">@Model.TotalCoupons</span></dd>
+
+                        <dt class="col-sm-4">Used Coupons:</dt>
+                        <dd class="col-sm-8">
+                            @if (Model.UsedCoupons > 0)
+                            {
+                                <span class="badge bg-danger">@Model.UsedCoupons</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">None</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-4">Created At:</dt>
+                        <dd class="col-sm-8">@Model.CreatedAt.ToString("dd-MM-yyyy")</dd>
+
+                        <dt class="col-sm-4">Updated:</dt>
+                        <dd class="col-sm-8">@Model.UpdatedAt.ToString("dd-MM-yyyy")</dd>
+
+                        @if (Model.UsedCoupons > 0)
+                        {
+                            <dt class="col-sm-4">Associated Orders:</dt>
+                            <dd class="col-sm-8"><span class="badge bg-danger">@Model.UsedCoupons</span></dd>
+                        }
+                    </dl>
+
+                    @if (Model.UsedCoupons > 0)
+                    {
+                        <h5 class="mt-3">Used Coupons:</h5>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Coupon Code</th>
+                                        <th>Used in Order</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var coupon in Model.Coupons.Where(c => c.IsUsed))
+                                    {
+                                        <tr>
+                                            <td><code>@coupon.Code</code></td>
+                                            <td><span class="badge bg-info">Order #@coupon.UsedInOrderId</span></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+
+                    @if (Model.UsedCoupons == 0)
+                    {
+                        <div class="alert alert-info mt-3">
+                            <i class="bi bi-info-circle"></i>
+                            This action cannot be undone. Please make sure you want to delete this gift card permanently.
+                        </div>
+                    }
+
+                    <form asp-action="Delete" asp-route-id="@Model.Id" method="post">
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-danger" disabled="@(Model.UsedCoupons > 0)" title="@(Model.UsedCoupons > 0 ? "Cannot delete gift card with used coupons" : "")">
+                                <i class="bi bi-trash"></i> Confirm Delete
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

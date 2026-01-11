@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
 
-public class BookController: BaseController<BookDto, BookDetailDto, BookRequestDto, BookRequestDto, IBookService>
+public class BookController : BaseController<BookDto, BookDetailDto, BookRequestDto, BookRequestDto, IBookService>
 {
     public BookController(IBookService bookService) : base(bookService)
     {

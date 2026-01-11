@@ -1,0 +1,51 @@
+@model WebMVC.Areas.Admin.Models.Publisher.PublisherCreateEditViewModelWithOptions
+
+@{
+    ViewBag.Title = "Create Publisher";
+    Layout = "_Layout";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Create New Publisher</h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" method="post" id="createPublisherForm" novalidate>
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="row">
+                            @await Html.PartialAsync("_FormBasicFields", Model)
+                        </div>
+
+                        <div class="row">
+                            @await Html.PartialAsync("_FormProfilePhoto", Model)
+                        </div>
+
+                        @await Html.PartialAsync("_FormMultiselects", Model)
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Back to List
+                            </a>
+                            <button type="submit" class="btn btn-primary" id="submitBtn">
+                                <i class="bi bi-save"></i> Create Publisher
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        ViewBag.FormId = "createPublisherForm";
+        ViewBag.SubmitBtnId = "submitBtn";
+    }
+    @await Html.PartialAsync("_FormValidationScript")
+}

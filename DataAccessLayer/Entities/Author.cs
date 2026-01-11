@@ -1,16 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
 
 namespace DataAccessLayer.Entities;
 public class Author : BaseEntity
 {
     [Required]
-    [MaxLength(30, ErrorMessage = "The Name cannot exceed 30 characters.")]
+    [MaxLength(30)]
     public required string Name { get; set; }
 
     [Required]
-    [MaxLength(30, ErrorMessage = "The Surname cannot exceed 30 characters.")]
+    [MaxLength(30)]
     public required string Surname { get; set; }
 
     [ForeignKey(nameof(ProfilePhotoId))]
@@ -18,5 +17,5 @@ public class Author : BaseEntity
 
     public int? ProfilePhotoId { get; set; }
 
-    public virtual ICollection<Book> Books { get; set; }
+    public virtual ICollection<Book> Books { get; set; } = new List<Book>();
 }

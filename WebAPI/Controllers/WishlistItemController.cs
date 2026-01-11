@@ -1,6 +1,6 @@
 ﻿using BusinessLayer.Models.WishlistItem.Requests;
-using BusinessLayer.Services.Interfaces;
 using BusinessLayer.Models.WishlistItem.Responses;
+using BusinessLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;

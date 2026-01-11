@@ -1,0 +1,11 @@
+﻿@model WebMVC.Areas.Admin.Models.Order.OrderCreateEditViewModelWithOptions
+
+<!-- Payment Status Select -->
+<div class="mb-3">
+    <label asp-for="Order.PaymentStatus" class="form-label">Payment Status *</label>
+    <select asp-for="Order.PaymentStatus" class="form-control">
+        <option value="0">Pending</option>
+        <option value="1">Completed</option>
+    </select>
+    <span asp-validation-for="Order.PaymentStatus" class="text-danger small d-block mt-1"></span>
+</div>

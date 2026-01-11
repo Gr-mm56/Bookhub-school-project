@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
 
 namespace DataAccessLayer.Entities;
 
@@ -16,7 +15,7 @@ public class Cart : BaseEntity
     public virtual User User { get; set; }
 
     [Required]
-    [Range(0, double.MaxValue, ErrorMessage = "TotalValue must be non-negative.")]
+    [Range(0, double.MaxValue)]
     public required double TotalValue { get; set; }
 
     public int? OrderId { get; set; }
@@ -24,4 +23,12 @@ public class Cart : BaseEntity
     public DateTime? OrderDate { get; set; }
 
     public virtual ICollection<PurchaseItem>? PurchaseItems { get; set; }
+
+    // 0 - pending, 1 - completed
+    public int PaymentStatus { get; set; } = 0;
+
+    public int? AppliedGiftCardCouponId { get; set; }
+
+    [ForeignKey(nameof(AppliedGiftCardCouponId))]
+    public virtual GiftCardCoupon? AppliedGiftCardCoupon { get; set; }
 }

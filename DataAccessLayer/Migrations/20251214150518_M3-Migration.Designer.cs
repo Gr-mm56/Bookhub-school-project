@@ -11,14 +11,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccessLayer.Migrations
 {
     [DbContext(typeof(BookHubDbContext))]
-    [Migration("20251115214205_MilestoneMigration")]
-    partial class MilestoneMigration
+    [Migration("20251214150518_M3-Migration")]
+    partial class M3Migration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "9.0.9");
+            modelBuilder.HasAnnotation("ProductVersion", "9.0.11");
 
             modelBuilder.Entity("DataAccessLayer.Entities.AuditLog", b =>
                 {
@@ -28,6 +28,7 @@ namespace DataAccessLayer.Migrations
 
                     b.Property<string>("Action")
                         .IsRequired()
+                        .HasMaxLength(500)
                         .HasColumnType("TEXT");
 
                     b.Property<int>("EditCount")
@@ -38,10 +39,12 @@ namespace DataAccessLayer.Migrations
 
                     b.Property<string>("EntityName")
                         .IsRequired()
+                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ModificationDetails")
                         .IsRequired()
+                        .HasMaxLength(2000)
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("ModifiedAt")
@@ -49,6 +52,7 @@ namespace DataAccessLayer.Migrations
 
                     b.Property<string>("Username")
                         .IsRequired()
+                        .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -83,7 +87,13 @@ namespace DataAccessLayer.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Name")
+                        .HasDatabaseName("idx_author_name");
+
                     b.HasIndex("ProfilePhotoId");
+
+                    b.HasIndex("Surname")
+                        .HasDatabaseName("idx_author_surname");
 
                     b.ToTable("Authors");
 
@@ -93,7 +103,7 @@ namespace DataAccessLayer.Migrations
                             Id = 1,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Wellington",
-                            ProfilePhotoId = 6,
+                            ProfilePhotoId = 10,
                             Surname = "Kuphal",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
@@ -102,7 +112,7 @@ namespace DataAccessLayer.Migrations
                             Id = 2,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Malcolm",
-                            ProfilePhotoId = 2,
+                            ProfilePhotoId = 9,
                             Surname = "Russel",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
@@ -111,7 +121,7 @@ namespace DataAccessLayer.Migrations
                             Id = 3,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Kadin",
-                            ProfilePhotoId = 5,
+                            ProfilePhotoId = 10,
                             Surname = "VonRueden",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
@@ -120,7 +130,7 @@ namespace DataAccessLayer.Migrations
                             Id = 4,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Florence",
-                            ProfilePhotoId = 2,
+                            ProfilePhotoId = 9,
                             Surname = "Murray",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
@@ -129,7 +139,7 @@ namespace DataAccessLayer.Migrations
                             Id = 5,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Melyna",
-                            ProfilePhotoId = 5,
+                            ProfilePhotoId = 10,
                             Surname = "Gleason",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
@@ -159,6 +169,9 @@ namespace DataAccessLayer.Migrations
                     b.Property<double>("Price")
                         .HasColumnType("REAL");
 
+                    b.Property<int>("PrimaryGenreId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int?>("PublisherId")
                         .HasColumnType("INTEGER");
 
@@ -174,7 +187,15 @@ namespace DataAccessLayer.Migrations
 
                     b.HasIndex("ImageId");
 
+                    b.HasIndex("Price")
+                        .HasDatabaseName("idx_book_price");
+
+                    b.HasIndex("PrimaryGenreId");
+
                     b.HasIndex("PublisherId");
+
+                    b.HasIndex("Title")
+                        .HasDatabaseName("idx_book_title");
 
                     b.ToTable("Books");
 
@@ -185,9 +206,10 @@ namespace DataAccessLayer.Migrations
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Et minima facilis ratione praesentium tempora dignissimos placeat et voluptas. Iusto voluptatem sit illum. Et aut dolor voluptatem harum architecto eaque provident veritatis aspernatur. Quia dolorem sapiente dicta eum veritatis illo magnam.",
                             ISBN = "666-1-6362726-71-3",
-                            ImageId = 2,
+                            ImageId = 6,
                             Price = 45.380000000000003,
-                            PublisherId = 1,
+                            PrimaryGenreId = 8,
+                            PublisherId = 2,
                             Title = "Dolores qui nam assumenda labore sed sint.",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
@@ -197,286 +219,301 @@ namespace DataAccessLayer.Migrations
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Fugit dicta ea deserunt. Et nam facere voluptate quis. Voluptas quis voluptates doloribus quia.",
                             ISBN = "666-1-7929691-67-3",
-                            ImageId = 2,
+                            ImageId = 8,
                             Price = 11.52,
+                            PrimaryGenreId = 4,
                             PublisherId = 2,
-                            Title = "Omnis nemo voluptatum recusandae qui.",
+                            Title = "Voluptatum recusandae qui.",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 3,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Aut veritatis aperiam deserunt. Soluta saepe unde voluptatem cumque rem eos corporis deserunt dolorem. Culpa ullam quia et consequatur ut reprehenderit laudantium voluptates blanditiis. Soluta neque consequatur qui et omnis. Est minima eius earum rerum rem dicta quo.",
-                            ISBN = "666-1-2622497-02-9",
-                            ImageId = 2,
-                            Price = 29.260000000000002,
+                            Description = "Non aut veritatis aperiam deserunt ut soluta saepe. Voluptatem cumque rem eos corporis deserunt dolorem. Culpa ullam quia et consequatur ut reprehenderit laudantium voluptates blanditiis. Soluta neque consequatur qui et omnis.\n\nMinima eius earum rerum rem dicta quo reprehenderit. Illum quidem et quia aliquam numquam voluptas. Non explicabo sed quod. Sunt soluta ducimus sit non eum quaerat magnam. Aspernatur libero ut perspiciatis est rerum velit.",
+                            ISBN = "666-1-9262249-70-2",
+                            Price = 45.789999999999999,
+                            PrimaryGenreId = 3,
                             PublisherId = 2,
-                            Title = "Nisi magnam provident repellendus sequi reiciendis.",
+                            Title = "Provident repellendus sequi.",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 4,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Similique aspernatur libero ut perspiciatis. Rerum velit minus provident exercitationem officiis qui facilis enim. Voluptas molestiae hic cum non eligendi nam et rerum. Est quaerat odio nostrum debitis voluptas dolores.",
-                            ISBN = "666-1-2202765-64-1",
-                            ImageId = 2,
-                            Price = 14.43,
-                            PublisherId = 1,
-                            Title = "Quidem et quia aliquam numquam voluptas.",
+                            Description = "Voluptatem magnam sed rerum. Impedit odio nobis dolorem deleniti. Et et pariatur molestiae voluptate id at. Iusto culpa eaque officiis iusto labore a recusandae consequuntur.\n\nOdio expedita delectus quod et reprehenderit minus saepe illo porro. Doloribus eum numquam aut cupiditate beatae omnis. Pariatur fugiat iusto explicabo saepe iste veniam vel. Nihil ipsam est.",
+                            ISBN = "666-1-6266496-62-4",
+                            ImageId = 6,
+                            Price = 18.170000000000002,
+                            PrimaryGenreId = 1,
+                            PublisherId = 2,
+                            Title = "Qui facilis enim voluptas voluptas molestiae hic.",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 5,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Officiis iusto labore. Recusandae consequuntur vel aut odio expedita delectus quod et reprehenderit. Saepe illo porro molestias doloribus eum numquam aut. Beatae omnis quisquam pariatur fugiat iusto explicabo. Iste veniam vel aut nihil ipsam est ipsam nemo at.",
-                            ISBN = "666-1-8459889-46-8",
-                            ImageId = 1,
-                            Price = 40.229999999999997,
+                            Description = "Architecto sit eius perferendis harum consectetur quod. Consectetur nobis non quia consectetur officia tenetur velit amet quia. Quidem accusantium delectus.",
+                            ISBN = "666-1-0956637-81-4",
+                            Price = 28.890000000000001,
+                            PrimaryGenreId = 8,
                             PublisherId = 2,
-                            Title = "Rerum enim impedit odio nobis.",
+                            Title = "Itaque consequuntur ut provident tempore quo et.",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 6,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Sit eius perferendis. Consectetur quod earum consectetur nobis non quia consectetur. Tenetur velit amet quia quia quidem accusantium. Ut fuga quisquam assumenda doloribus iusto animi et omnis porro. Nisi eos earum.",
-                            ISBN = "666-1-9566378-14-5",
-                            ImageId = 1,
-                            Price = 11.26,
-                            PublisherId = 2,
-                            Title = "Consequuntur ut provident tempore quo et et.",
+                            Description = "Qui consequuntur molestiae omnis eius ex. Commodi sed aut. Mollitia nostrum eos velit.\n\nVeniam voluptates vel eos nulla. Aut quis nam magni animi in ut incidunt. Et labore et. Excepturi quo est quam optio tempore consequatur facere qui.",
+                            ISBN = "666-1-0389150-50-1",
+                            ImageId = 6,
+                            Price = 38.109999999999999,
+                            PrimaryGenreId = 4,
+                            PublisherId = 1,
+                            Title = "Doloribus iusto animi et omnis porro.",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 7,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Aut numquam mollitia nostrum eos velit corporis. Veniam voluptates vel eos nulla. Aut quis nam magni animi in ut incidunt. Et labore et.",
-                            ISBN = "666-1-1791411-97-2",
-                            ImageId = 4,
-                            Price = 21.02,
-                            PublisherId = 2,
-                            Title = "Occaecati veritatis.",
+                            Description = "Temporibus et mollitia quos fugit. Eaque ut veniam facere odio rerum. Illum sed omnis architecto amet.",
+                            ISBN = "666-1-4945247-68-1",
+                            Price = 9.3499999999999996,
+                            PrimaryGenreId = 5,
+                            PublisherId = 1,
+                            Title = "Repellendus qui doloribus enim ut exercitationem.",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 8,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Iste tempora esse temporibus quidem aut. Aspernatur illo incidunt suscipit. Et mollitia quos fugit laudantium eaque ut veniam facere. Rerum minima illum sed omnis architecto. Saepe suscipit laudantium mollitia. Magni adipisci veniam aut quia.",
-                            ISBN = "666-1-5213774-93-3",
-                            ImageId = 4,
-                            Price = 18.25,
-                            PublisherId = 2,
-                            Title = "Est quam optio tempore consequatur facere qui.",
+                            Description = "Et harum quisquam fugit minima. Ut occaecati aut architecto. Neque eveniet officiis adipisci eos laudantium exercitationem fugiat culpa et. Nihil voluptatem ut. Nostrum pariatur fugiat molestiae in doloribus aut beatae aperiam sapiente. Sit sint ratione voluptates et est quas cupiditate.",
+                            ISBN = "666-1-1854199-92-8",
+                            ImageId = 6,
+                            Price = 27.530000000000001,
+                            PrimaryGenreId = 8,
+                            PublisherId = 1,
+                            Title = "Commodi magni adipisci veniam aut.",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 9,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Aut architecto voluptates neque eveniet officiis adipisci. Laudantium exercitationem fugiat culpa. Aspernatur nihil voluptatem ut asperiores nostrum pariatur fugiat molestiae. Doloribus aut beatae aperiam sapiente rerum sit. Ratione voluptates et est quas cupiditate aut inventore fugit est. Iure sed commodi ullam.",
-                            ISBN = "666-1-2851824-67-1",
-                            ImageId = 2,
-                            Price = 17.469999999999999,
-                            PublisherId = 1,
-                            Title = "Ipsum tenetur maiores ut.",
+                            Description = "Sequi illum quo incidunt dolores ducimus vel nobis libero non. Velit autem quaerat itaque quia. Eligendi ut quis. Quo est optio aperiam ut dolorem quidem.",
+                            ISBN = "666-1-3233948-28-1",
+                            ImageId = 8,
+                            Price = 35.75,
+                            PrimaryGenreId = 6,
+                            PublisherId = 2,
+                            Title = "Iure sed.",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 10,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Autem quaerat itaque quia. Eligendi ut quis. Quo est optio aperiam ut dolorem quidem. Temporibus ut mollitia consequatur id.",
-                            ISBN = "666-1-4918824-43-6",
-                            ImageId = 4,
-                            Price = 35.149999999999999,
-                            PublisherId = 1,
-                            Title = "Ea pariatur veniam nulla quia nobis quia.",
+                            Description = "Libero quae asperiores quidem magni. Odio magni qui velit voluptatem. Maxime vel aut labore qui. Consectetur ea cumque eveniet. Quae animi perspiciatis earum vitae molestias est.\n\nIn nostrum harum maxime reiciendis a debitis. Velit aut dolores ut eum. Vitae ullam placeat itaque veniam ut nihil consectetur. Assumenda sint hic eaque qui ex ea dolorum.",
+                            ISBN = "666-1-2256986-61-0",
+                            ImageId = 8,
+                            Price = 37.960000000000001,
+                            PrimaryGenreId = 8,
+                            PublisherId = 2,
+                            Title = "Id at.",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 11,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Ullam odio magni qui. Voluptatem veniam maxime vel. Labore qui consectetur consectetur ea cumque eveniet provident quae animi. Earum vitae molestias est ullam fuga in. Harum maxime reiciendis a debitis.\n\nAut dolores ut eum expedita vitae. Placeat itaque veniam ut nihil. Rerum assumenda sint hic. Qui ex ea.",
-                            ISBN = "666-1-8661076-53-6",
-                            ImageId = 3,
-                            Price = 7.0999999999999996,
-                            PublisherId = 1,
-                            Title = "Perspiciatis facilis itaque.",
+                            Description = "Sed iure est eos tempora doloremque et exercitationem hic. Quos nobis qui. Hic et omnis laborum cum sint tempora ut. Illo aut sit quis.\n\nQuo accusantium ab. Eos iusto quia. Rerum voluptates incidunt nulla sit recusandae recusandae aspernatur beatae.",
+                            ISBN = "666-1-3895716-94-6",
+                            Price = 19.989999999999998,
+                            PrimaryGenreId = 10,
+                            PublisherId = 2,
+                            Title = "Placeat eos voluptatem assumenda.",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 12,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Sed iure est eos tempora doloremque et exercitationem hic. Quos nobis qui. Hic et omnis laborum cum sint tempora ut. Illo aut sit quis.\n\nQuo accusantium ab. Eos iusto quia. Rerum voluptates incidunt nulla sit recusandae recusandae aspernatur beatae.",
-                            ISBN = "666-1-3895716-94-6",
-                            ImageId = 3,
-                            Price = 19.989999999999998,
-                            PublisherId = 2,
-                            Title = "Quidem impedit qui placeat eos voluptatem assumenda.",
+                            Description = "Eum libero cumque ducimus libero quia id voluptatem. Non animi autem explicabo quis dolorum nemo sequi nesciunt id. Dolores sed doloremque perferendis corrupti perferendis nulla optio et. Dignissimos quam animi quis alias nihil sit dignissimos.",
+                            ISBN = "666-1-1588781-20-4",
+                            ImageId = 6,
+                            Price = 33.649999999999999,
+                            PrimaryGenreId = 10,
+                            PublisherId = 1,
+                            Title = "Sunt quisquam saepe necessitatibus provident distinctio.",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 13,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Eum libero cumque ducimus libero quia id voluptatem. Non animi autem explicabo quis dolorum nemo sequi nesciunt id. Dolores sed doloremque perferendis corrupti perferendis nulla optio et. Dignissimos quam animi quis alias nihil sit dignissimos.",
-                            ISBN = "666-1-1588781-20-4",
-                            ImageId = 1,
-                            Price = 33.649999999999999,
+                            Description = "Ea exercitationem corrupti dolor est est veniam velit quis quo. Minima porro numquam natus aut porro quia veniam a vitae. Quis sapiente quo et. Autem dolor sit corrupti error delectus voluptatem error ut odio.\n\nConsequatur id quam iusto in ut molestiae. Minima quasi sed ut quo autem ea dolorem quia. Cupiditate laudantium impedit pariatur et esse tenetur tempora quis ipsam.",
+                            ISBN = "666-1-6724754-66-6",
+                            ImageId = 7,
+                            Price = 48.149999999999999,
+                            PrimaryGenreId = 7,
                             PublisherId = 1,
-                            Title = "Fugiat sunt quisquam saepe necessitatibus provident distinctio.",
+                            Title = "Molestiae exercitationem consequatur minus rerum.",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 14,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Est a expedita ea et ea exercitationem corrupti. Est est veniam velit. Quo itaque minima porro numquam. Aut porro quia veniam a vitae sit. Sapiente quo et debitis autem.",
-                            ISBN = "666-1-9237867-24-7",
-                            ImageId = 4,
-                            Price = 29.140000000000001,
+                            Description = "Repudiandae expedita aut nesciunt optio alias. Aliquid dolorem fugit aliquam et vero. Quis nemo aspernatur quae neque nihil magni aut dolor. Dolore animi ipsum deserunt in sit.",
+                            ISBN = "666-1-7422532-36-1",
+                            Price = 30.34,
+                            PrimaryGenreId = 3,
                             PublisherId = 1,
-                            Title = "Et facilis.",
+                            Title = "Provident ad ex distinctio placeat.",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 15,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Sed ut quo. Ea dolorem quia molestiae cupiditate. Impedit pariatur et esse tenetur tempora. Ipsam error est non nam.\n\nAd ex distinctio placeat quibusdam quam veniam. Animi nemo et commodi. Consectetur error quia reprehenderit quam repudiandae expedita aut. Optio alias deleniti aliquid. Fugit aliquam et vero.",
-                            ISBN = "666-1-3415064-45-5",
-                            ImageId = 4,
-                            Price = 24.300000000000001,
+                            Description = "Nostrum consequatur voluptatum esse voluptates aspernatur eum necessitatibus est maiores. Sit quis et consequuntur nihil. Maiores iure quas nesciunt nobis pariatur aut voluptatum.\n\nEt animi incidunt explicabo. Beatae nostrum et itaque. Incidunt sed natus fugiat vel tempore. Aut ut mollitia eum et.",
+                            ISBN = "666-1-2421994-39-3",
+                            ImageId = 8,
+                            Price = 9.0600000000000005,
+                            PrimaryGenreId = 2,
                             PublisherId = 1,
-                            Title = "Error delectus voluptatem error.",
+                            Title = "Placeat rerum est fugit distinctio distinctio.",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 16,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Temporibus placeat rerum est fugit. Distinctio ut dignissimos magnam ipsum maiores ut qui. Asperiores nisi sunt sint nesciunt.\n\nConsequatur voluptatum esse voluptates aspernatur. Necessitatibus est maiores commodi sit quis et consequuntur nihil. Maiores iure quas nesciunt nobis pariatur aut voluptatum. Ratione et animi incidunt explicabo. Beatae nostrum et itaque. Incidunt sed natus fugiat vel tempore.",
-                            ISBN = "666-1-4111425-15-5",
-                            ImageId = 2,
-                            Price = 13.23,
+                            Description = "Dolorem tempore dolor perferendis qui quia molestias nobis voluptas. Aperiam perspiciatis doloribus odit nihil deleniti saepe. Consequatur nostrum similique laborum et sunt consequuntur autem cum aperiam. Vel illo laborum quaerat voluptatem corporis maiores.\n\nAutem quaerat et hic sit rem aliquam. Ut accusantium sint animi cum non hic dolores numquam numquam. Eligendi rerum non non rem ipsum tenetur et quam.",
+                            ISBN = "666-1-6902581-90-5",
+                            ImageId = 8,
+                            Price = 13.48,
+                            PrimaryGenreId = 5,
                             PublisherId = 2,
-                            Title = "Aspernatur quae neque.",
+                            Title = "Consequatur est sapiente laudantium earum.",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 17,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Vitae similique amet tenetur molestiae repellendus dolorem tempore dolor perferendis. Quia molestias nobis voluptas iste aperiam perspiciatis. Odit nihil deleniti saepe reiciendis consequatur nostrum similique laborum et.\n\nAutem cum aperiam sint. Illo laborum quaerat voluptatem corporis maiores doloremque deserunt autem. Et hic sit rem aliquam.",
-                            ISBN = "666-1-6869496-90-2",
-                            ImageId = 4,
-                            Price = 29.469999999999999,
+                            Description = "Dicta sed laboriosam. Dolorem qui a omnis incidunt ut quo porro. Modi beatae ratione vel.\n\nMinima deserunt temporibus sed. Possimus id debitis a aliquam qui expedita possimus nesciunt. Porro voluptatem fugit deserunt iusto sit eveniet. Adipisci commodi repellat velit labore et iusto voluptas facere. Laudantium nulla excepturi exercitationem.",
+                            ISBN = "666-1-6438146-59-1",
+                            ImageId = 7,
+                            Price = 43.009999999999998,
+                            PrimaryGenreId = 5,
                             PublisherId = 2,
-                            Title = "Mollitia eum et similique est aut magni.",
+                            Title = "Ullam animi placeat vero.",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 18,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Et quam veniam tempore et iusto qui ullam animi placeat. Dolorum molestiae sit fugiat consequuntur rem et sint repudiandae. Nulla nam consequuntur aut.",
-                            ISBN = "666-1-6291228-68-2",
-                            ImageId = 1,
-                            Price = 28.780000000000001,
-                            PublisherId = 1,
-                            Title = "Sint animi.",
+                            Description = "Occaecati corrupti et nihil exercitationem enim. Quam id harum. Consequatur neque saepe voluptatem repellendus quae sint vero. Molestiae cum minus delectus inventore minima totam.",
+                            ISBN = "666-1-5707113-75-1",
+                            Price = 43.810000000000002,
+                            PrimaryGenreId = 5,
+                            PublisherId = 2,
+                            Title = "Alias cupiditate velit ipsam beatae iste nam.",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 19,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Temporibus sed vero possimus id debitis a. Qui expedita possimus nesciunt similique. Voluptatem fugit deserunt iusto sit eveniet voluptas adipisci. Repellat velit labore et iusto.",
-                            ISBN = "666-1-7298722-01-3",
-                            ImageId = 4,
-                            Price = 32.460000000000001,
+                            Description = "Consequuntur earum quos et cupiditate nulla possimus aspernatur commodi. Nulla ullam quo. Sit ipsa beatae possimus velit. Dignissimos sequi eos laborum aut.",
+                            ISBN = "666-1-3872600-41-1",
+                            Price = 5.8700000000000001,
+                            PrimaryGenreId = 4,
                             PublisherId = 2,
-                            Title = "Nihil dolorem qui a.",
+                            Title = "Animi non voluptate atque aperiam.",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 20,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Omnis aperiam temporibus quia sit vel placeat. Quia eos ut et ducimus occaecati corrupti. Nihil exercitationem enim. Quam id harum. Consequatur neque saepe voluptatem repellendus quae sint vero.\n\nCum minus delectus inventore minima totam omnis nihil voluptate et. Non voluptate atque aperiam nisi saepe dolor. Id dicta accusantium in. Ipsum sit atque et. Consequuntur earum quos et cupiditate nulla possimus aspernatur commodi.",
-                            ISBN = "666-1-2549480-54-3",
-                            ImageId = 1,
-                            Price = 8.4800000000000004,
+                            Description = "Aspernatur sunt voluptatem architecto ratione commodi. Aut debitis hic nobis adipisci molestiae ad rem possimus eos. Illum illo nisi recusandae architecto officiis assumenda consequatur velit et. Non nam laudantium a hic est. Repellat voluptates sit sed nemo accusamus incidunt illo velit.",
+                            ISBN = "666-1-6108622-57-3",
+                            ImageId = 8,
+                            Price = 18.77,
+                            PrimaryGenreId = 1,
                             PublisherId = 2,
-                            Title = "Laudantium nulla excepturi.",
+                            Title = "Necessitatibus quaerat voluptatibus sit eveniet minima.",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 21,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Necessitatibus quaerat voluptatibus sit eveniet minima tempore aut consequatur. Rerum ad et non voluptas in nemo quis eligendi eum. Sunt voluptatem architecto. Commodi ut aut debitis.\n\nAdipisci molestiae ad rem possimus eos ut illum. Nisi recusandae architecto. Assumenda consequatur velit et autem non nam laudantium a. Est quibusdam repellat voluptates sit sed nemo accusamus incidunt illo. Ducimus pariatur delectus illo. Sed laboriosam iste.",
-                            ISBN = "666-1-0074241-16-9",
-                            ImageId = 3,
-                            Price = 42.659999999999997,
-                            PublisherId = 1,
-                            Title = "Quo sit sit.",
+                            Description = "Ut deleniti omnis cum. Tenetur repellendus veniam maxime voluptatum cumque sit tempore quia. Incidunt sunt quis cum. Voluptates voluptatem voluptates natus omnis.\n\nIpsa consequatur delectus odio error assumenda reiciendis. Quis esse vel et. Omnis enim saepe error laudantium alias quisquam. Voluptatibus recusandae assumenda inventore doloribus a enim sint similique doloribus. Nesciunt aliquid quod repudiandae dolor aperiam eos magnam eligendi aut.",
+                            ISBN = "666-1-5601033-11-3",
+                            Price = 24.32,
+                            PrimaryGenreId = 2,
+                            PublisherId = 2,
+                            Title = "Sed laboriosam.",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 22,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Repellendus veniam maxime voluptatum cumque sit tempore quia nesciunt incidunt. Quis cum voluptas voluptates voluptatem voluptates natus. Id id ipsa consequatur delectus odio error assumenda reiciendis. Quis esse vel et. Omnis enim saepe error laudantium alias quisquam. Voluptatibus recusandae assumenda inventore doloribus a enim sint similique doloribus.\n\nAliquid quod repudiandae dolor. Eos magnam eligendi. Repellendus vel adipisci. Explicabo omnis quidem nihil. Aspernatur omnis rerum fuga veritatis. Adipisci vel sunt vel nam exercitationem.",
-                            ISBN = "666-1-3113462-22-4",
-                            ImageId = 4,
-                            Price = 29.789999999999999,
+                            Description = "Exercitationem et molestiae atque dicta incidunt consequatur ea. Non quia facere. Accusamus adipisci quia. Non eveniet dolor cum dolores modi saepe. Enim est soluta. Officia et error iusto accusantium illum.\n\nQuo quae eos delectus minima enim. Est accusantium eos facere et ipsam et qui cum. Doloribus et culpa sed commodi vel quas magni. Cupiditate officiis possimus ipsam repellat illo non minus et rerum. Numquam in amet. Sed sunt velit aut vel dolorem.",
+                            ISBN = "666-1-6430786-04-1",
+                            Price = 22.149999999999999,
+                            PrimaryGenreId = 9,
                             PublisherId = 1,
-                            Title = "Sit reprehenderit.",
+                            Title = "Explicabo omnis.",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 23,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Modi saepe sed enim est soluta. Officia et error iusto accusantium illum. Iure quo quae eos delectus minima enim illum est accusantium. Facere et ipsam et qui cum harum doloribus et. Sed commodi vel quas magni aut cupiditate.",
-                            ISBN = "666-1-1537081-15-9",
-                            ImageId = 4,
-                            Price = 45.359999999999999,
-                            PublisherId = 2,
-                            Title = "Dicta incidunt consequatur ea.",
+                            Description = "Quam deserunt et quia quam enim ea provident. Porro iste tempore accusamus excepturi. Eaque consequatur aut sint et cum vel alias in praesentium. Vel unde enim. Qui numquam quidem dolore.\n\nEa tempora iusto architecto eum dolorem. Soluta incidunt enim ratione sed ut nam. Cumque labore repudiandae delectus ipsa deserunt numquam quo ipsam. Vero voluptatem nesciunt magni laboriosam aperiam fuga consequuntur sint quidem.",
+                            ISBN = "666-1-3837907-87-6",
+                            ImageId = 7,
+                            Price = 31.120000000000001,
+                            PrimaryGenreId = 9,
+                            PublisherId = 1,
+                            Title = "Eaque sit ea at ut incidunt.",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 24,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Ut sed necessitatibus aut. Sit ea at. Incidunt ea quo qui repellendus. Perferendis quo et cumque et culpa facere error rerum quam. Et quia quam enim ea provident voluptatem. Iste tempore accusamus excepturi sapiente eaque consequatur aut.\n\nCum vel alias in praesentium aut vel unde. Nesciunt qui numquam quidem dolore. Dignissimos ea tempora iusto architecto eum. Occaecati soluta incidunt enim ratione sed ut nam nulla. Labore repudiandae delectus ipsa deserunt numquam quo ipsam.",
-                            ISBN = "666-1-7880231-41-0",
-                            ImageId = 4,
-                            Price = 23.469999999999999,
+                            Description = "Ea omnis necessitatibus labore occaecati architecto eum. Ut magnam quibusdam. Fugit sit enim. Cupiditate ea porro. Expedita nulla et ea. Nisi repellendus nam ducimus et.",
+                            ISBN = "666-1-6389723-81-5",
+                            ImageId = 6,
+                            Price = 10.31,
+                            PrimaryGenreId = 3,
                             PublisherId = 2,
-                            Title = "Repellat illo non.",
+                            Title = "Eos voluptatem ipsum consectetur tenetur quia facilis.",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 25,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Tenetur quia facilis id. Rerum reiciendis est minima nisi. Amet sint sed sit aut natus ea omnis necessitatibus.",
-                            ISBN = "666-1-0615654-48-8",
-                            ImageId = 1,
-                            Price = 43.68,
+                            Description = "Omnis et excepturi nemo provident molestiae. Nostrum quisquam qui velit. Ut labore dolorem soluta quas omnis sunt molestiae et tenetur. Quibusdam laborum dolor. Dolor dolorum dicta corporis architecto sunt quibusdam dicta. Maiores praesentium placeat accusantium quaerat consequatur.\n\nPariatur impedit rerum qui nisi deleniti architecto eum quam eum. Consequatur dolorem porro eligendi aliquid magnam repellat libero harum. Consequuntur aliquid maxime voluptatem odio. Ipsa aut perspiciatis libero consequatur esse sunt hic. Ut minima fugiat qui perferendis et expedita quod hic minima.",
+                            ISBN = "666-1-1250616-11-5",
+                            ImageId = 6,
+                            Price = 11.5,
+                            PrimaryGenreId = 5,
                             PublisherId = 2,
-                            Title = "Nesciunt magni laboriosam.",
+                            Title = "Assumenda minima tenetur iusto.",
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
                 });
@@ -494,6 +531,9 @@ namespace DataAccessLayer.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<int?>("OrderId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("PaymentStatus")
                         .HasColumnType("INTEGER");
 
                     b.Property<double>("TotalValue")
@@ -516,8 +556,7 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 1,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            OrderDate = new DateTime(2025, 2, 17, 16, 51, 5, 965, DateTimeKind.Unspecified).AddTicks(8834),
-                            OrderId = 1729,
+                            PaymentStatus = 1,
                             TotalValue = 292.50999999999999,
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UserId = 1
@@ -526,9 +565,10 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 2,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            OrderDate = new DateTime(2025, 7, 26, 8, 45, 7, 378, DateTimeKind.Unspecified).AddTicks(9460),
-                            OrderId = 1535,
-                            TotalValue = 231.18000000000001,
+                            OrderDate = new DateTime(2024, 11, 28, 23, 40, 23, 892, DateTimeKind.Unspecified).AddTicks(4379),
+                            OrderId = 1000,
+                            PaymentStatus = 0,
+                            TotalValue = 199.21000000000001,
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UserId = 2
                         },
@@ -536,9 +576,10 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 3,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            OrderDate = new DateTime(2024, 5, 25, 10, 39, 3, 278, DateTimeKind.Unspecified).AddTicks(2620),
-                            OrderId = 1631,
-                            TotalValue = 204.75999999999999,
+                            OrderDate = new DateTime(2025, 1, 28, 6, 13, 39, 512, DateTimeKind.Unspecified).AddTicks(1616),
+                            OrderId = 1001,
+                            PaymentStatus = 0,
+                            TotalValue = 275.62,
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UserId = 3
                         },
@@ -546,9 +587,10 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 4,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            OrderDate = new DateTime(2025, 4, 2, 20, 45, 33, 659, DateTimeKind.Unspecified).AddTicks(5317),
-                            OrderId = 1674,
-                            TotalValue = 212.91,
+                            OrderDate = new DateTime(2025, 2, 23, 13, 9, 33, 729, DateTimeKind.Unspecified).AddTicks(7070),
+                            OrderId = 1002,
+                            PaymentStatus = 0,
+                            TotalValue = 70.040000000000006,
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UserId = 4
                         },
@@ -556,9 +598,10 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 5,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            OrderDate = new DateTime(2024, 3, 12, 4, 38, 58, 477, DateTimeKind.Unspecified).AddTicks(5940),
-                            OrderId = 1898,
-                            TotalValue = 30.940000000000001,
+                            OrderDate = new DateTime(2025, 7, 13, 0, 11, 5, 430, DateTimeKind.Unspecified).AddTicks(1468),
+                            OrderId = 1003,
+                            PaymentStatus = 1,
+                            TotalValue = 220.47999999999999,
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UserId = 5
                         },
@@ -566,7 +609,8 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 6,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            TotalValue = 138.91999999999999,
+                            PaymentStatus = 1,
+                            TotalValue = 34.280000000000001,
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UserId = 6
                         },
@@ -574,8 +618,7 @@ namespace DataAccessLayer.Migrations
                         {
                             Id = 7,
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            OrderDate = new DateTime(2024, 3, 31, 21, 33, 41, 734, DateTimeKind.Unspecified).AddTicks(7149),
-                            OrderId = 1644,
+                            PaymentStatus = 1,
                             TotalValue = 73.489999999999995,
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UserId = 7
@@ -600,6 +643,9 @@ namespace DataAccessLayer.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("idx_genre_name");
 
                     b.ToTable("Genres");
 
@@ -725,6 +771,7 @@ namespace DataAccessLayer.Migrations
 
                     b.Property<string>("FileUrl")
                         .IsRequired()
+                        .HasMaxLength(300)
                         .HasColumnType("TEXT");
 
                     b.Property<int?>("PublisherId")
@@ -924,6 +971,9 @@ namespace DataAccessLayer.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Name")
+                        .HasDatabaseName("idx_publisher_name");
+
                     b.HasIndex("ProfilePhotoId");
 
                     b.ToTable("Publishers");
@@ -935,7 +985,7 @@ namespace DataAccessLayer.Migrations
                             Address = "36272 VonRueden Rapid, Murphyton, French Southern Territories",
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Kuphal, Rempel and O'Reilly",
-                            ProfilePhotoId = 4,
+                            ProfilePhotoId = 12,
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
@@ -944,7 +994,7 @@ namespace DataAccessLayer.Migrations
                             Address = "24768 Corkery Lodge, South Emmatown, Solomon Islands",
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Kohler Group",
-                            ProfilePhotoId = 4,
+                            ProfilePhotoId = 12,
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
@@ -953,7 +1003,7 @@ namespace DataAccessLayer.Migrations
                             Address = "0161 Alison Mountain, Windlerton, South Georgia and the South Sandwich Islands",
                             CreatedAt = new DateTime(2025, 9, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Bradtke - Sauer",
-                            ProfilePhotoId = 1,
+                            ProfilePhotoId = 11,
                             UpdatedAt = new DateTime(2025, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
                 });
@@ -2024,12 +2074,20 @@ namespace DataAccessLayer.Migrations
                         .HasForeignKey("ImageId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("DataAccessLayer.Entities.Genre", "PrimaryGenre")
+                        .WithMany("PrimaryBooks")
+                        .HasForeignKey("PrimaryGenreId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("DataAccessLayer.Entities.Publisher", "Publisher")
                         .WithMany("Books")
                         .HasForeignKey("PublisherId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Image");
+
+                    b.Navigation("PrimaryGenre");
 
                     b.Navigation("Publisher");
                 });
@@ -2245,6 +2303,11 @@ namespace DataAccessLayer.Migrations
             modelBuilder.Entity("DataAccessLayer.Entities.Cart", b =>
                 {
                     b.Navigation("PurchaseItems");
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Entities.Genre", b =>
+                {
+                    b.Navigation("PrimaryBooks");
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.Image", b =>

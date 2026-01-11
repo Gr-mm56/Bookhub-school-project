@@ -1,0 +1,84 @@
+﻿version: '3.8'
+
+services:
+  # MongoDB for logging/additional data storage
+  mongodb:
+    image: mongo:latest
+    container_name: bookhub-mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin123
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+      - mongodb_config:/data/configdb
+    networks:
+      - bookhub-network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # WebAPI Service
+  webapi:
+    build:
+      context: .
+      dockerfile: WebAPI/Dockerfile
+    container_name: bookhub-webapi
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ASPNETCORE_URLS=http://+:5000
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongodb
+      - minio-init
+    volumes:
+      - ./BookHub.db:/app/BookHub.db
+    networks:
+      - bookhub-network
+    healthcheck:
+      test: curl -f http://localhost:5000/swagger/index.html || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # WebMVC Service
+  webmvc:
+    build:
+      context: .
+      dockerfile: WebMVC/Dockerfile
+    container_name: bookhub-webmvc
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ASPNETCORE_URLS=http://+:5170
+    ports:
+      - "5170:5170"
+    depends_on:
+      - mongodb
+      - minio-init
+      - webapi
+    volumes:
+      - ./BookHub.db:/app/BookHub.db
+    networks:
+      - bookhub-network
+    healthcheck:
+      test: curl -f http://localhost:5170/ || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  mongodb_data:
+    driver: local
+  mongodb_config:
+    driver: local
+
+networks:
+  bookhub-network:
+    driver: bridge
+
+
+

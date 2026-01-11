@@ -18,6 +18,7 @@ public static class CartMapper
             TotalValue = cart.TotalValue,
             OrderId = cart.OrderId,
             OrderDate = cart.OrderDate,
+            PaymentStatus = cart.PaymentStatus,
             CreatedAt = cart.CreatedAt,
             UpdatedAt = cart.UpdatedAt,
         };
@@ -35,7 +36,13 @@ public static class CartMapper
             TotalValue = cart.TotalValue,
             OrderId = cart.OrderId,
             OrderDate = cart.OrderDate,
-            PurchaseItems = cart.PurchaseItems?.Select(PurchaseItemMapper.ToDto).ToList() ?? new List<PurchaseItemDto>(),
+            PaymentStatus = cart.PaymentStatus,
+            PurchaseItems = cart.PurchaseItems?.Select(PurchaseItemMapper.ToDetailDto).ToList() 
+                ?? new List<PurchaseItemDetailDto>(),
+            AppliedGiftCardCouponId = cart.AppliedGiftCardCouponId,
+            AppliedGiftCardCoupon = cart.AppliedGiftCardCoupon != null 
+                ? GiftCardCouponMapper.ToDetailDto(cart.AppliedGiftCardCoupon) 
+                : null,
             CreatedAt = cart.CreatedAt,
             UpdatedAt = cart.UpdatedAt,
         };
@@ -51,8 +58,27 @@ public static class CartMapper
             TotalValue = createDto.TotalValue,
             OrderId = createDto.OrderId,
             OrderDate = createDto.OrderDate,
-            CreatedAt = DateTime.Now,
-            UpdatedAt = DateTime.Now,
+            PaymentStatus = createDto.PaymentStatus,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
+        };
+    }
+
+    public static Cart DetailDtoToEntity(CartDetailDto cartDetailDto)
+    {
+        ArgumentNullException.ThrowIfNull(cartDetailDto);
+
+        return new Cart
+        {
+            Id = cartDetailDto.Id,
+            UserId = cartDetailDto.UserId,
+            TotalValue = cartDetailDto.TotalValue,
+            OrderId = cartDetailDto.OrderId,
+            OrderDate = cartDetailDto.OrderDate,
+            PaymentStatus = cartDetailDto.PaymentStatus,
+            AppliedGiftCardCouponId = cartDetailDto.AppliedGiftCardCouponId,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
         };
     }
 
@@ -64,7 +90,49 @@ public static class CartMapper
         cart.TotalValue = updateDto.TotalValue;
         cart.OrderId = updateDto.OrderId;
         cart.OrderDate = updateDto.OrderDate;
-        cart.UpdatedAt = DateTime.Now;
+        cart.PaymentStatus = updateDto.PaymentStatus;
+        cart.AppliedGiftCardCouponId = updateDto.AppliedGiftCardCouponId;
+        cart.UpdatedAt = DateTime.UtcNow;
+    }
+
+    public static Cart CreateOrderDtoToEntity(OrderCreateDto createDto)
+    {
+        ArgumentNullException.ThrowIfNull(createDto);
+
+        return new Cart
+        {
+            UserId = createDto.UserId,
+            TotalValue = createDto.TotalValue,
+            OrderId = createDto.OrderId,
+            OrderDate = createDto.OrderDate,
+            PaymentStatus = createDto.PaymentStatus,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
+        };
+    }
+
+    public static void UpdateOrderEntity(Cart order, OrderUpdateDto updateDto)
+    {
+        ArgumentNullException.ThrowIfNull(order);
+        ArgumentNullException.ThrowIfNull(updateDto);
+
+        order.TotalValue = updateDto.TotalValue;
+        order.UserId = updateDto.UserId;
+        order.OrderDate = updateDto.OrderDate;
+        order.PaymentStatus = updateDto.PaymentStatus;
+        order.UpdatedAt = DateTime.UtcNow;
+    }
+
+    public static CartUpdateDto CartToUpdateDto(Cart cart)
+    {
+        return new CartUpdateDto
+        {
+            TotalValue = cart.TotalValue,
+            OrderId = cart.OrderId,
+            PaymentStatus = cart.PaymentStatus,
+            OrderDate = DateTime.UtcNow,
+            AppliedGiftCardCouponId = cart.AppliedGiftCardCouponId,
+        };
     }
 
     public static IEnumerable<CartDto> ToDtoList(IEnumerable<Cart> carts)

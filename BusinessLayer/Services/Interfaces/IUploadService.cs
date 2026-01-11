@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace BusinessLayer.Services.Interfaces;
+﻿namespace BusinessLayer.Services.Interfaces;
 
 public interface IUploadService
 {
@@ -13,5 +11,12 @@ public interface IUploadService
     /// <param name="contentType">Optional content type.</param>
     /// <returns>Virtual request path that can be used by clients to access the file.</returns>
     Task<string> SaveImageAsync(Stream content, string originalFileName, string? contentType = null);
+
+    /// <summary>
+    /// Deletes an image file from storage based on the virtual path.
+    /// </summary>
+    /// <param name="virtualPath">Virtual request path (eg. "/assets/uploads/filename.jpg").</param>
+    /// <returns>True if the file was deleted; false if the file was not found.</returns>
+    Task<bool> DeleteImageAsync(string virtualPath);
 }
 

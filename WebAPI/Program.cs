@@ -1,32 +1,32 @@
 using BusinessLayer.Services.Implementations;
 using BusinessLayer.Services.Interfaces;
 using DataAccessLayer.Context;
+using DataAccessLayer.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using MongoDB.Driver;
 using Middleware;
+using MongoDB.Driver;
+using Serilog;
 using WebAPI.Extensions;
+
+// Configure Serilog
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .WriteTo.Console()
+    .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IAuditLogService, AuditLogService>();
 builder.Services.AddDbContext<BookHubDbContext>(options =>
 {
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
-// Add services to the container.
 
-builder.Services.AddScoped<IRatingService, RatingService>();
-builder.Services.AddScoped<IGenreService, GenreService>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<ICartService, CartService>();
-builder.Services.AddScoped<IPurchaseItemService, PurchaseItemService>();
-builder.Services.AddScoped<IWishlistItemService, WishlistItemService>();
-builder.Services.AddScoped<IBookService, BookService>();
-builder.Services.AddScoped<IAuthorService, AuthorService>();
-builder.Services.AddScoped<IPublisherService, PublisherService>();
-builder.Services.AddScoped<IImageService, ImageService>();
+builder.Services.AddMemoryCache();
 
-// register upload service as the BusinessLayer FileSystemUploadService using a factory
+builder.Services.AddBusinessServices();
 builder.Services.AddFileSystemUploadService(builder.Configuration, builder.Environment);
 
 builder.Services.AddControllers();
@@ -65,8 +65,15 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddSingleton<IMongoClient>(_ =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("MongoDB")
-                           ?? "mongodb://localhost:27017";
+    var connectionString = builder.Configuration.GetConnectionString("MongoDB");
+
+    if (string.IsNullOrEmpty(connectionString))
+    {
+        throw new InvalidOperationException(
+            "MongoDB connection string is not configured. " +
+            "Please set 'ConnectionStrings:MongoDB' in appsettings.json or environment variables.");
+    }
+
     return new MongoClient(connectionString);
 });
 
@@ -86,9 +93,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseMiddleware<RequestLoggingMiddleware>();
-app.UseMiddleware<RequestTimingMiddleware>();
 app.UseMiddleware<TokenAuthenticationMiddleware>();
-app.UseMiddleware<AuditLogMiddleware>();
 
 // Configure the HTTP request pipeline.
 

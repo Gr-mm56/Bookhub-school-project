@@ -3,7 +3,6 @@ using BusinessLayer.Services.Interfaces;
 using DataAccessLayer.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using TestUtilities.Data;
 
 namespace TestUtilities.MockedObjects;
 
@@ -44,6 +43,7 @@ public class MockedDependencyInjectionBuilder
     public MockedDependencyInjectionBuilder AddServices()
     {
         _serviceCollection = _serviceCollection
+            .AddMemoryCache()
             .AddScoped<IRatingService, RatingService>()
             .AddScoped<IGenreService, GenreService>()
             .AddScoped<IUserService, UserService>()
@@ -57,7 +57,7 @@ public class MockedDependencyInjectionBuilder
 
         return this;
     }
-    
+
 
     public ServiceProvider Create()
     {

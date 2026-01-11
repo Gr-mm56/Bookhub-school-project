@@ -2,46 +2,80 @@
 using BusinessLayer.Models.Common;
 using BusinessLayer.Models.Genre.Requests;
 using BusinessLayer.Models.Genre.Responses;
+using BusinessLayer.Services.Extensions;
 using BusinessLayer.Services.Interfaces;
 using DataAccessLayer.Context;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace BusinessLayer.Services.Implementations;
 
 public class GenreService : BaseService<BookHubDbContext>, IGenreService
 {
-    public GenreService(BookHubDbContext context) : base(context)
+    private readonly IMemoryCache _memoryCache;
+    private const string GenreAllCacheKey = "genres_all";
+    private static readonly TimeSpan CacheExpiration = TimeSpan.FromSeconds(60);
+
+    public GenreService(BookHubDbContext context, IMemoryCache memoryCache) : base(context)
     {
+        _memoryCache = memoryCache;
     }
 
     public async Task<PagedResultDto<GenreDto>> GetAllAsync(int limit = 20, int offset = 0)
     {
-        var query = Context.Genres
-            .AsNoTracking()
-            .OrderBy(g => g.Name);
+        var cacheKey = $"{GenreAllCacheKey}_{limit}_{offset}";
 
-        return await PageAsync(query, limit, offset, GenreMapper.ToDtoList);
+        return await _memoryCache.GetOrCreateAsync(
+            cacheKey,
+            CacheExpiration,
+            async () =>
+            {
+                var query = Context.Genres
+                    .AsNoTracking()
+                    .OrderBy(g => g.Name);
+
+                return await PageAsync(query, limit, offset, GenreMapper.ToDtoList);
+            }
+        );
     }
 
     public async Task<GenreDetailDto?> GetByIdAsync(int id)
     {
-        var genre = await Context.Genres
-            .AsNoTracking()
-            .Include(g => g.Books)
-            .FirstOrDefaultAsync(g => g.Id == id);
+        var cacheKey = $"genre_{id}";
 
-        return genre != null ? GenreMapper.ToDetailDto(genre) : null;
+        return await _memoryCache.GetOrCreateAsync(
+            cacheKey,
+            CacheExpiration,
+            async () =>
+            {
+                var genre = await Context.Genres
+                    .AsNoTracking()
+                    .WithDetailIncludes()
+                    .FirstOrDefaultAsync(g => g.Id == id);
+
+                return genre != null ? GenreMapper.ToDetailDto(genre) : null;
+            }
+        );
     }
 
     public async Task<PagedResultDto<GenreDto>> SearchGenresAsync(GenreSearchDto searchDto)
     {
         var name = searchDto.Name.Trim();
-        var query = Context.Genres
-            .AsNoTracking()
-            .Where(g => g.Name.Contains(name))
-            .OrderBy(g => g.Name);
+        var cacheKey = $"genre_search_{name}_{searchDto.Limit}_{searchDto.Offset}";
 
-        return await PageAsync(query, searchDto.Limit, searchDto.Offset, GenreMapper.ToDtoList);
+        return await _memoryCache.GetOrCreateAsync(
+            cacheKey,
+            CacheExpiration,
+            async () =>
+            {
+                var query = Context.Genres
+                    .AsNoTracking()
+                    .Where(g => g.Name.Contains(name))
+                    .OrderBy(g => g.Name);
+
+                return await PageAsync(query, searchDto.Limit, searchDto.Offset, GenreMapper.ToDtoList);
+            }
+        );
     }
 
     public async Task<GenreDto> CreateAsync(GenreRequestDto requestDto)
@@ -50,6 +84,8 @@ public class GenreService : BaseService<BookHubDbContext>, IGenreService
 
         await Context.Genres.AddAsync(genre);
         await SaveAsync();
+
+        _memoryCache.InvalidateAllCache();
 
         return GenreMapper.ToDto(genre);
     }
@@ -65,6 +101,8 @@ public class GenreService : BaseService<BookHubDbContext>, IGenreService
         GenreMapper.UpdateEntity(genre, requestDto);
         await SaveAsync();
 
+        _memoryCache.InvalidateAllCache();
+
         return GenreMapper.ToDto(genre);
     }
 
@@ -78,6 +116,9 @@ public class GenreService : BaseService<BookHubDbContext>, IGenreService
 
         Context.Genres.Remove(genre);
         await SaveAsync();
+
+        _memoryCache.InvalidateAllCache();
+
         return true;
     }
 }

@@ -1,7 +1,8 @@
 ﻿using BusinessLayer.Mappers;
-using BusinessLayer.Models.Common;
 using BusinessLayer.Models.Cart.Requests;
 using BusinessLayer.Models.Cart.Responses;
+using BusinessLayer.Models.Common;
+using BusinessLayer.Models.PurchaseItem.Requests;
 using BusinessLayer.Services.Interfaces;
 using DataAccessLayer.Context;
 using DataAccessLayer.Entities;
@@ -11,7 +12,7 @@ namespace BusinessLayer.Services.Implementations;
 
 public class CartService : BaseService<BookHubDbContext>, ICartService
 {
-    public CartService(BookHubDbContext context): base(context)
+    public CartService(BookHubDbContext context) : base(context)
     {
     }
 
@@ -19,9 +20,27 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
     {
         var query = Context.Carts
             .AsNoTracking()
-            .OrderBy(u => u.Id);
+            .OrderBy(c => c.Id);
 
         return await PageAsync(query, limit, offset, CartMapper.ToDtoList);
+    }
+
+    /**
+     * Get Carts that had orderId filled, those are actual orders
+     */
+    public async Task<PagedResultDto<CartDetailDto>> GetAllOrdersAsync(int limit = 20, int offset = 0)
+    {
+        var query = Context.Carts
+            .AsNoTracking()
+            .Include(c => c.User)
+            .Include(c => c.PurchaseItems!)
+                .ThenInclude(pi => pi.Book)
+            .Include(c => c.AppliedGiftCardCoupon!)
+                .ThenInclude(gc => gc.GiftCard)
+            .Where(c => c.OrderId != null)
+            .OrderBy(c => c.OrderDate);
+
+        return await PageAsync(query, limit, offset, CartMapper.ToDetailDtoList);
     }
 
     public async Task<CartDetailDto?> GetByIdAsync(int id)
@@ -29,8 +48,25 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
         var cart = await Context.Carts
             .AsNoTracking()
             .Include(c => c.User)
-            .Include(c => c.PurchaseItems)
+            .Include(c => c.PurchaseItems!)
+                .ThenInclude(p => p.Book)
+            .Include(c => c.AppliedGiftCardCoupon!)
+                .ThenInclude(gc => gc.GiftCard)
             .FirstOrDefaultAsync(c => c.Id == id);
+
+        return cart != null ? CartMapper.ToDetailDto(cart) : null;
+    }
+
+    public async Task<CartDetailDto?> GetCartByUserIdAsync(int id)
+    {
+        var cart = await Context.Carts
+            .AsNoTracking()
+            .Include(c => c.User)
+            .Include(c => c.PurchaseItems!)
+                .ThenInclude(p => p.Book)
+            .Include(c => c.AppliedGiftCardCoupon!)
+                .ThenInclude(gc => gc.GiftCard)
+            .FirstOrDefaultAsync(c => c.UserId == id && c.OrderId == null);
 
         return cart != null ? CartMapper.ToDetailDto(cart) : null;
     }
@@ -38,7 +74,7 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
     public async Task<CartDto> CreateAsync(CartCreateDto cartCreateDto)
     {
         // Validate that User exists
-        await ValidateRelatedEntitiesExistAsync(cartCreateDto);
+        await ValidateRelatedEntitiesExistAsync(cartCreateDto.UserId);
 
         // Validate other values
         await ValidateValues(cartCreateDto.OrderId, cartCreateDto.TotalValue);
@@ -51,9 +87,80 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
         return CartMapper.ToDto(cart);
     }
 
+    public async Task<CartDto> CreateOrderAsync(OrderCreateDto orderCreateDto, int? cartId = null)
+    {
+        // Validate that User exists
+        await ValidateRelatedEntitiesExistAsync(orderCreateDto.UserId);
+
+        // Validate other values
+        await ValidateValues(orderCreateDto.OrderId, orderCreateDto.TotalValue);
+
+        Cart cart;
+
+        if (cartId == null)
+        {
+            cart = CartMapper.CreateOrderDtoToEntity(orderCreateDto);
+        }
+        else
+        {
+            var cartDetailDto = await GetByIdAsync(cartId ?? 0);
+
+            if (cartDetailDto == null)
+            {
+                throw new InvalidOperationException($"Cart with ID {cartId} not found, but should exist already.");
+            }
+
+            cart = CartMapper.DetailDtoToEntity(cartDetailDto);
+        }
+
+        // Create new order ID
+        var lastOrderId = Context.Carts
+            .Where(c => c.OrderId != null)
+            .Max(c => c.OrderId);
+
+        cart.OrderId = lastOrderId + 1;
+
+        if (cartId == null)
+        {
+            await Context.Carts.AddAsync(cart);
+        }
+        else
+        {
+            // Order from FE after payment
+            cart.PaymentStatus = 1;
+
+            // Update existing order
+            var updateDto = CartMapper.CartToUpdateDto(cart);
+            await UpdateAsync(cartId ?? 0, updateDto);
+        }
+
+        await SaveAsync();
+
+        // Add purchased items from admin, purchase items from FE cart are already saved
+        if (cartId == null)
+        {
+            foreach (var bookId in orderCreateDto.BookIds)
+            {
+                var purchaseItemDto = new PurchaseItemCreateDto
+                {
+                    CartId = cart.Id,
+                    BookId = bookId,
+                    Count = 1,
+                };
+
+                var purchaseItem = PurchaseItemMapper.CreateDtoToEntity(purchaseItemDto);
+
+                await Context.PurchaseItems.AddAsync(purchaseItem);
+                await SaveAsync();
+            }
+        }
+
+        return CartMapper.ToDto(cart);
+    }
+
     public async Task<bool> DeleteAsync(int id)
     {
-        Cart? cart = await Context.Carts.FirstOrDefaultAsync(g => g.Id == id);
+        Cart? cart = await Context.Carts.FirstOrDefaultAsync(c => c.Id == id);
         if (cart == null)
         {
             return false;
@@ -70,7 +177,7 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
         // Validate other values
         await ValidateValues(cartUpdateDto.OrderId, cartUpdateDto.TotalValue);
 
-        Cart? cart = await Context.Carts.FirstOrDefaultAsync(u => u.Id == id);
+        Cart? cart = await Context.Carts.FirstOrDefaultAsync(c => c.Id == id);
         if (cart == null)
         {
             return null;
@@ -82,19 +189,75 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
         return CartMapper.ToDto(cart);
     }
 
-    private async Task ValidateRelatedEntitiesExistAsync(CartCreateDto cartDto)
+    public async Task<CartDto?> UpdateOrderAsync(int id, OrderUpdateDto orderUpdateDto)
+    {
+        // Validate other values
+        await ValidateValues(null, orderUpdateDto.TotalValue);
+
+        Cart? cart = await Context.Carts
+            .Include(c => c.PurchaseItems)
+            .FirstOrDefaultAsync(c => c.Id == id);
+
+        if (cart == null)
+        {
+            return null;
+        }
+
+        CartMapper.UpdateOrderEntity(cart, orderUpdateDto);
+        await SaveAsync();
+
+        // Remove purchase items that was removed in admin multiselect
+
+        var selectedBookIds = orderUpdateDto.BookIds.Distinct().ToList();
+        var itemsToRemove = cart.PurchaseItems?
+            .Where(pi => !selectedBookIds.Contains(pi.BookId))
+            .ToList();
+
+        if (itemsToRemove != null && itemsToRemove.Any())
+        {
+            Context.PurchaseItems.RemoveRange(itemsToRemove);
+            await SaveAsync();
+        }
+
+        // Add purchased items from admin
+        foreach (var bookId in orderUpdateDto.BookIds)
+        {
+            bool exists = await Context.PurchaseItems
+                .AnyAsync(pi => pi.CartId == cart.Id && pi.BookId == bookId);
+
+            if (exists)
+            {
+                continue;
+            }
+
+            var purchaseItemDto = new PurchaseItemCreateDto
+            {
+                CartId = cart.Id,
+                BookId = bookId,
+                Count = 1,
+            };
+
+            var purchaseItem = PurchaseItemMapper.CreateDtoToEntity(purchaseItemDto);
+
+            await Context.PurchaseItems.AddAsync(purchaseItem);
+            await SaveAsync();
+        }
+
+        return CartMapper.ToDto(cart);
+    }
+
+    private async Task ValidateRelatedEntitiesExistAsync(int userId)
     {
         // Validate User exists
-        var userExists = await Context.Users.AnyAsync(u => u.Id == cartDto.UserId);
+        var userExists = await Context.Users.AnyAsync(u => u.Id == userId);
         if (!userExists)
         {
-            throw new ArgumentException($"Invalid User ID: {cartDto.UserId}");
+            throw new ArgumentException($"Invalid User ID: {userId}");
         }
     }
 
-    private async Task ValidateValues(int? orderId, double totalValue)
+    private static Task ValidateValues(int? orderId, double totalValue)
     {
-        // Validate values
         if (orderId is < 0)
         {
             throw new ArgumentException($"Invalid Order ID: {orderId} - Cannot be negative");
@@ -104,5 +267,7 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
         {
             throw new ArgumentException($"Invalid Total Value: {totalValue} - Cannot be negative");
         }
+
+        return Task.CompletedTask;
     }
 }

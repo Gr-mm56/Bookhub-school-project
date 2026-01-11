@@ -1,12 +1,15 @@
-﻿using DataAccessLayer.Entities;
+﻿using Bogus;
+using DataAccessLayer.Entities;
 using Microsoft.EntityFrameworkCore;
-using Bogus;
 
 namespace DataAccessLayer.Context;
 
 public static class DataInitializer
 {
     private const int BogusSeed = 696969;
+
+    private static int _orderIdCounter = 1000;
+
     public static void Seed(this ModelBuilder modelBuilder)
     {
         var images = PrepareImageModels();
@@ -41,7 +44,7 @@ public static class DataInitializer
 
         var bookAuthors = PrepareBookAuthorRelationships(books, authors);
         modelBuilder.Entity<RelBookAuthor>().HasData(bookAuthors);
-        
+
         var bookGenres = PrepareBookGenreRelationships();
         modelBuilder.Entity<RelBookGenre>().HasData(bookGenres);
 
@@ -72,12 +75,13 @@ public static class DataInitializer
             .RuleFor(b => b.ISBN, f => f.Random.ReplaceNumbers("666-1-#######-##-#"))
             .RuleFor(b => b.Price, f => Math.Round(f.Random.Double(5, 50), 2))
             .RuleFor(b => b.Description, f => f.Lorem.Paragraphs(1, 2))
-            .RuleFor(b => b.ImageId, f => f.Random.Number(1, 4))
+            .RuleFor(b => b.ImageId, f => f.Random.Bool(0.7f) ? f.Random.Number(6, 8) : null)
             .RuleFor(b => b.PublisherId, f => f.Random.Number(1, 2))
+            .RuleFor(b => b.PrimaryGenreId, f => f.Random.Number(1, 10))
             .Generate(25);
     }
-    
-    
+
+
 
     private static List<User> PrepareUserModels()
     {
@@ -98,8 +102,8 @@ public static class DataInitializer
         var targetCount = Math.Min(8, maxBooks * maxUsers);
 
         var allPairs = (from bookId in Enumerable.Range(1, maxBooks)
-            from userId in Enumerable.Range(1, maxUsers)
-            select (BookId: bookId, UserId: userId)).ToList();
+                        from userId in Enumerable.Range(1, maxUsers)
+                        select (BookId: bookId, UserId: userId)).ToList();
 
         var randomizer = new Randomizer(BogusSeed);
         var shuffledPairs = randomizer.Shuffle(allPairs).Take(targetCount).ToList();
@@ -110,7 +114,8 @@ public static class DataInitializer
         return new Faker<Rating>().UseSeed(BogusSeed)
             .RuleFor(r => r.Id, _ => id++)
             .RuleFor(r => r.BookId, _ => shuffledPairs[pairIndex].BookId)
-            .RuleFor(r => r.UserId, _ => {
+            .RuleFor(r => r.UserId, _ =>
+            {
                 var u = shuffledPairs[pairIndex].UserId;
                 pairIndex++;
                 return u;
@@ -129,7 +134,13 @@ public static class DataInitializer
             .RuleFor(c => c.Id, _ => idCounter++)
             .RuleFor(c => c.UserId, _ => userCounter++)
             .RuleFor(c => c.TotalValue, f => Math.Round(f.Random.Double(0, 300), 2))
-            .RuleFor(c => c.OrderId, f => f.Random.Bool(0.5f) ? f.Random.Int(1000, 2000) : null)
+            .RuleFor(c => c.PaymentStatus, f => f.Random.Bool(0.5f) ? 1 : 0)
+            .RuleFor(c => c.OrderId, f =>
+            {
+                if (f.Random.Bool(0.5f))
+                    return _orderIdCounter++;
+                return null;
+            })
             .RuleFor(c => c.OrderDate, (f, c) => c.OrderId.HasValue ? f.Date.Between(new DateTime(2024, 1, 1), new DateTime(2025, 9, 15)) : null)
              .Generate(userCount);
     }
@@ -140,8 +151,8 @@ public static class DataInitializer
         const int maxCarts = 7;
 
         var allPairs = (from b in Enumerable.Range(1, maxBooks)
-            from c in Enumerable.Range(1, maxCarts)
-            select (BookId: b, CartId: c)).ToList();
+                        from c in Enumerable.Range(1, maxCarts)
+                        select (BookId: b, CartId: c)).ToList();
 
         var randomizer = new Randomizer(BogusSeed);
         var targetCount = Math.Min(10, allPairs.Count);
@@ -163,8 +174,8 @@ public static class DataInitializer
         const int maxUsers = 7;
         const int maxBooks = 25;
         var allPairs = (from u in Enumerable.Range(1, maxUsers)
-            from b in Enumerable.Range(1, maxBooks)
-            select (UserId: u, BookId: b)).ToList();
+                        from b in Enumerable.Range(1, maxBooks)
+                        select (UserId: u, BookId: b)).ToList();
 
         var randomizer = new Randomizer(BogusSeed);
         var targetCount = Math.Min(5, allPairs.Count);
@@ -220,7 +231,7 @@ public static class DataInitializer
             .RuleFor(a => a.Id, _ => index++)
             .RuleFor(a => a.Name, f => f.Name.FirstName())
             .RuleFor(a => a.Surname, f => f.Name.LastName())
-            .RuleFor(a => a.ProfilePhotoId, f => f.Random.Number(1, 7))
+            .RuleFor(a => a.ProfilePhotoId, f => f.Random.Number(9, 10))
             .Generate(5);
     }
 
@@ -231,7 +242,7 @@ public static class DataInitializer
             .RuleFor(p => p.Id, _ => index++)
             .RuleFor(p => p.Name, f => f.Company.CompanyName())
             .RuleFor(p => p.Address, f => f.Address.FullAddress())
-            .RuleFor(p => p.ProfilePhotoId, f => f.Random.Number(1, 4))
+            .RuleFor(p => p.ProfilePhotoId, f => f.Random.Number(11, 12))
             .Generate(3);
     }
 

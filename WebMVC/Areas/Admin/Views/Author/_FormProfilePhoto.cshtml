@@ -1,0 +1,14 @@
+@model WebMVC.Areas.Admin.Models.Author.AuthorCreateEditViewModelWithOptions
+
+<!-- Profile Photo -->
+<div class="col-md-12 mb-3">
+    <label asp-for="Author.ProfilePhotoId" class="form-label">Profile Photo</label>
+    <select asp-for="Author.ProfilePhotoId" class="form-select">
+        <option value="">-- No Photo --</option>
+        @foreach (var image in Model.Images)
+        {
+            <option value="@image.Id">@image.FileName</option>
+        }
+    </select>
+    <span asp-validation-for="Author.ProfilePhotoId" class="text-danger small d-block mt-1"></span>
+</div>

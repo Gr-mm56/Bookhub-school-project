@@ -1,0 +1,22 @@
+﻿@model WebMVC.Areas.Admin.Models.Book.BookCreateEditViewModelWithOptions
+
+<!-- Price -->
+<div class="col-md-6 mb-3">
+    <label asp-for="Book.Price" class="form-label">Price ($) *</label>
+    <input asp-for="Book.Price" class="form-control" type="number" step="0.01" min="0.01" placeholder="0.00" />
+    <span asp-validation-for="Book.Price" class="text-danger small d-block mt-1"></span>
+</div>
+
+<!-- Primary Genre -->
+<div class="col-md-6 mb-3">
+    <label asp-for="Book.PrimaryGenreId" class="form-label">Primary Genre *</label>
+    <select asp-for="Book.PrimaryGenreId" class="form-select">
+        <option value="">-- Select Primary Genre --</option>
+        @foreach (var genre in Model.Genres)
+        {
+            <option value="@genre.Id">@genre.Name</option>
+        }
+    </select>
+    <span asp-validation-for="Book.PrimaryGenreId" class="text-danger small d-block mt-1"></span>
+</div>
+

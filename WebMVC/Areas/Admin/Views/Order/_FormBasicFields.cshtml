@@ -1,0 +1,15 @@
+﻿@model WebMVC.Areas.Admin.Models.Order.OrderCreateEditViewModelWithOptions
+
+<!-- TotalValue -->
+<div class="col-md-6 mb-3">
+    <label asp-for="Order.TotalValueRounded" class="form-label">Total Value *</label>
+    <input asp-for="Order.TotalValue" type="number" step="0.01" min="0" class="form-control" placeholder="Enter total value" />
+    <span asp-validation-for="Order.TotalValue" class="text-danger small d-block mt-1"></span>
+</div>
+
+<!-- OrderDate -->
+<div class="col-md-6 mb-3">
+    <label asp-for="Order.OrderDate" class="form-label">Order Date *</label>
+    <input asp-for="Order.OrderDate" type="date" class="form-control" placeholder="Enter order title" />
+    <span asp-validation-for="Order.OrderDate" class="text-danger small d-block mt-1"></span>
+</div>

@@ -6,32 +6,36 @@ namespace DataAccessLayer.Entities;
 public class Book : BaseEntity
 {
     [Required]
-    [MaxLength(150, ErrorMessage = "The Title cannot exceed 150 characters.")]
+    [MaxLength(150)]
     public required string Title { get; set; }
 
     [Required]
     [MaxLength(17)]
-    [RegularExpression(@"^(?:ISBN(?:-1[03])?:? )?(?=[0-9X]{10}$|(?=(?:[0-9]+[- ]){3})[- 0-9X]{13}$|97[89][0-9]{10}$|(?=(?:[0-9]+[- ]){4})[- 0-9]{17}$)(?:97[89][- ]?)?[0-9]{1,5}[- ]?[0-9]+(?:[- ]?[0-9]+){2}[- ]?[0-9X]$", ErrorMessage = "The ISBN must be a valid ISBN-10 or ISBN-13 format.")]
     public required string ISBN { get; set; }
 
-
-    [MaxLength(300, ErrorMessage = "Description cannot exceed 300 characters.")]
+    [MaxLength(300)]
     public string? Description { get; set; }
 
     [Required]
-    [Range(0.0, double.MaxValue, ErrorMessage = "The Price must be non-negative.")]
+    [Range(0.0, double.MaxValue)]
     public required double Price { get; set; }
 
-    public virtual ICollection<Genre> Genres { get; set; }
+    [Required]
+    public required int PrimaryGenreId { get; set; }
 
-    public virtual ICollection<Rating>? Ratings { get; set; }
+    [ForeignKey(nameof(PrimaryGenreId))]
+    public virtual Genre? PrimaryGenre { get; set; }
 
-    public virtual ICollection<Author> Authors { get; set; }
+    public virtual ICollection<Genre> Genres { get; set; } = new List<Genre>();
+
+    public virtual ICollection<Rating> Ratings { get; set; } = new List<Rating>();
+
+    public virtual ICollection<Author> Authors { get; set; } = new List<Author>();
 
     [ForeignKey(nameof(PublisherId))]
     public virtual Publisher? Publisher { get; set; }
-    public int? PublisherId { get; set; }
 
+    public int? PublisherId { get; set; }
 
     [ForeignKey(nameof(ImageId))]
     public virtual Image? Image { get; set; }

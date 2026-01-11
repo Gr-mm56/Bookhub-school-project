@@ -1,21 +1,15 @@
 ﻿using BusinessLayer.Services.Interfaces;
+using Infrastructure.Repository;
 
 namespace BusinessLayer.Services.Implementations;
 
 public class FileSystemUploadService : IUploadService
 {
-    private readonly string _storagePath; // absolute path on disk
-    private readonly string _virtualBasePath; // eg "/assets/uploads"
+    private readonly IUploadRepository _uploadRepository;
 
-    /// <summary>
-    /// Constructor expects an absolute storage path and the public/virtual base path.
-    /// </summary>
-    public FileSystemUploadService(string storagePath, string virtualBasePath)
+    public FileSystemUploadService(IUploadRepository uploadRepository)
     {
-        _storagePath = storagePath ?? throw new ArgumentNullException(nameof(storagePath));
-        _virtualBasePath = (virtualBasePath).TrimEnd('/');
-
-        Directory.CreateDirectory(_storagePath);
+        _uploadRepository = uploadRepository ?? throw new ArgumentNullException(nameof(uploadRepository));
     }
 
     public async Task<string> SaveImageAsync(Stream content, string originalFileName, string? contentType = null)
@@ -25,19 +19,17 @@ public class FileSystemUploadService : IUploadService
             throw new ArgumentException("Content stream is null or unreadable.", nameof(content));
         }
 
-        var ext = Path.GetExtension(originalFileName);
-        var fileName = $"{Guid.NewGuid()}{ext}";
-        var filePath = Path.Combine(_storagePath, fileName);
-
-        // write to disk
-        await using (var fs = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None))
+        if (string.IsNullOrWhiteSpace(originalFileName))
         {
-            await content.CopyToAsync(fs);
-            await fs.FlushAsync();
+            throw new ArgumentException("File name cannot be empty.", nameof(originalFileName));
         }
 
-        var virtualPath = _virtualBasePath + "/" + fileName;
-        return virtualPath;
+        return await _uploadRepository.SaveImageAsync(content, originalFileName, contentType);
+    }
+
+    public async Task<bool> DeleteImageAsync(string virtualPath)
+    {
+        return await _uploadRepository.DeleteImageAsync(virtualPath);
     }
 }
 

@@ -1,21 +1,43 @@
 ﻿using BusinessLayer.Services.Implementations;
 using BusinessLayer.Services.Interfaces;
+using Infrastructure.Repository;
 using Microsoft.Extensions.FileProviders;
 
 namespace WebAPI.Extensions;
 
 public static class ServiceCollectionExtensions
 {
+    public static IServiceCollection AddBusinessServices(
+        this IServiceCollection services)
+    {
+        services.AddScoped<IGenreService, GenreService>();
+        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<ICartService, CartService>();
+        services.AddScoped<IPurchaseItemService, PurchaseItemService>();
+        services.AddScoped<IWishlistItemService, WishlistItemService>();
+        services.AddScoped<IBookService, BookService>();
+        services.AddScoped<IAuthorService, AuthorService>();
+        services.AddScoped<IPublisherService, PublisherService>();
+        services.AddScoped<IRatingService, RatingService>();
+        services.AddScoped<IImageService, ImageService>();
+
+        services.AddScoped<IBookManagementFacade, BookManagementFacade>();
+
+        return services;
+    }
+
     public static IServiceCollection AddFileSystemUploadService(
         this IServiceCollection services,
         IConfiguration configuration,
         IWebHostEnvironment environment)
     {
-        services.AddSingleton<IUploadService>(_ =>
-        {
-            var (storagePath, virtualBase) = ResolveStoragePath(configuration, environment);
-            return new FileSystemUploadService(storagePath, virtualBase);
-        });
+        var (storagePath, virtualBase) = ResolveStoragePath(configuration, environment);
+
+        // Register the repository with the resolved paths
+        services.AddSingleton<IUploadRepository>(new UploadRepository(storagePath, virtualBase));
+
+        // Register the upload service - it will receive IUploadRepository through DI
+        services.AddSingleton<IUploadService, FileSystemUploadService>();
 
         return services;
     }
@@ -33,8 +55,7 @@ public static class ServiceCollectionExtensions
             RequestPath = virtualBase
         });
     }
-    // Helper method to resolve storage path and virtual base URL
-    // files should be stored outside the web root 
+
     private static (string storagePath, string virtualBase) ResolveStoragePath(
         IConfiguration configuration,
         IWebHostEnvironment environment)

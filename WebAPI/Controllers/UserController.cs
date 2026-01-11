@@ -1,6 +1,6 @@
 ﻿using BusinessLayer.Models.User.Requests;
-using BusinessLayer.Services.Interfaces;
 using BusinessLayer.Models.User.Responses;
+using BusinessLayer.Services.Interfaces;
 
 namespace WebAPI.Controllers;
 

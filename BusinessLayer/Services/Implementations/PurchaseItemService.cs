@@ -2,6 +2,7 @@
 using BusinessLayer.Models.Common;
 using BusinessLayer.Models.PurchaseItem.Requests;
 using BusinessLayer.Models.PurchaseItem.Responses;
+using BusinessLayer.Services.Extensions;
 using BusinessLayer.Services.Interfaces;
 using DataAccessLayer.Context;
 using DataAccessLayer.Entities;
@@ -11,7 +12,7 @@ namespace BusinessLayer.Services.Implementations;
 
 public class PurchaseItemService : BaseService<BookHubDbContext>, IPurchaseItemService
 {
-    public PurchaseItemService(BookHubDbContext context): base(context)
+    public PurchaseItemService(BookHubDbContext context) : base(context)
     {
     }
 
@@ -19,17 +20,38 @@ public class PurchaseItemService : BaseService<BookHubDbContext>, IPurchaseItemS
     {
         var query = Context.PurchaseItems
             .AsNoTracking()
-            .OrderBy(u => u.Id);
+            .OrderBy(p => p.Id);
 
         return await PageAsync(query, limit, offset, PurchaseItemMapper.ToDtoList);
+    }
+
+    public async Task<PagedResultDto<PurchaseItemDetailDto>> GetAllDetailsAsync(int limit = 20, int offset = 0)
+    {
+        var query = Context.PurchaseItems
+            .AsNoTracking()
+            .WithDetailIncludes()
+            .OrderBy(p => p.Id);
+
+        return await PageAsync(query, limit, offset, PurchaseItemMapper.ToDetailDtoList);
+    }
+
+    public async Task<List<PurchaseItemDetailDto>> GetAllDetailsByCartIdAsync(int cartId)
+    {
+        var query = Context.PurchaseItems
+            .AsNoTracking()
+            .WithDetailIncludes()
+            .Where(p => p.CartId == cartId);
+
+        var purchaseItems = await query.ToListAsync();
+
+        return PurchaseItemMapper.ToDetailDtoList(purchaseItems).ToList();
     }
 
     public async Task<PurchaseItemDetailDto?> GetByIdAsync(int id)
     {
         var purchaseItem = await Context.PurchaseItems
             .AsNoTracking()
-            .Include(p => p.Book)
-            .Include(p => p.Cart)
+            .WithDetailIncludes()
             .FirstOrDefaultAsync(p => p.Id == id);
 
         return purchaseItem != null ? PurchaseItemMapper.ToDetailDto(purchaseItem) : null;
@@ -56,7 +78,23 @@ public class PurchaseItemService : BaseService<BookHubDbContext>, IPurchaseItemS
 
     public async Task<bool> DeleteAsync(int id)
     {
-        PurchaseItem? purchaseItem = await Context.PurchaseItems.FirstOrDefaultAsync(g => g.Id == id);
+        PurchaseItem? purchaseItem = await Context.PurchaseItems.FirstOrDefaultAsync(p => p.Id == id);
+        if (purchaseItem == null)
+        {
+            return false;
+        }
+
+        Context.PurchaseItems.Remove(purchaseItem);
+        await SaveAsync();
+
+        return true;
+    }
+
+    public async Task<bool> DeleteByItemIdAsync(int bookId, int cartId)
+    {
+        PurchaseItem? purchaseItem = await Context.PurchaseItems
+            .FirstOrDefaultAsync(p => p.BookId == bookId && p.CartId == cartId);
+
         if (purchaseItem == null)
         {
             return false;
@@ -76,7 +114,7 @@ public class PurchaseItemService : BaseService<BookHubDbContext>, IPurchaseItemS
             throw new ArgumentException($"Invalid Count: {purchaseItemUpdateDto.Count} - Cannot be negative");
         }
 
-        PurchaseItem? purchaseItem = await Context.PurchaseItems.FirstOrDefaultAsync(u => u.Id == id);
+        PurchaseItem? purchaseItem = await Context.PurchaseItems.FirstOrDefaultAsync(p => p.Id == id);
         if (purchaseItem == null)
         {
             return null;
@@ -93,7 +131,7 @@ public class PurchaseItemService : BaseService<BookHubDbContext>, IPurchaseItemS
         var errors = new List<string>();
 
         // Validate Cart exists
-        var cartExists = await Context.Carts.AnyAsync(u => u.Id == purchaseItemDto.CartId);
+        var cartExists = await Context.Carts.AnyAsync(c => c.Id == purchaseItemDto.CartId);
         if (!cartExists)
         {
             errors.Add($"Invalid User ID: {purchaseItemDto.CartId}");

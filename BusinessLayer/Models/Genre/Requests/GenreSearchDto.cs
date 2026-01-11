@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using BusinessLayer.Models.Common;
+﻿using BusinessLayer.Models.Common;
+using System.ComponentModel.DataAnnotations;
 
 namespace BusinessLayer.Models.Genre.Requests;
 

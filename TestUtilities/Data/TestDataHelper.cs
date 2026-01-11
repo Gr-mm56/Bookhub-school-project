@@ -39,7 +39,8 @@ public class TestDataHelper
                 Description =
                     "The first volume in J.R.R. Tolkien's epic adventure, starting the journey to destroy the One Ring.",
                 ImageId = 6,
-                PublisherId = 1
+                PublisherId = 1,
+                PrimaryGenreId = 2
             },
 
             new Book
@@ -51,7 +52,8 @@ public class TestDataHelper
                 Description =
                     "The second volume of the trilogy, where the fellowship is scattered and the war for Middle-earth escalates.",
                 ImageId = 7,
-                PublisherId = 1
+                PublisherId = 1,
+                PrimaryGenreId = 2
             },
 
             new Book
@@ -63,7 +65,8 @@ public class TestDataHelper
                 Description =
                     "The final volume, chronicling the final destruction of the Ring and the ultimate fate of Middle-earth.",
                 ImageId = 8,
-                PublisherId = 2
+                PublisherId = 2,
+                PrimaryGenreId = 2
             }
         ];
     }
@@ -144,7 +147,7 @@ public class TestDataHelper
                 BookId = 2,
                 UserId = 2
             }
-        ]; 
+        ];
     }
 
     public static List<Cart> GetCarts()
@@ -159,7 +162,8 @@ public class TestDataHelper
                 UserId = 1,
                 TotalValue = 49.99,
                 OrderId = null,
-                OrderDate = null
+                OrderDate = null,
+                PaymentStatus = 0,
             },
             new Cart
             {
@@ -167,7 +171,8 @@ public class TestDataHelper
                 UserId = 2,
                 TotalValue = 0,
                 OrderId = null,
-                OrderDate = null
+                OrderDate = null,
+                PaymentStatus = 0,
             },
             new Cart
             {
@@ -175,7 +180,8 @@ public class TestDataHelper
                 UserId = 3,
                 TotalValue = 120.50,
                 OrderId = 1001,
-                OrderDate = seedDate
+                OrderDate = seedDate,
+                PaymentStatus = 1,
             },
             new Cart
             {
@@ -183,7 +189,8 @@ public class TestDataHelper
                 UserId = 4,
                 TotalValue = 15.75,
                 OrderId = 1002,
-                OrderDate = seedDate
+                OrderDate = seedDate,
+                PaymentStatus = 0,
             },
             new Cart
             {
@@ -191,7 +198,8 @@ public class TestDataHelper
                 UserId = 5,
                 TotalValue = 200.00,
                 OrderId = null,
-                OrderDate = null
+                OrderDate = null,
+                PaymentStatus = 0,
             }
         ];
     }
@@ -272,7 +280,7 @@ public class TestDataHelper
                 UserId = 4,
                 BookId = 4
             }
-        ]; 
+        ];
     }
     public static List<T> AddDates<T>(List<T> data) where T : BaseEntity
     {

@@ -1,0 +1,111 @@
+﻿@model PublisherDetailViewModel
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="container py-5">
+    <h1 class="mb-4">@Model.Name</h1>
+
+    <!-- Two Column Layout: Image and Details -->
+    <div class="row mb-5">
+        <!-- Left Column: Image -->
+        <div class="col-lg-4 col-md-5 mb-4 mb-md-0">
+            <div style="height: 600px; overflow: hidden; background-color: #f5f5f5; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                {
+                    <img src="~/@Model.ImageUrl"
+                         alt="@Model.Name"
+                         style="width: 100%; height: 100%; object-fit: cover; display: block;" />
+                }
+                else
+                {
+                    <div class="d-flex align-items-center justify-content-center h-100">
+                        <span class="text-muted">
+                            <i class="bi bi-building" style="font-size: 5rem;"></i>
+                        </span>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Right Column: Details -->
+        <div class="col-lg-8 col-md-7">
+            <!-- Address -->
+            @if (!string.IsNullOrEmpty(Model.Address))
+            {
+                <div class="mb-4">
+                    <h5 class="text-muted mb-2">Address</h5>
+                    <p>@Model.Address</p>
+                </div>
+            }
+
+            <!-- Books Published -->
+            <div class="mb-4">
+                <h5 class="text-muted mb-2">Books Published</h5>
+                <p>@Model.Books.Count @(Model.Books.Count == 1 ? "book" : "books")</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Books by Publisher -->
+    @if (Model.Books.Any())
+    {
+        <div class="row mb-5">
+            <div class="col-12">
+                <h3>Books by @Model.Name</h3>
+                <div class="row g-4">
+                    @foreach (var book in Model.Books)
+                    {
+                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                            <a href="@Url.Action("Detail", "Home", new { id = book.Id })" class="text-decoration-none">
+                                <div class="card h-100 book-card" style="cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.12)';">
+                                    <!-- Book Image -->
+                                    <div class="position-relative" style="height: 250px; overflow: hidden; background-color: #f5f5f5;">
+                                        @if (!string.IsNullOrEmpty(book.ImageUrl))
+                                        {
+                                            <img src="/@book.ImageUrl"
+                                                 class="card-img-top"
+                                                 alt="@book.Title"
+                                                 style="width: 100%; height: 100%; object-fit: cover;" />
+                                        }
+                                        else
+                                        {
+                                            <div class="d-flex align-items-center justify-content-center h-100">
+                                                <span class="text-muted">
+                                                    <i class="bi bi-image" style="font-size: 3rem;"></i>
+                                                </span>
+                                            </div>
+                                        }
+                                    </div>
+
+                                    <!-- Card Body -->
+                                    <div class="card-body d-flex flex-column">
+                                        <h5 class="card-title text-truncate text-dark" title="@book.Title">@book.Title</h5>
+
+                                        <div class="mt-auto">
+                                            <span class="h5 mb-0 text-primary">$@book.Price.ToString("F2")</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Card Footer -->
+                                    <div class="card-footer bg-light border-top-0">
+                                        <small class="text-muted d-block text-center">
+                                            Click to view details
+                                        </small>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            <i class="bi bi-info-circle me-2"></i>
+            No books published yet.
+        </div>
+    }
+</div>

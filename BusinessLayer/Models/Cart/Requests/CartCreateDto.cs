@@ -13,4 +13,7 @@ public class CartCreateDto
     public int? OrderId { get; set; }
 
     public DateTime? OrderDate { get; set; }
+
+    [Required]
+    public int PaymentStatus { get; set; }
 }

@@ -1,6 +1,9 @@
 ﻿using DataAccessLayer.Context;
-using EntityFrameworkCore.Testing.NSubstitute.Helpers;
+using DataAccessLayer.Entities;
+using DataAccessLayer.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using NSubstitute;
 using TestUtilities.Data;
 
 namespace TestUtilities.MockedObjects;
@@ -16,15 +19,23 @@ public class MockedDbContext
             .Options;
 
         return dbContextOptions;
-    } 
-    
+    }
+
     public static BookHubDbContext CreateFromOptions(DbContextOptions<BookHubDbContext> options)
     {
-        var dbContextToMock = new BookHubDbContext(options);
+        var httpContextAccessor = Substitute.For<IHttpContextAccessor>();
+        var auditLogService = Substitute.For<IAuditLogService>();
+        auditLogService.GenerateAuditLogs(Arg.Any<IEnumerable<Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry>>(),
+            Arg.Any<string>(),
+            Arg.Any<DbSet<AuditLog>>())
+            .Returns(new List<AuditLog>());
+
+        var dbContextToMock = new BookHubDbContext(options, httpContextAccessor, auditLogService);
         PrepareData(dbContextToMock);
 
         return dbContextToMock;
     }
+
     private static void PrepareData(BookHubDbContext dbContext)
     {
         dbContext.Images.AddRange(TestDataHelper.GetImages());
@@ -40,7 +51,4 @@ public class MockedDbContext
 
         dbContext.SaveChanges();
     }
-
-
-
 }

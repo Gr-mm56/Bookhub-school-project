@@ -4,14 +4,13 @@ using BusinessLayer.Models.WishlistItem.Requests;
 using BusinessLayer.Models.WishlistItem.Responses;
 using BusinessLayer.Services.Interfaces;
 using DataAccessLayer.Context;
-using DataAccessLayer.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLayer.Services.Implementations;
 
 public class WishlistItemService : BaseService<BookHubDbContext>, IWishlistItemService
 {
-    public WishlistItemService(BookHubDbContext context): base(context)
+    public WishlistItemService(BookHubDbContext context) : base(context)
     {
     }
 
@@ -21,7 +20,7 @@ public class WishlistItemService : BaseService<BookHubDbContext>, IWishlistItemS
             .AsNoTracking()
             .Include(w => w.Book)
             .Include(w => w.User)
-            .OrderBy(u => u.Id);
+            .OrderBy(w => w.Id);
 
         return await PageAsync(query, limit, offset, WishlistItemMapper.ToDetailDtoList);
     }
@@ -37,22 +36,55 @@ public class WishlistItemService : BaseService<BookHubDbContext>, IWishlistItemS
         return wishlistItem != null ? WishlistItemMapper.ToDetailDto(wishlistItem) : null;
     }
 
+    public async Task<List<WishlistItemDetailDto>> GetWishlistByUserIdAsync(int userId)
+    {
+        var wishlistItems = await Context.WishlistItems
+            .AsNoTracking()
+            .Include(w => w.Book)
+            .Include(w => w.User)
+            .Where(w => w.UserId == userId)
+            .ToListAsync();
+
+        return WishlistItemMapper.ToDetailDtoList(wishlistItems).ToList();;
+    }
+
     public async Task<WishlistItemDetailDto> CreateAsync(WishlistItemCreateDto wishlistItemCreateDto)
     {
         // Validate that User and Book exist
         await ValidateRelatedEntitiesExistAsync(wishlistItemCreateDto);
 
-        WishlistItem wishlistItem = WishlistItemMapper.CreateDtoToEntity(wishlistItemCreateDto);
+        var wishlistItem = WishlistItemMapper.CreateDtoToEntity(wishlistItemCreateDto);
 
         await Context.WishlistItems.AddAsync(wishlistItem);
         await SaveAsync();
+
+        wishlistItem = await Context.WishlistItems
+            .Include(w => w.Book)
+            .Include(w => w.User)
+            .FirstOrDefaultAsync(w => w.Id == wishlistItem.Id);
 
         return WishlistItemMapper.ToDetailDto(wishlistItem);
     }
 
     public async Task<bool> DeleteAsync(int id)
     {
-        WishlistItem? wishlistItem = await Context.WishlistItems.FirstOrDefaultAsync(g => g.Id == id);
+        var wishlistItem = await Context.WishlistItems.FirstOrDefaultAsync(w => w.Id == id);
+        if (wishlistItem == null)
+        {
+            return false;
+        }
+
+        Context.WishlistItems.Remove(wishlistItem);
+        await SaveAsync();
+
+        return true;
+    }
+
+    public async Task<bool> DeleteByUserBookIdAsync(int userId, int bookId)
+    {
+        var wishlistItem = await Context.WishlistItems
+            .FirstOrDefaultAsync(w => w.UserId == userId && w.BookId == bookId);
+
         if (wishlistItem == null)
         {
             return false;
@@ -88,7 +120,7 @@ public class WishlistItemService : BaseService<BookHubDbContext>, IWishlistItemS
             errors.Add($"Invalid Book ID: {wishlistItemDto.BookId}");
         }
 
-        if (errors.Any())
+        if (errors.Count != 0)
         {
             throw new ArgumentException($"Validation failed: {string.Join("; ", errors)}");
         }

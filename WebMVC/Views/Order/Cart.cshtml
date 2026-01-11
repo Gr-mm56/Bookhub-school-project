@@ -1,0 +1,158 @@
+﻿@model WebMVC.Models.CartViewModel
+
+@{
+    ViewData["Title"] = "Shopping Cart";
+    var items = Model?.PurchaseItems ?? new List<WebMVC.Models.CartItemViewModel>();
+}
+
+<div class="container py-5">
+    <h1 class="mb-4">Shopping Cart</h1>
+
+    @if (items.Any())
+    {
+        <div class="row">
+            <!-- Cart Items -->
+            <div class="col-lg-8">
+                @foreach (var item in items)
+                {
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-3 text-center">
+                                    <strong>@item.Title</strong>
+                                </div>
+
+                                <div class="col-md-3 text-center">
+                                    <form asp-action="UpdateQuantity" asp-controller="Order" method="post" class="d-flex align-items-center justify-content-center gap-1">
+                                        <input type="hidden" name="bookId" value="@item.BookId" />
+                                        <input type="number" name="quantity" value="@item.Quantity" min="1" class="form-control form-control-sm" style="width:60px;" />
+                                        <button type="submit" class="btn btn-sm btn-outline-secondary">Update</button>
+                                    </form>
+                                </div>
+
+                                <div class="col-md-2 text-center">
+                                    <strong>$@item.Price.ToString("F2")</strong>
+                                </div>
+
+                                <div class="col-md-2 text-end">
+                                    <strong class="text-primary">
+                                        $@item.Subtotal.ToString("F2")
+                                    </strong>
+                                </div>
+                                <div class="col-md-2 text-end">
+                                    <form asp-action="RemoveFromCart" asp-controller="Order" method="post">
+                                        <input type="hidden" name="bookId" value="@item.BookId"/>
+                                        <button class="btn btn-sm btn-link text-danger">Remove</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Summary -->
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h4>Order Summary</h4>
+                        <hr />
+
+                        <div class="d-flex justify-content-between">
+                            <span>Subtotal</span>
+                            <span>$@((Model?.PurchaseItems?.Sum(i => i.Subtotal) ?? 0).ToString("F2"))</span>
+                        </div>
+
+                        @if (Model?.GiftCardDiscount > 0)
+                        {
+                            <div class="d-flex justify-content-between text-success mt-2">
+                                <span>
+                                    <i class="bi bi-gift"></i> Gift Card Discount
+                                    <br/>
+                                    <small class="text-muted">Code: @Model.AppliedCouponCode</small>
+                                </span>
+                                <span>- $@Model.GiftCardDiscount.ToString("F2")</span>
+                            </div>
+                        }
+
+                        <hr />
+
+                        <div class="d-flex justify-content-between fw-bold fs-5">
+                            <span>Total</span>
+                            <span class="text-primary">$@Model.TotalValue.ToString("F2")</span>
+                        </div>
+
+                        @if (Model?.GiftCardDiscount > 0)
+                        {
+                            <div class="alert alert-success mt-3 mb-0">
+                                <i class="bi bi-check-circle"></i> You saved <strong>$@Model.GiftCardDiscount.ToString("F2")</strong>!
+                            </div>
+                        }
+
+                        <a asp-action="Checkout" asp-controller="Order" class="btn btn-primary w-100 mt-3">
+                            Proceed to Checkout
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Gift Card Section -->
+                <div class="card mt-3">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="bi bi-gift"></i> Gift Card
+                        </h5>
+
+                        @if (!string.IsNullOrEmpty(Model?.AppliedCouponCode))
+                        {
+                            <div class="alert alert-success">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="bi bi-check-circle"></i> 
+                                        <strong>Applied:</strong> @Model.AppliedCouponCode
+                                    </div>
+                                    <form asp-action="RemoveGiftCard" asp-controller="Order" method="post" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Remove gift card">
+                                            <i class="bi bi-x"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <form asp-action="ApplyGiftCard" asp-controller="Order" method="post">
+                                <div class="input-group">
+                                    <input type="text" name="code" class="form-control" placeholder="Enter gift card code" required />
+                                    <button type="submit" class="btn btn-outline-primary">Apply</button>
+                                </div>
+                            </form>
+                        }
+
+                        @if (TempData["GiftCardError"] != null)
+                        {
+                            <div class="alert alert-danger mt-2 mb-0">
+                                <i class="bi bi-exclamation-triangle"></i> @TempData["GiftCardError"]
+                            </div>
+                        }
+
+                        @if (TempData["GiftCardSuccess"] != null)
+                        {
+                            <div class="alert alert-success mt-2 mb-0">
+                                <i class="bi bi-check-circle"></i> @TempData["GiftCardSuccess"]
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <h3>Your cart is empty</h3>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-primary mt-3">
+                Browse Books
+            </a>
+        </div>
+    }
+</div>

@@ -1,22 +1,54 @@
 ﻿@model LoginViewModel
 
-<h2>Login</h2>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-lg">
+                <div class="card-body p-5">
+                    <h2 class="card-title text-center mb-4">Login</h2>
 
-<form asp-action="Login" method="post">
-    <div>
-        <label asp-for="Username"></label>
-        <input asp-for="Username"/>
-        <span asp-validation-for="Username"></span>
+                    <form asp-action="Login" method="post" novalidate>
+                        <div class="mb-3">
+                            <label asp-for="Username" class="form-label"></label>
+                            <input asp-for="Username" class="form-control" placeholder="Enter your username"/>
+                            <span asp-validation-for="Username" class="text-danger small d-block mt-1"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Password" class="form-label"></label>
+                            <input asp-for="Password" type="password" class="form-control" placeholder="Enter your password"/>
+                            <span asp-validation-for="Password" class="text-danger small d-block mt-1"></span>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input asp-for="RememberMe" type="checkbox" class="form-check-input" id="rememberMe"/>
+                            <label class="form-check-label" for="rememberMe">
+                                Remember me
+                            </label>
+                        </div>
+
+                        <div class="mb-3 text-end">
+                            <a asp-action="ForgotPassword" class="text-muted text-decoration-none small">Forgot your password?</a>
+                        </div>
+
+                        @if (ViewData.ModelState[""] != null)
+                        {
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                @Html.ValidationSummary(false, "", new { @class = "mb-0" })
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        }
+
+                        <button type="submit" class="btn btn-primary w-100 btn-lg">Login</button>
+                    </form>
+
+                    <hr class="my-4">
+
+                    <p class="text-center text-muted mb-0">
+                        Don't have an account? <a asp-action="Register" class="link-primary text-decoration-none fw-semibold">Register here</a>
+                    </p>
+                </div>
+            </div>
+        </div>
     </div>
-    <div>
-        <label asp-for="Password"></label>
-        <input asp-for="Password" type="password"/>
-        <span asp-validation-for="Password"></span>
-    </div>
-    <div>
-        <input asp-for="RememberMe" type="checkbox"/>
-        <label asp-for="RememberMe"></label>
-    </div>
-    <button type="submit">Login</button>
-    @Html.ValidationSummary(false, "", new { @class = "text-danger" })
-</form>
+</div>

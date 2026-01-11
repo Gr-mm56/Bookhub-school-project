@@ -2,47 +2,68 @@
 using BusinessLayer.Models.Author.Requests;
 using BusinessLayer.Models.Author.Responses;
 using BusinessLayer.Models.Common;
+using BusinessLayer.Services.Extensions;
 using BusinessLayer.Services.Interfaces;
 using DataAccessLayer.Context;
 using DataAccessLayer.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace BusinessLayer.Services.Implementations;
 
 public class AuthorService : BaseService<BookHubDbContext>, IAuthorService
 {
-    public AuthorService(BookHubDbContext dbContext) : base(dbContext)
-    {
+    private readonly IMemoryCache _memoryCache;
+    private const string AuthorAllCacheKey = "authors_all";
+    private const string AuthorDetailCacheKey = "authors_detail";
+    private static readonly TimeSpan CacheExpiration = TimeSpan.FromSeconds(60);
 
+    public AuthorService(BookHubDbContext dbContext, IMemoryCache memoryCache) : base(dbContext)
+    {
+        _memoryCache = memoryCache;
     }
 
     public async Task<PagedResultDto<AuthorBooksDto>> GetAllAsync(int limit = 20, int offset = 0)
     {
-        var query = Context.Authors
-            .AsNoTracking()
-            .Include(a => a.ProfilePhoto)
-            .Include(a => a.Books)
-                .ThenInclude(b => b.Image)
-            .OrderBy(a => a.Surname);
+        var cacheKey = $"{AuthorAllCacheKey}_{limit}_{offset}";
 
-        return await PageAsync<Author, AuthorBooksDto>(
-            query, 
-            limit, 
-            offset, 
-            authors => AuthorMapper.ToDetailDtoList(authors)
+        return await _memoryCache.GetOrCreateAsync(
+            cacheKey,
+            CacheExpiration,
+            async () =>
+            {
+                var query = Context.Authors
+                    .AsNoTracking()
+                    .WithFullDetails()
+                    .OrderBy(a => a.Surname);
+
+                return await PageAsync(
+                    query,
+                    limit,
+                    offset,
+                    AuthorMapper.ToDetailDtoList
+                );
+            }
         );
     }
 
     public async Task<AuthorBooksDto?> GetByIdAsync(int id)
     {
-        var author = await Context.Authors
-            .AsNoTracking()
-            .Include(a => a.ProfilePhoto)
-            .Include(a => a.Books)
-                .ThenInclude(b => b.Image)
-            .FirstOrDefaultAsync(a => a.Id == id);
+        var cacheKey = $"{AuthorDetailCacheKey}_{id}";
 
-        return author != null ? AuthorMapper.ToDetailDto(author) : null;
+        return await _memoryCache.GetOrCreateAsync(
+            cacheKey,
+            CacheExpiration,
+            async () =>
+            {
+                var author = await Context.Authors
+                    .AsNoTracking()
+                    .WithDetailIncludes()
+                    .FirstOrDefaultAsync(a => a.Id == id);
+
+                return author != null ? AuthorMapper.ToDetailDto(author) : null;
+            }
+        );
     }
 
     public async Task<AuthorBooksDto> CreateAsync(AuthorRequestDto requestDto)
@@ -64,10 +85,10 @@ public class AuthorService : BaseService<BookHubDbContext>, IAuthorService
 
         // Reload with all related data
         var createdAuthor = await Context.Authors
-            .Include(a => a.Books)
-            .Include(a => a.Books)
-                .ThenInclude(b => b.Image)
+            .WithDetailIncludes()
             .FirstAsync(a => a.Id == author.Id);
+
+        _memoryCache.InvalidateAllCache();
 
         return AuthorMapper.ToDetailDto(createdAuthor);
     }
@@ -75,8 +96,7 @@ public class AuthorService : BaseService<BookHubDbContext>, IAuthorService
     public async Task<AuthorBooksDto?> UpdateAsync(int id, AuthorRequestDto requestDto)
     {
         var author = await Context.Authors
-            .Include(a => a.ProfilePhoto)
-            .Include(b => b.Books)
+            .WithDetailIncludes()
             .FirstOrDefaultAsync(a => a.Id == id);
 
         if (author == null)
@@ -99,10 +119,10 @@ public class AuthorService : BaseService<BookHubDbContext>, IAuthorService
 
         // Reload with updated data
         var updatedAuthor = await Context.Authors
-            .Include(a => a.ProfilePhoto)
-            .Include(a => a.Books)
-                .ThenInclude(b => b.Image)
+            .WithDetailIncludes()
             .FirstAsync(a => a.Id == id);
+
+        _memoryCache.InvalidateAllCache();
 
         return AuthorMapper.ToDetailDto(updatedAuthor);
     }
@@ -112,7 +132,7 @@ public class AuthorService : BaseService<BookHubDbContext>, IAuthorService
         var errors = new List<string>();
 
         // Validate Books
-        if (requestDto.BookIds.Any())
+        if (requestDto.BookIds.Count != 0)
         {
             var existingBookIds = await Context.Books
                 .Where(b => requestDto.BookIds.Contains(b.Id))
@@ -121,7 +141,7 @@ public class AuthorService : BaseService<BookHubDbContext>, IAuthorService
 
             var invalidBookIds = requestDto.BookIds.Except(existingBookIds);
             var invalidBookList = invalidBookIds.ToList();
-            if (invalidBookList.Any())
+            if (invalidBookList.Count != 0)
             {
                 errors.Add($"Invalid Book IDs: {string.Join(", ", invalidBookList)}");
             }
@@ -137,7 +157,7 @@ public class AuthorService : BaseService<BookHubDbContext>, IAuthorService
             }
         }
 
-        if (errors.Any())
+        if (errors.Count != 0)
         {
             throw new ArgumentException($"Validation failed: {string.Join("; ", errors)}");
         }
@@ -145,13 +165,13 @@ public class AuthorService : BaseService<BookHubDbContext>, IAuthorService
 
     private async Task ExtendBooksCollectionAsync(Author author, AuthorRequestDto requestDto)
     {
-        if (requestDto.BookIds.Any())
+        if (requestDto.BookIds.Count != 0)
         {
             var currentBookIds = author.Books.Select(b => b.Id).ToList();
 
             var newBookIds = requestDto.BookIds.Except(currentBookIds).ToList();
 
-            if (newBookIds.Any())
+            if (newBookIds.Count != 0)
             {
                 var newBooks = await Context.Books
                     .Where(b => newBookIds.Contains(b.Id))
@@ -168,12 +188,8 @@ public class AuthorService : BaseService<BookHubDbContext>, IAuthorService
     public async Task<bool> DeleteAsync(int id)
     {
         var author = await Context.Authors
-            .Include(a => a.Books)
-                .ThenInclude(b => b.Authors)
-            .Include(a => a.Books)
-                .ThenInclude(b => b.Ratings)
-            .Include(a => a.Books)
-                .ThenInclude(b => b.Genres)
+            .Include(author => author.Books) // to silence the compiler warning
+            .WithDeleteIncludes()
             .FirstOrDefaultAsync(a => a.Id == id);
 
         if (author == null)
@@ -181,13 +197,17 @@ public class AuthorService : BaseService<BookHubDbContext>, IAuthorService
             return false;
         }
 
-        if (author.Books.Any())
+        if (author.Books.Count != 0)
         {
             throw new InvalidOperationException("Cannot delete author who has associated books. Remove the author from all books first.");
         }
 
         Context.Authors.Remove(author);
         await SaveAsync();
+
+        _memoryCache.InvalidateAllCache();
+
         return true;
     }
+
 }
