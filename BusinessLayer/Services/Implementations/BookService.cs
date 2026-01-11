@@ -60,38 +60,21 @@ public class BookService : BaseService<BookHubDbContext>, IBookService
         return await _memoryCache.GetOrCreateAsync(
             cacheKey,
             CacheExpiration,
-            async () =>
-            {
-                var query = Context.Books
-                    .AsNoTracking()
-                    .WithBaseIncludes()
-                    .AsQueryable();
-
-                if (!string.IsNullOrEmpty(searchDto.SearchTerm))
-                {
-                    var searchTerm = searchDto.SearchTerm.Trim().ToLower();
-
-                    query = query.Where(b =>
-                        b.Title.ToLower().Contains(searchTerm) ||
-                        b.Authors.Any(a => (a.Name.ToLower() + " " + a.Surname.ToLower()).Contains(searchTerm) ||
-                                           a.Name.ToLower().Contains(searchTerm) ||
-                                           a.Surname.ToLower().Contains(searchTerm)) ||
-                        (b.Publisher != null && b.Publisher.Name.ToLower().Contains(searchTerm)) ||
-                        (b.PrimaryGenre != null && b.PrimaryGenre.Name.ToLower().Contains(searchTerm)) ||
-                        b.Genres.Any(g => g.Name.ToLower().Contains(searchTerm))
-                    );
-                }
-
-                if (searchDto.Price.HasValue)
-                {
-                    query = query.Where(b => Math.Abs(b.Price - searchDto.Price.Value) <= 0.0001);
-                }
-
-                query = query.OrderBy(b => b.Title);
-
-                return await PageAsync(query, searchDto.Limit, searchDto.Offset, BookMapper.ToDetailDtoList);
-            }
+            () => PerformSearchAsync(searchDto)
         );
+    }
+
+    private async Task<PagedResultDto<BookDetailDto>> PerformSearchAsync(BookSearchDto searchDto)
+    {
+        var query = Context.Books
+            .AsNoTracking()
+            .WithBaseIncludes()
+            .AsQueryable()
+            .FilterBySearchTerm(searchDto.SearchTerm)
+            .FilterByPrice(searchDto.Price)
+            .OrderBy(b => b.Title);
+
+        return await PageAsync(query, searchDto.Limit, searchDto.Offset, BookMapper.ToDetailDtoList);
     }
 
     public async Task<BookDto> CreateAsync(BookRequestDto requestDto)
