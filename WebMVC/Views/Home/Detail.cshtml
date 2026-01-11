@@ -44,7 +44,16 @@
                     </div>
                 </div>
             }
-
+            <!-- Primary Genre -->
+            @if (Model.PrimaryGenre != null)
+            {
+                <div class="mb-4">
+                    <h5 class="text-muted mb-2">Primary Genre</h5>
+                    <div>
+                        <a href="@Url.Action("Index", "Home", new { searchTerm = Model.PrimaryGenre.Name })" class="badge bg-primary me-2 mb-2 text-decoration-none" style="cursor: pointer;">@Model.PrimaryGenre.Name</a>
+                    </div>
+                </div>
+            }
             <!-- Genres -->
             @if (Model.Genres.Any())
             {
