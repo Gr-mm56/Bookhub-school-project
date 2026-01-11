@@ -1,4 +1,5 @@
 using BusinessLayer.Services.Interfaces;
+using BusinessLayer.Models.Rating.Requests;
 using DataAccessLayer.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +16,9 @@ namespace WebMVC.Controllers
         private readonly IAuthorService _authorService;
         private readonly IBookService _bookService;
         private readonly IPublisherService _publisherService;
+        private readonly IRatingService _ratingService;
         private readonly SignInManager<LocalIdentityUser> _signInManager;
+        private readonly UserManager<LocalIdentityUser> _userManager;
 
         public HomeController(
             ILogger<HomeController> logger,
@@ -23,14 +26,19 @@ namespace WebMVC.Controllers
             IAuthorService authorService,
             IBookService bookService,
             IPublisherService publisherService,
-            SignInManager<LocalIdentityUser> signInManager
-        ) {
+            IRatingService ratingService,
+            SignInManager<LocalIdentityUser> signInManager,
+            UserManager<LocalIdentityUser> userManager
+        )
+        {
             _logger = logger;
             _searchFacade = searchFacade;
             _authorService = authorService;
             _bookService = bookService;
             _publisherService = publisherService;
+            _ratingService = ratingService;
             _signInManager = signInManager;
+            _userManager = userManager;
         }
 
         public async Task<IActionResult> Index(
@@ -89,6 +97,17 @@ namespace WebMVC.Controllers
 
                 var viewModel = BookMapper.ToBookDetailViewModel(book);
                 viewModel.IsSignedIn = _signInManager.IsSignedIn(User);
+
+                // Get current user ID if signed in
+                if (viewModel.IsSignedIn)
+                {
+                    var user = await _userManager.GetUserAsync(User);
+                    if (user != null)
+                    {
+                        viewModel.CurrentUserId = user.UserId;
+                    }
+                }
+
                 return View(viewModel);
             }
             catch (Exception ex)
@@ -125,6 +144,86 @@ namespace WebMVC.Controllers
         public IActionResult Privacy()
         {
             return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateRating(int bookId, int stars)
+        {
+            if (!_signInManager.IsSignedIn(User))
+            {
+                return Unauthorized();
+            }
+
+            if (stars < 1 || stars > 5)
+            {
+                return BadRequest("Rating must be between 1 and 5 stars");
+            }
+
+            try
+            {
+                var user = await _userManager.GetUserAsync(User);
+                if (user == null)
+                {
+                    return Unauthorized();
+                }
+
+                var ratingRequest = new RatingRequestDto
+                {
+                    Stars = stars,
+                    UserId = user.UserId,
+                    BookId = bookId
+                };
+
+                await _ratingService.CreateAsync(ratingRequest);
+
+                return RedirectToAction("Detail", new { id = bookId });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating rating for book {BookId}", bookId);
+                return RedirectToAction("Detail", new { id = bookId });
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateRating(int ratingId, int bookId, int stars)
+        {
+            if (!_signInManager.IsSignedIn(User))
+            {
+                return Unauthorized();
+            }
+
+            if (stars < 1 || stars > 5)
+            {
+                return BadRequest("Rating must be between 1 and 5 stars");
+            }
+
+            try
+            {
+                var user = await _userManager.GetUserAsync(User);
+                if (user == null)
+                {
+                    return Unauthorized();
+                }
+
+                var ratingRequest = new RatingRequestDto
+                {
+                    Stars = stars,
+                    UserId = user.UserId,
+                    BookId = bookId
+                };
+
+                await _ratingService.UpdateAsync(ratingId, ratingRequest);
+
+                return RedirectToAction("Detail", new { id = bookId });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating rating {RatingId} for book {BookId}", ratingId, bookId);
+                return RedirectToAction("Detail", new { id = bookId });
+            }
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

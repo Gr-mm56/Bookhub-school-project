@@ -123,7 +123,7 @@ public class BookService : BaseService<BookHubDbContext>, IBookService
             .WithBaseIncludes()
             .FirstAsync(b => b.Id == book.Id);
 
-        _memoryCache.InvalidateAllCache();
+        _memoryCache.Remove(BookSearchCacheKey);
 
         return BookMapper.ToDto(createdBook);
     }
@@ -150,7 +150,8 @@ public class BookService : BaseService<BookHubDbContext>, IBookService
 
         await SaveAsync();
 
-        _memoryCache.InvalidateAllCache();
+        _memoryCache.Remove(BookSearchCacheKey);
+        _memoryCache.Remove($"{BookDetailCacheKey}_{id}");
 
         return BookMapper.ToDto(book);
     }
@@ -261,7 +262,8 @@ public class BookService : BaseService<BookHubDbContext>, IBookService
         Context.Books.Remove(book);
         await SaveAsync();
 
-        _memoryCache.InvalidateAllCache();
+        _memoryCache.Remove(BookSearchCacheKey);
+        _memoryCache.Remove($"{BookDetailCacheKey}_{id}");
 
         return true;
     }

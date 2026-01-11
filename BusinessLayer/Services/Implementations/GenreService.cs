@@ -85,7 +85,8 @@ public class GenreService : BaseService<BookHubDbContext>, IGenreService
         await Context.Genres.AddAsync(genre);
         await SaveAsync();
 
-        _memoryCache.InvalidateAllCache();
+        _memoryCache.Remove(GenreAllCacheKey);
+        _memoryCache.Remove("genre_search_*");
 
         return GenreMapper.ToDto(genre);
     }
@@ -101,7 +102,9 @@ public class GenreService : BaseService<BookHubDbContext>, IGenreService
         GenreMapper.UpdateEntity(genre, requestDto);
         await SaveAsync();
 
-        _memoryCache.InvalidateAllCache();
+        _memoryCache.Remove(GenreAllCacheKey);
+        _memoryCache.Remove($"genre_{id}");
+        _memoryCache.Remove("genre_search_*");
 
         return GenreMapper.ToDto(genre);
     }
@@ -117,7 +120,9 @@ public class GenreService : BaseService<BookHubDbContext>, IGenreService
         Context.Genres.Remove(genre);
         await SaveAsync();
 
-        _memoryCache.InvalidateAllCache();
+        _memoryCache.Remove(GenreAllCacheKey);
+        _memoryCache.Remove($"genre_{id}");
+        _memoryCache.Remove("genre_search_*");
 
         return true;
     }

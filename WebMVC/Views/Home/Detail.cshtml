@@ -188,6 +188,61 @@
                     No ratings yet. Be the first to rate this book!
                 </div>
             }
+
+            <!-- Add Review Section -->
+            @if (Model.IsSignedIn && Model.CurrentUserId.HasValue)
+            {
+                var userHasReviewed = Model.Ratings.Any(r => r.UserId == Model.CurrentUserId.Value);
+                
+                @if (!userHasReviewed)
+                {
+                    <div class="card p-4 mt-4">
+                        <h5>Add Your Review</h5>
+                        <form asp-controller="Home" asp-action="CreateRating" method="post">
+                            <input type="hidden" name="bookId" value="@Model.Id" />
+                            
+                            <div class="mb-3">
+                                <label for="stars" class="form-label">Rating (1-5 stars)</label>
+                                <input type="number" 
+                                       id="stars" 
+                                       name="stars" 
+                                       class="form-control" 
+                                       min="1" 
+                                       max="5" 
+                                       required 
+                                       placeholder="Enter rating 1-5" />
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Submit Rating</button>
+                        </form>
+                    </div>
+                }
+                else if (Model.CurrentUserRating != null)
+                {
+                    <div class="card p-4 mt-4">
+                        <h5>Update Your Review</h5>
+                        <p class="text-muted mb-3">You rated this book: <strong>@Model.CurrentUserRating.Stars star@(Model.CurrentUserRating.Stars == 1 ? "" : "s")</strong></p>
+                        <form asp-controller="Home" asp-action="UpdateRating" method="post">
+                            <input type="hidden" name="ratingId" value="@Model.CurrentUserRating.Id" />
+                            <input type="hidden" name="bookId" value="@Model.Id" />
+                            
+                            <div class="mb-3">
+                                <label for="updateStars" class="form-label">New Rating (1-5 stars)</label>
+                                <input type="number" 
+                                       id="updateStars" 
+                                       name="stars" 
+                                       class="form-control" 
+                                       min="1" 
+                                       max="5" 
+                                       value="@Model.CurrentUserRating.Stars"
+                                       required />
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Update Rating</button>
+                        </form>
+                    </div>
+                }
+            }
         </div>
     </div>
 </div>
