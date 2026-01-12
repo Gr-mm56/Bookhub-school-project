@@ -43,14 +43,11 @@
                             </li>
                         }
                         <li>
-                            <a asp-area="" class="nav-link text-dark">Hello @UserManager.GetUserName(User)!</a>
-                        </li>
-                        <li>
                             <form asp-area="" asp-controller="Order" asp-action="Cart" method="get">
                                 <input type="hidden" name="returnUrl" value="/"/>
 
                                 <button type="submit" class="nav-link btn btn-link text-dark">
-                                    My Cart
+                                    <i class="bi bi-cart"></i> My Cart
                                 </button>
                             </form>
                         </li>
@@ -59,27 +56,37 @@
                                 <input type="hidden" name="returnUrl" value="/"/>
 
                                 <button type="submit" class="nav-link btn btn-link text-dark">
-                                    My Wishlist
+                                    <i class="bi bi-heart"></i> My Wishlist
                                 </button>
                             </form>
                         </li>
-                        <li>
-                            <form asp-area="" asp-controller="Account" asp-action="Logout" method="post">
+                    }
+                </ul>
+                <ul class="navbar-nav">
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Order" asp-action="Profile">
+                                <i class="bi bi-person-circle"></i> @UserManager.GetUserName(User)
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <form asp-area="" asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
                                 <input type="hidden" name="returnUrl" value="/"/>
 
                                 <button type="submit" class="nav-link btn btn-link text-dark">
-                                    Logout
+                                    <i class="bi bi-box-arrow-right"></i> Logout
                                 </button>
                             </form>
                         </li>
                     }
                     else
                     {
-                        <li>
+                        <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Account"
                                asp-action="Login">Login</a>
                         </li>
-                        <li>
+                        <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Register">Register</a>
                         </li>
                     }

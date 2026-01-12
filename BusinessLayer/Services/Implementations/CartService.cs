@@ -43,6 +43,25 @@ public class CartService : BaseService<BookHubDbContext>, ICartService
         return await PageAsync(query, limit, offset, CartMapper.ToDetailDtoList);
     }
 
+    /**
+     * Get Carts that had orderId filled for certain user - user profile
+     */
+    public async Task<List<CartDetailDto>> GetAllOrdersForUserAsync(int userId)
+    {
+        var query = Context.Carts
+            .AsNoTracking()
+            .Include(c => c.User)
+            .Include(c => c.PurchaseItems!)
+                .ThenInclude(pi => pi.Book)
+            .Include(c => c.AppliedGiftCardCoupon!)
+                .ThenInclude(gc => gc.GiftCard)
+            .Where(c => c.OrderId != null)
+            .Where(c => c.UserId == userId)
+            .OrderBy(c => c.OrderDate);
+
+        return CartMapper.ToDetailDtoList(await query.ToListAsync()).ToList();
+    }
+
     public async Task<CartDetailDto?> GetByIdAsync(int id)
     {
         var cart = await Context.Carts

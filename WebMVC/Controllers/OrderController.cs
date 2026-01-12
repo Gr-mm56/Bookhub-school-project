@@ -398,7 +398,7 @@ public class OrderController : Controller
             try
             {
                 await _giftCardCouponService.MarkAsUsedAsync(
-                    cart.AppliedGiftCardCouponId.Value, 
+                    cart.AppliedGiftCardCouponId.Value,
                     cart.Id);
             }
             catch (Exception ex)
@@ -423,6 +423,23 @@ public class OrderController : Controller
     public async Task<IActionResult> OrderCreated(int orderId)
     {
         return View(orderId);
+    }
+
+    /**
+     * Loads order user has done for user profile
+     */
+    public async Task<IActionResult> Profile()
+    {
+        var userId = await ValidateLoginAndGetUserId();
+        var orders = await _cartService.GetAllOrdersForUserAsync(userId);
+        var cartViewModels = CartMapper.ToCartViewModels(orders);
+
+        var viewModel = new OrdersInProfileViewModel
+        {
+            Orders = cartViewModels
+        };
+
+        return View(viewModel);
     }
 
     private async Task<int> ValidateLoginAndGetUserId()
