@@ -25,25 +25,16 @@ public class PublisherService : BaseService<BookHubDbContext>, IPublisherService
 
     public async Task<PagedResultDto<PublisherBooksDto>> GetAllAsync(int limit = 20, int offset = 0)
     {
-        var cacheKey = $"{PublisherAllCacheKey}_{limit}_{offset}";
+        var query = Context.Publishers
+            .AsNoTracking()
+            .WithDetailIncludes()
+            .OrderBy(p => p.Name);
 
-        return await _memoryCache.GetOrCreateAsync(
-            cacheKey,
-            CacheExpiration,
-            async () =>
-            {
-                var query = Context.Publishers
-                    .AsNoTracking()
-                    .WithDetailIncludes()
-                    .OrderBy(p => p.Name);
-
-                return await PageAsync<Publisher, PublisherBooksDto>(
-                    query,
-                    limit,
-                    offset,
-                    publishers => PublisherMapper.ToDetailDtoList(publishers)
-                );
-            }
+        return await PageAsync<Publisher, PublisherBooksDto>(
+            query,
+            limit,
+            offset,
+            publishers => PublisherMapper.ToDetailDtoList(publishers)
         );
     }
 
@@ -86,7 +77,7 @@ public class PublisherService : BaseService<BookHubDbContext>, IPublisherService
             .WithDetailIncludes()
             .FirstAsync(p => p.Id == publisher.Id);
 
-        _memoryCache.InvalidateAllCache();
+        _memoryCache.Remove($"{PublisherAllCacheKey}_*");
 
         return PublisherMapper.ToDetailDto(createdPublisher);
     }
@@ -121,7 +112,7 @@ public class PublisherService : BaseService<BookHubDbContext>, IPublisherService
             .WithDetailIncludes()
             .FirstAsync(p => p.Id == id);
 
-        _memoryCache.InvalidateAllCache();
+        _memoryCache.Remove($"{PublisherDetailCacheKey}_{id}");
 
         return PublisherMapper.ToDetailDto(updatedPublisher);
     }
@@ -202,7 +193,7 @@ public class PublisherService : BaseService<BookHubDbContext>, IPublisherService
         Context.Publishers.Remove(publisher);
         await SaveAsync();
 
-        _memoryCache.InvalidateAllCache();
+        _memoryCache.Remove($"{PublisherDetailCacheKey}_{id}");
 
         return true;
     }

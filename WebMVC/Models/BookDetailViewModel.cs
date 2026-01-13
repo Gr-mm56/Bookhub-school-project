@@ -26,25 +26,15 @@ public class BookDetailViewModel
 
     public bool IsSignedIn { get; set; }
 
+    public int? CurrentUserId { get; set; }
+
+    public RatingViewModel? CurrentUserRating => CurrentUserId.HasValue 
+        ? Ratings.FirstOrDefault(r => r.UserId == CurrentUserId.Value)
+        : null;
+
     public double AverageRating => Ratings.Any()
         ? Math.Round(Ratings.Average(r => r.Stars), 1)
         : 0;
 
     public int RatingCount => Ratings.Count;
-}
-
-public class GenreViewModel
-{
-    public int Id { get; set; }
-
-    public string Name { get; set; }
-}
-
-public class RatingViewModel
-{
-    public int Id { get; set; }
-
-    public int Stars { get; set; }
-
-    public DateTime CreatedAt { get; set; }
 }
