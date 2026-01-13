@@ -13,4 +13,6 @@ public interface ICartService : ICrudService<CartDto, CartDetailDto, CartCreateD
     Task<CartDto> CreateOrderAsync(OrderCreateDto orderCreateDto, int? cartId = null);
 
     Task<CartDto?> UpdateOrderAsync(int id, OrderUpdateDto orderUpdateDto);
+
+    Task<List<CartDetailDto>> GetAllOrdersForUserAsync(int userId);
 }
