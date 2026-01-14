@@ -5,13 +5,18 @@ using BusinessLayer.Models.Rating.Responses;
 using BusinessLayer.Services.Interfaces;
 using DataAccessLayer.Context;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace BusinessLayer.Services.Implementations;
 
 public class RatingService : BaseService<BookHubDbContext>, IRatingService
 {
-    public RatingService(BookHubDbContext context) : base(context)
+    private readonly IMemoryCache _memoryCache;
+    private const string BookDetailCacheKey = "books_detail";
+
+    public RatingService(BookHubDbContext context, IMemoryCache memoryCache) : base(context)
     {
+        _memoryCache = memoryCache;
     }
 
     public async Task<PagedResultDto<RatingDto>> GetAllAsync(int limit = 20, int offset = 0)
@@ -83,6 +88,8 @@ public class RatingService : BaseService<BookHubDbContext>, IRatingService
 
         await Context.Ratings.AddAsync(rating);
         await SaveAsync();
+        _memoryCache.Remove(BookDetailCacheKey);
+        _memoryCache.Remove($"{BookDetailCacheKey}_{requestDto.BookId}");
 
         return RatingMapper.ToDto(rating);
     }
@@ -111,6 +118,14 @@ public class RatingService : BaseService<BookHubDbContext>, IRatingService
         RatingMapper.UpdateEntity(rating, requestDto);
         await SaveAsync();
 
+        var oldBookId = rating.BookId;
+        if (oldBookId != requestDto.BookId)
+        {
+            _memoryCache.Remove($"{BookDetailCacheKey}_{oldBookId}");
+        }
+        _memoryCache.Remove(BookDetailCacheKey);
+        _memoryCache.Remove($"{BookDetailCacheKey}_{requestDto.BookId}");
+
         return RatingMapper.ToDto(rating);
     }
 
@@ -122,8 +137,13 @@ public class RatingService : BaseService<BookHubDbContext>, IRatingService
             return false;
         }
 
+        var bookId = rating.BookId;
+        
         Context.Ratings.Remove(rating);
         await SaveAsync();
+        _memoryCache.Remove(BookDetailCacheKey);
+        _memoryCache.Remove($"{BookDetailCacheKey}_{bookId}");
+        
         return true;
     }
 

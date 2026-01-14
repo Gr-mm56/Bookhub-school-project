@@ -79,14 +79,31 @@ builder.Services.AddSingleton<IMongoClient>(_ =>
 
 builder.Services.AddSingleton<ILogService, MongoLogService>();
 
-
 var app = builder.Build();
+
+// Ensure database is created and migrations are applied
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var dbContext = services.GetRequiredService<BookHubDbContext>();
+    
+    try
+    {
+        dbContext.Database.Migrate();
+        Log.Information("Database migrations applied successfully.");
+    }
+    catch (Exception ex)
+    {
+        Log.Error(ex, "An error occurred while applying database migrations.");
+    }
+}
 
 app.ConfigureStaticFileServing(app.Configuration, app.Environment);
 
 builder.Services.AddLogging();
 
-if (app.Environment.IsDevelopment())
+// Enable Swagger in Development and Docker environments
+if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Docker")
 {
     app.UseSwagger();
     app.UseSwaggerUI();

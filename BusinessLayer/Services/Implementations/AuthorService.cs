@@ -25,25 +25,16 @@ public class AuthorService : BaseService<BookHubDbContext>, IAuthorService
 
     public async Task<PagedResultDto<AuthorBooksDto>> GetAllAsync(int limit = 20, int offset = 0)
     {
-        var cacheKey = $"{AuthorAllCacheKey}_{limit}_{offset}";
+        var query = Context.Authors
+            .AsNoTracking()
+            .WithFullDetails()
+            .OrderBy(a => a.Surname);
 
-        return await _memoryCache.GetOrCreateAsync(
-            cacheKey,
-            CacheExpiration,
-            async () =>
-            {
-                var query = Context.Authors
-                    .AsNoTracking()
-                    .WithFullDetails()
-                    .OrderBy(a => a.Surname);
-
-                return await PageAsync(
-                    query,
-                    limit,
-                    offset,
-                    AuthorMapper.ToDetailDtoList
-                );
-            }
+        return await PageAsync(
+            query,
+            limit,
+            offset,
+            AuthorMapper.ToDetailDtoList
         );
     }
 
@@ -88,7 +79,6 @@ public class AuthorService : BaseService<BookHubDbContext>, IAuthorService
             .WithDetailIncludes()
             .FirstAsync(a => a.Id == author.Id);
 
-        _memoryCache.InvalidateAllCache();
 
         return AuthorMapper.ToDetailDto(createdAuthor);
     }
@@ -122,7 +112,7 @@ public class AuthorService : BaseService<BookHubDbContext>, IAuthorService
             .WithDetailIncludes()
             .FirstAsync(a => a.Id == id);
 
-        _memoryCache.InvalidateAllCache();
+        _memoryCache.Remove($"{AuthorDetailCacheKey}_{id}");
 
         return AuthorMapper.ToDetailDto(updatedAuthor);
     }
@@ -205,7 +195,8 @@ public class AuthorService : BaseService<BookHubDbContext>, IAuthorService
         Context.Authors.Remove(author);
         await SaveAsync();
 
-        _memoryCache.InvalidateAllCache();
+        // Invalidate the specific author detail cache
+        _memoryCache.Remove($"{AuthorDetailCacheKey}_{id}");
 
         return true;
     }

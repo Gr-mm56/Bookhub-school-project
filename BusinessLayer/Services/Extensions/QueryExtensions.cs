@@ -1,4 +1,5 @@
 ﻿using BusinessLayer.Models.Common;
+using DataAccessLayer.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLayer.Services.Extensions;
@@ -49,7 +50,32 @@ public static class QueryExtensions
             Items = mapper(entities)
         };
     }
+    
+    public static IQueryable<Book> FilterBySearchTerm(this IQueryable<Book> query, string? searchTerm)
+    {
+        if (string.IsNullOrEmpty(searchTerm))
+            return query;
+
+        var lowerSearchTerm = searchTerm.Trim().ToLower();
+
+        return query.Where(b =>
+            b.Title.ToLower().Contains(lowerSearchTerm) ||
+            b.Authors.Any(a => 
+                (a.Name.ToLower() + " " + a.Surname.ToLower()).Contains(lowerSearchTerm) ||
+                a.Name.ToLower().Contains(lowerSearchTerm) ||
+                a.Surname.ToLower().Contains(lowerSearchTerm)) ||
+            (b.Publisher != null && b.Publisher.Name.ToLower().Contains(lowerSearchTerm)) ||
+            (b.PrimaryGenre != null && b.PrimaryGenre.Name.ToLower().Contains(lowerSearchTerm)) ||
+            b.Genres.Any(g => g.Name.ToLower().Contains(lowerSearchTerm))
+        );
+    }
+    
+    public static IQueryable<Book> FilterByPrice(this IQueryable<Book> query, double? price)
+    {
+        if (!price.HasValue)
+            return query;
+
+        return query.Where(b => Math.Abs(b.Price - price.Value) <= 0.0001);
+    }
 }
-
-
 
