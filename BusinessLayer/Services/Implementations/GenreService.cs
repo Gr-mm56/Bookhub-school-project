@@ -23,20 +23,12 @@ public class GenreService : BaseService<BookHubDbContext>, IGenreService
 
     public async Task<PagedResultDto<GenreDto>> GetAllAsync(int limit = 20, int offset = 0)
     {
-        var cacheKey = $"{GenreAllCacheKey}_{limit}_{offset}";
+        var query = Context.Genres
+            .AsNoTracking()
+            .OrderBy(g => g.Name);
 
-        return await _memoryCache.GetOrCreateAsync(
-            cacheKey,
-            CacheExpiration,
-            async () =>
-            {
-                var query = Context.Genres
-                    .AsNoTracking()
-                    .OrderBy(g => g.Name);
+        return await PageAsync(query, limit, offset, GenreMapper.ToDtoList);
 
-                return await PageAsync(query, limit, offset, GenreMapper.ToDtoList);
-            }
-        );
     }
 
     public async Task<GenreDetailDto?> GetByIdAsync(int id)

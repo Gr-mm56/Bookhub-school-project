@@ -17,7 +17,15 @@ public class TokenAuthenticationMiddleware
 
     public async Task Invoke(HttpContext context)
     {
-        string token = context.Request.Headers.Authorization;
+        // Skip authentication for Swagger UI and Swagger JSON endpoints
+        var path = context.Request.Path.Value?.ToLower() ?? "";
+        if (path.StartsWith("/swagger") || path.StartsWith("/api/swagger"))
+        {
+            await _next(context);
+            return;
+        }
+
+        string token = context.Request.Headers.Authorization.ToString();
 
         if (string.IsNullOrEmpty(token))
         {

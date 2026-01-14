@@ -96,10 +96,27 @@ builder.Services.AddSingleton<ILogService, MongoLogService>();
 
 var app = builder.Build();
 
-// Initialize roles
+// Ensure database is created and migrations are applied
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
+    
+    // Apply migrations and ensure database is created in Development and Docker environments
+    if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Docker")
+    {
+        var dbContext = services.GetRequiredService<BookHubDbContext>();
+        try
+        {
+            dbContext.Database.Migrate();
+            Log.Information("Database migrations applied successfully.");
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "An error occurred while applying database migrations.");
+        }
+    }
+    
+    // Initialize roles
     await RoleInitializer.InitializeAsync(services);
 }
 
