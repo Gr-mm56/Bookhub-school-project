@@ -1,0 +1,136 @@
+﻿@model WebMVC.Models.OrdersInProfileViewModel
+
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <h2 class="mb-4">
+                <i class="bi bi-person-circle"></i> My Profile
+            </h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-box-seam"></i> Order History
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @if (Model?.Orders != null && Model.Orders.Any())
+                    {
+                        <div class="accordion" id="orderAccordion">
+                            @for (int i = 0; i < Model.Orders.Count; i++)
+                            {
+                                var order = Model.Orders[i];
+                                <div class="accordion-item mb-2">
+                                    <h2 class="accordion-header" id="heading@(i)">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#collapse@(i)" aria-expanded="false"
+                                                aria-controls="collapse@(i)">
+                                            <div class="d-flex w-100 justify-content-between align-items-center pe-3">
+                                                <div>
+                                                    <strong>Order ID #@order.Id</strong>
+                                                </div>
+                                                <div>
+                                                    @if (order.PaymentStatus == 1)
+                                                    {
+                                                        <span class="badge bg-success">
+                                                            <i class="bi bi-check-circle"></i> Paid
+                                                        </span>
+                                                    }
+                                                    else if (order.PaymentStatus == 0)
+                                                    {
+                                                        <span class="badge bg-warning text-dark">
+                                                            <i class="bi bi-clock"></i> Pending
+                                                        </span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge bg-secondary">
+                                                            Unknown
+                                                        </span>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </button>
+                                    </h2>
+                                    <div id="collapse@(i)" class="accordion-collapse collapse"
+                                         aria-labelledby="heading@(i)" data-bs-parent="#orderAccordion">
+                                        <div class="accordion-body">
+                                            <h6 class="mb-3">Order Items:</h6>
+                                            <div class="table-responsive">
+                                                <table class="table table-sm">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Book</th>
+                                                            <th>Quantity</th>
+                                                            <th>Price</th>
+                                                            <th>Subtotal</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var item in order.PurchaseItems)
+                                                        {
+                                                            <tr>
+                                                                <td>
+                                                                    <strong>@item.Title</strong>
+                                                                </td>
+                                                                <td>@item.Quantity</td>
+                                                                <td>$@item.Price.ToString("F2")</td>
+                                                                <td><strong>$@item.Subtotal.ToString("F2")</strong></td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                    <tfoot>
+                                                        <tr>
+                                                            <td colspan="3" class="text-end">Subtotal:</td>
+                                                            <td>$@order.PurchaseItems.Sum(i => i.Subtotal).ToString("F2")</td>
+                                                        </tr>
+                                                        @if (order.GiftCardDiscount > 0)
+                                                        {
+                                                            <tr class="table-success">
+                                                                <td colspan="3" class="text-end">
+                                                                    <i class="bi bi-gift"></i> Gift Card Applied:
+                                                                </td>
+                                                                <td>-$@order.GiftCardDiscount.ToString("F2")</td>
+                                                            </tr>
+                                                        }
+                                                        @if (!string.IsNullOrEmpty(order.AppliedCouponCode))
+                                                        {
+                                                            <tr class="table-info">
+                                                                <td colspan="3" class="text-end">
+                                                                    <i class="bi bi-tag"></i> Coupon (@order.AppliedCouponCode):
+                                                                </td>
+                                                                <td>Applied</td>
+                                                            </tr>
+                                                        }
+                                                        <tr>
+                                                            <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                                                            <td><strong>$@order.TotalValue.ToString("F2")</strong></td>
+                                                        </tr>
+                                                    </tfoot>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info" role="alert">
+                            <i class="bi bi-info-circle"></i> You haven't placed any orders yet.
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
