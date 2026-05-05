@@ -20,6 +20,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IPublisherService, PublisherService>();
         services.AddScoped<IRatingService, RatingService>();
         services.AddScoped<IImageService, ImageService>();
+        services.AddScoped<IGiftCardService, GiftCardService>();
+        services.AddScoped<IGiftCardCouponService, GiftCardCouponService>();
 
         services.AddScoped<IBookManagementFacade, BookManagementFacade>();
 

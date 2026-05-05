@@ -1,0 +1,54 @@
+﻿# Ignore build outputs
+**/bin/
+**/obj/
+**/out/
+
+# Ignore IDE and editor files
+**/.vs/
+**/.vscode/
+**/.idea/
+**/*.user
+**/*.suo
+
+# Ignore NuGet packages
+**/packages/
+**/*.nupkg
+
+# Ignore database files
+**/*.db
+**/*.db-shm
+**/*.db-wal
+
+# Ignore logs
+**/logs/
+**/*.log
+
+# Ignore temp files
+**/temp/
+**/tmp/
+
+# Ignore OS files
+**/Thumbs.db
+**/.DS_Store
+
+# Ignore Git files
+.git/
+.gitignore
+.gitattributes
+
+# Ignore Docker files during build
+**/Dockerfile
+**/docker-compose*.yml
+**/.dockerignore
+
+# Ignore documentation
+**/README.md
+**/DOCKER_SETUP.md
+
+# Ignore node modules if any
+**/node_modules/
+
+# Ignore test files
+**/TestUtilities/
+**/*Tests/
+

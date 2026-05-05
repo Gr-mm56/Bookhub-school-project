@@ -25,6 +25,24 @@ Team composition:
 
 ## How to run
 
+### docker
+You can easily run WebAPI and WebMVC project via docker.
+1. have docker installed and launched
+2. clone this repository
+3. In root folder of this repository, type:
+Windows:
+```bash
+docker-compose build; docker-compose up
+```
+Linux:
+```bash
+docker-compose build && docker-compose up
+```
+WebAPI is running on port 5000, swagger is on /swagger/index.html
+WebMVC is running on port 5170
+
+Otherwise, follow the instructions below to run the projects locally.
+
 1. Clone the repository (example using SSH):
 ```bash
 git clone git@gitlab.fi.muni.cz:xspacek1/pv179_bookhub.git 
@@ -74,7 +92,6 @@ The project uses Entity Framework Core for database management. To initialize th
    dotnet ef database update --project DataAccessLayer --startup-project WebAPI
    ```
 4. After setting up the database the seeder will populate it with initial data automatically.
-5. WebAPI and WebMVC use different databases. To initialize WebMVC database, repeat step 3 with 
    ```bash
    dotnet ef database update --project DataAccessLayer--startup-project WebMVC
    ```
