@@ -23,20 +23,12 @@ public class GenreService : BaseService<BookHubDbContext>, IGenreService
 
     public async Task<PagedResultDto<GenreDto>> GetAllAsync(int limit = 20, int offset = 0)
     {
-        var cacheKey = $"{GenreAllCacheKey}_{limit}_{offset}";
+        var query = Context.Genres
+            .AsNoTracking()
+            .OrderBy(g => g.Name);
 
-        return await _memoryCache.GetOrCreateAsync(
-            cacheKey,
-            CacheExpiration,
-            async () =>
-            {
-                var query = Context.Genres
-                    .AsNoTracking()
-                    .OrderBy(g => g.Name);
+        return await PageAsync(query, limit, offset, GenreMapper.ToDtoList);
 
-                return await PageAsync(query, limit, offset, GenreMapper.ToDtoList);
-            }
-        );
     }
 
     public async Task<GenreDetailDto?> GetByIdAsync(int id)
@@ -85,7 +77,8 @@ public class GenreService : BaseService<BookHubDbContext>, IGenreService
         await Context.Genres.AddAsync(genre);
         await SaveAsync();
 
-        _memoryCache.InvalidateAllCache();
+        _memoryCache.Remove(GenreAllCacheKey);
+        _memoryCache.Remove("genre_search_*");
 
         return GenreMapper.ToDto(genre);
     }
@@ -101,7 +94,9 @@ public class GenreService : BaseService<BookHubDbContext>, IGenreService
         GenreMapper.UpdateEntity(genre, requestDto);
         await SaveAsync();
 
-        _memoryCache.InvalidateAllCache();
+        _memoryCache.Remove(GenreAllCacheKey);
+        _memoryCache.Remove($"genre_{id}");
+        _memoryCache.Remove("genre_search_*");
 
         return GenreMapper.ToDto(genre);
     }
@@ -117,7 +112,9 @@ public class GenreService : BaseService<BookHubDbContext>, IGenreService
         Context.Genres.Remove(genre);
         await SaveAsync();
 
-        _memoryCache.InvalidateAllCache();
+        _memoryCache.Remove(GenreAllCacheKey);
+        _memoryCache.Remove($"genre_{id}");
+        _memoryCache.Remove("genre_search_*");
 
         return true;
     }

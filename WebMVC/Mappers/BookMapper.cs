@@ -65,6 +65,7 @@ namespace WebMVC.Mappers
                 {
                     Id = r.Id,
                     Stars = r.Stars,
+                    UserId = r.UserId,
                     CreatedAt = r.CreatedAt
                 }).ToList()
             };

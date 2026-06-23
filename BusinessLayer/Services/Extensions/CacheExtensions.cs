@@ -27,15 +27,5 @@ public static class CacheExtensions
 
         return value;
     }
-
-    // essentially clears all entries from the memory cache
-    // not the most efficient way, unless I want to track all keys
-    public static void InvalidateAllCache(this IMemoryCache cache)
-    {
-        if (cache is MemoryCache memoryCache)
-        {
-            memoryCache.Compact(1.0);
-        }
-    }
 }
 
